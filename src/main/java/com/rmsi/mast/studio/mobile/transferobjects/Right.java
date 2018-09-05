@@ -10,6 +10,7 @@ public class Right implements Serializable {
     private int shareTypeId;
     private String certNumber;
     private String certDate;
+    private Integer certTypeId;
     private Double juridicalArea;
     private List<Person> naturalPersons = new ArrayList<>();
     private Person nonNaturalPerson;
@@ -60,6 +61,14 @@ public class Right implements Serializable {
 
     public void setCertDate(String certDate) {
         this.certDate = certDate;
+    }
+
+    public Integer getCertTypeId() {
+        return certTypeId;
+    }
+
+    public void setCertTypeId(Integer certTypeId) {
+        this.certTypeId = certTypeId;
     }
 
     public Double getJuridicalArea() {

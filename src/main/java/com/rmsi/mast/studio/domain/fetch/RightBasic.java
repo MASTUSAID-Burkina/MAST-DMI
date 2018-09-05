@@ -14,18 +14,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.hibernate.annotations.BatchSize;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.rmsi.mast.studio.domain.LaExtTransactiondetail;
 import com.rmsi.mast.studio.domain.LaParty;
-import com.rmsi.mast.studio.domain.PersonType;
-import com.rmsi.mast.studio.domain.SpatialUnit;
 
 @Entity
 @Table(name = "la_ext_personlandmapping")
@@ -35,156 +29,156 @@ public class RightBasic implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="personlandid")
-	private Integer personlandid;
-    
-    @Column(name="createdby")
-	private Integer createdby;
+    @Column(name = "personlandid")
+    private Integer personlandid;
+
+    @Column(name = "createdby")
+    private Integer createdby;
 
     @Temporal(TemporalType.DATE)
-	private Date createddate;
+    private Date createddate;
 
-    @Column(name="isactive")
-	private Boolean isactive;
+    @Column(name = "isactive")
+    private Boolean isactive;
 
-    @Column(name="modifiedby")
-	private Integer modifiedby;
+    @Column(name = "modifiedby")
+    private Integer modifiedby;
 
     @Temporal(TemporalType.DATE)
-	private Date modifieddate;
-    
+    private Date modifieddate;
+
     @Column(name = "certificateno")
     private String certNumber;
-  
+
     @Temporal(TemporalType.DATE)
     @Column(name = "certificateissuedate")
     private Date certIssueDate;
 
-	//bi-directional many-to-one association to LaExtTransactiondetail
-	@ManyToOne
-	@JoinColumn(name="transactionid")
-	private LaExtTransactiondetailBasic laExtTransactiondetail;
+    @Column(name = "certificatetypeid")
+    private Integer certTypeid;
+    
+    //bi-directional many-to-one association to LaExtTransactiondetail
+    @ManyToOne
+    @JoinColumn(name = "transactionid")
+    private LaExtTransactiondetailBasic laExtTransactiondetail;
 
-	//bi-directional many-to-one association to LaParty
-	@ManyToOne
-	@JoinColumn(name="partyid",insertable=false, updatable=false)
-	private LaParty laParty;
+    //bi-directional many-to-one association to LaParty
+    @ManyToOne
+    @JoinColumn(name = "partyid", insertable = false, updatable = false)
+    private LaParty laParty;
 
-	//bi-directional many-to-one association to LaPartygroupPersontype
+    //bi-directional many-to-one association to LaPartygroupPersontype
 //	@ManyToOne
 //	@JoinColumn(name="persontypeid")
 //	private PersonTypeBasic laPartygroupPersontype;
+    //bi-directional many-to-one association to LaSpatialunitLand
+    @ManyToOne
+    @JoinColumn(name = "landid", insertable = false, updatable = false)
+    private ClaimBasic laSpatialunitLand;
 
-	//bi-directional many-to-one association to LaSpatialunitLand
-	@ManyToOne
-	@JoinColumn(name="landid",insertable=false, updatable=false)
-	private ClaimBasic laSpatialunitLand;
-	
-   @OneToMany(fetch=FetchType.EAGER,cascade = CascadeType.ALL)
-   @JoinColumn(name = "parentuid")
-   private List<RightAttributeValue> attributes;
-	
-    
-	 public RightBasic() {
-	    }
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "parentuid")
+    private List<RightAttributeValue> attributes;
 
-	 
-	 
-	 
-	public List<RightAttributeValue> getAttributes() {
-		return attributes;
-	}
+    public RightBasic() {
+    }
 
+    public List<RightAttributeValue> getAttributes() {
+        return attributes;
+    }
 
+    public void setAttributes(List<RightAttributeValue> attributes) {
+        this.attributes = attributes;
+    }
 
+    public Integer getPersonlandid() {
+        return personlandid;
+    }
 
-	public void setAttributes(List<RightAttributeValue> attributes) {
-		this.attributes = attributes;
-	}
+    public void setPersonlandid(Integer personlandid) {
+        this.personlandid = personlandid;
+    }
 
+    public Integer getCreatedby() {
+        return createdby;
+    }
 
+    public void setCreatedby(Integer createdby) {
+        this.createdby = createdby;
+    }
 
+    public Date getCreateddate() {
+        return createddate;
+    }
 
-	public Integer getPersonlandid() {
-		return personlandid;
-	}
+    public void setCreateddate(Date createddate) {
+        this.createddate = createddate;
+    }
 
-	public void setPersonlandid(Integer personlandid) {
-		this.personlandid = personlandid;
-	}
+    public Boolean getIsactive() {
+        return isactive;
+    }
 
-	public Integer getCreatedby() {
-		return createdby;
-	}
+    public void setIsactive(Boolean isactive) {
+        this.isactive = isactive;
+    }
 
-	public void setCreatedby(Integer createdby) {
-		this.createdby = createdby;
-	}
+    public Integer getModifiedby() {
+        return modifiedby;
+    }
 
-	public Date getCreateddate() {
-		return createddate;
-	}
+    public void setModifiedby(Integer modifiedby) {
+        this.modifiedby = modifiedby;
+    }
 
-	public void setCreateddate(Date createddate) {
-		this.createddate = createddate;
-	}
+    public Date getModifieddate() {
+        return modifieddate;
+    }
 
-	public Boolean getIsactive() {
-		return isactive;
-	}
+    public void setModifieddate(Date modifieddate) {
+        this.modifieddate = modifieddate;
+    }
 
-	public void setIsactive(Boolean isactive) {
-		this.isactive = isactive;
-	}
+    public String getCertNumber() {
+        return certNumber;
+    }
 
-	public Integer getModifiedby() {
-		return modifiedby;
-	}
+    public void setCertNumber(String certNumber) {
+        this.certNumber = certNumber;
+    }
 
-	public void setModifiedby(Integer modifiedby) {
-		this.modifiedby = modifiedby;
-	}
+    public Date getCertIssueDate() {
+        return certIssueDate;
+    }
 
-	public Date getModifieddate() {
-		return modifieddate;
-	}
+    public void setCertIssueDate(Date certIssueDate) {
+        this.certIssueDate = certIssueDate;
+    }
 
-	public void setModifieddate(Date modifieddate) {
-		this.modifieddate = modifieddate;
-	}
+    public Integer getCertTypeid() {
+        return certTypeid;
+    }
 
-	public String getCertNumber() {
-		return certNumber;
-	}
+    public void setCertTypeid(Integer certTypeid) {
+        this.certTypeid = certTypeid;
+    }
 
-	public void setCertNumber(String certNumber) {
-		this.certNumber = certNumber;
-	}
+    public LaExtTransactiondetailBasic getLaExtTransactiondetail() {
+        return laExtTransactiondetail;
+    }
 
-	public Date getCertIssueDate() {
-		return certIssueDate;
-	}
+    public void setLaExtTransactiondetail(
+            LaExtTransactiondetailBasic laExtTransactiondetail) {
+        this.laExtTransactiondetail = laExtTransactiondetail;
+    }
 
-	public void setCertIssueDate(Date certIssueDate) {
-		this.certIssueDate = certIssueDate;
-	}
+    public LaParty getLaParty() {
+        return laParty;
+    }
 
-	public LaExtTransactiondetailBasic getLaExtTransactiondetail() {
-		return laExtTransactiondetail;
-	}
-
-	public void setLaExtTransactiondetail(
-			LaExtTransactiondetailBasic laExtTransactiondetail) {
-		this.laExtTransactiondetail = laExtTransactiondetail;
-	}
-
-	public LaParty getLaParty() {
-		return laParty;
-	}
-
-	public void setLaParty(LaParty laParty) {
-		this.laParty = laParty;
-	}
+    public void setLaParty(LaParty laParty) {
+        this.laParty = laParty;
+    }
 
 //	public PersonTypeBasic getLaPartygroupPersontype() {
 //		return laPartygroupPersontype;
@@ -193,20 +187,15 @@ public class RightBasic implements Serializable {
 //	public void setLaPartygroupPersontype(PersonTypeBasic laPartygroupPersontype) {
 //		this.laPartygroupPersontype = laPartygroupPersontype;
 //	}
-	@JsonIgnore
-	public ClaimBasic getLaSpatialunitLand() {
-		return laSpatialunitLand;
-	}
+    @JsonIgnore
+    public ClaimBasic getLaSpatialunitLand() {
+        return laSpatialunitLand;
+    }
 
-	public void setLaSpatialunitLand(ClaimBasic laSpatialunitLand) {
-		this.laSpatialunitLand = laSpatialunitLand;
-	}
-    
-	 
-	 
-	 
-	 
-    
+    public void setLaSpatialunitLand(ClaimBasic laSpatialunitLand) {
+        this.laSpatialunitLand = laSpatialunitLand;
+    }
+
 //    @Id
 //    private Integer gid;
 //    

@@ -110,6 +110,8 @@ LANGUAGES.en = {
     "gen-role": "Role",
     "gen-active": "Active",
     "gen-attribute": "Attribute",
+    "gen-name-fr": "Name (Fr)",
+    "gen-logo": "Logo",
     
     "login-title": "MAST-DMI Login",
     "login-logintomast": "Login to MAST System",
@@ -444,6 +446,10 @@ LANGUAGES.en = {
     "reg-province": "Province",
     "reg-district": "District",
     "reg-village": "Village",
+    "reg-village-code": "Village Code",
+    "reg-villages": "Villages",
+    "reg-commune": "Commune",
+    "reg-cfv-agent": "CFV Agent",
     "reg-place": "Place",
     "reg-parcel-num": "Parcel Number",
     "reg-disputes": "Disputes",
@@ -504,6 +510,7 @@ LANGUAGES.en = {
     "reg-proj-adj": "Project Adjudicator",
     "reg-hamlet-code": "Hamlet Code",
     "reg-leader-name": "Leader Name",
+    "reg-mayor-name": "Mayor Name",
     
     "err-error": "Error",
     "err-alert": "Alert",
@@ -522,6 +529,7 @@ LANGUAGES.en = {
     "err-enter-claim-num": "Enter claim number",
     "err-enter-claim-date": "Enter claim date",
     "err-enter-name": "Please enter Name",
+    "err-enter-name-fr": "Please enter Name in French",
     "err-enter-pass": "Please enter Password",
     "err-pass-confirm-req": "Confirm Password Required",
     "err-pass-not-matching": "Confirm Password should be same as Password",
@@ -585,7 +593,7 @@ LANGUAGES.en = {
     "err-enter-doc-date": "Please Enter Document Date",
     "err-enter-doc-desc": "Please Enter Document Description",
     "err-select-doc-type": "Please Select Document Type",
-    "err-select-file": "Please select Files",
+    "err-select-file": "Please select File",
     "err-enter-no-of-month": "Enter No of Month",
     "err-enter-lease-amount": "Please enter lease amount",
     "err-no-contact-assosiated": "No contact associated with property",
@@ -657,5 +665,8 @@ LANGUAGES.en = {
     "err-select-boss": "Select Reporting To",
     "err-select-role": "Select Role",
     "err-enter-alfanum-value": "Enter Alpha Numeric value in Username",
-    "err-cant-delete-user-boss": "Data Can not be Deleted. Used as reporting Manager"
+    "err-cant-delete-user-boss": "Data Can not be Deleted. Used as reporting Manager",
+    "err-enter-cfv-agent": "Please enter CFV Agent",
+    "err-enter-village-code": "Please enter Village Code",
+    "err-failed-upload": "Failed uploading file"
 };

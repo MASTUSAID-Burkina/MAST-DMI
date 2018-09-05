@@ -123,7 +123,12 @@
     <body>
         <div id="_splash" class="splash">				
             <div id="splash-content"> 
-                <img id="enter" src="resources/images/studio/splash-logo.png" /> 
+                <c:if test='${langCode eq "en"}'>
+                    <img id="enter" src="resources/images/splash-logo.png" />
+                </c:if>
+                <c:if test='${langCode ne "en"}'>
+                    <img id="enter" src="resources/images/splash-logo-french.png" />
+                </c:if> 
             </div>
         </div>
 
@@ -157,6 +162,7 @@
                 <li id="layergroup" class="login"><img src="resources/images/studio/vtab/layergroup.png" /><span data-i18n="admin-layer-groups"></span></li>
                 <li id="project" class="login"><img src="resources/images/studio/vtab/project.png" /><span data-i18n="admin-survey-projects"></span></li>
                 <li id="masterattribute"  class="login"><img src="resources/images/studio/vtab/users.png" /><span data-i18n="admin-master-attrs"></span></li>
+                <li id="bookmark" class="login"><img src="resources/images/studio/vtab/bookmark.png" /><span data-i18n="reg-villages"></span></li>
                 <li id="topologycheck"  class="login"><img src="resources/images/studio/vtab/users.png" /><span data-i18n="admin-topology-check"></span></li>
             </ul>
 
@@ -165,7 +171,8 @@
             <div id="layergroups"></div> 
             <div id="projects"></div>
             <div id="masterattribute-div"></div>
-
+            <div id="bookmarks"></div>
+            
             <div id="topologycheck">
                 <div>
                     <ul class="main-topolist">
@@ -194,10 +201,10 @@
         <div id="footer">
             <span class="footer-s" data-i18n="[html]gen-copyright"></span>
         </div>
-        <div id="signature-dialog-form" title="Signature" style="display: none;">
+        <div id="signature-dialog-form" data-i18n="[title]gen-file" style="display: none;">
             <form id="formSignature" action="" onsubmit="return false;">
                 <div style="margin: 10px;">
-                    <label data-i18n="admin-select-signature"></label>
+                    <label data-i18n="gen-select-file"></label>
                     <input name="fileSignature" id="fileSignature" type="file" accept=".jpg,.png,.gif,.jpeg" style="border: #aaa solid 1px;" />
                     <label style="color: #0088cc">.jpeg,.png,.gif</label>
                 </div>

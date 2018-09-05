@@ -17,185 +17,197 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-
 /**
  * Entity implementation class for Entity: SocialTenureRelationship
  */
 @Entity
-@Table(name="la_ext_personlandmapping")
+@Table(name = "la_ext_personlandmapping")
 public class SocialTenureRelationship implements Serializable {
 
-/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
 //    private static final long serialVersionUID = 1L;
-    
     @Id
-    @SequenceGenerator(name="pk_la_personlandmapping",sequenceName="la_ext_personlandmapping_personlandid_seq", allocationSize=1) 
-	@GeneratedValue(strategy=GenerationType.SEQUENCE,generator="pk_la_personlandmapping") 
-    @Column(name="personlandid")
-	private Long personlandid;
-    
-    @Column(name="createdby")
-	private Integer createdby;
+    @SequenceGenerator(name = "pk_la_personlandmapping", sequenceName = "la_ext_personlandmapping_personlandid_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pk_la_personlandmapping")
+    @Column(name = "personlandid")
+    private Long personlandid;
+
+    @Column(name = "createdby")
+    private Integer createdby;
 
     @Temporal(TemporalType.DATE)
-	private Date createddate;
+    private Date createddate;
 
-    @Column(name="isactive")
-	private Boolean isactive;
+    @Column(name = "isactive")
+    private Boolean isactive;
 
-    @Column(name="modifiedby")
-	private Integer modifiedby;
+    @Column(name = "modifiedby")
+    private Integer modifiedby;
 
     @Temporal(TemporalType.DATE)
-	private Date modifieddate;
-    
+    private Date modifieddate;
+
     @Column(name = "certificateno")
     private String certNumber;
-  
+
     @Temporal(TemporalType.DATE)
     @Column(name = "certificateissuedate")
     private Date certIssueDate;
+    
+    @Column
+    private Integer certificatetypeid;
+    
+    //bi-directional many-to-one association to LaExtTransactiondetail
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "transactionid")
+    private LaExtTransactiondetail laExtTransactiondetail;
 
-	//bi-directional many-to-one association to LaExtTransactiondetail
-	@ManyToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name="transactionid")
-	private LaExtTransactiondetail laExtTransactiondetail;
+    @Column(name = "partyid")
+    private Long partyid;
 
-	
-	@Column(name="partyid")
-	private Long partyid;
+    @Transient
+    private LaParty laParty;
 
-	@Transient
-	private LaParty laParty;
-	
-	
-	//bi-directional many-to-one association to LaPartygroupPersontype
-	@ManyToOne
-	@JoinColumn(name="persontypeid", nullable = false, updatable = false)
-	private PersonType laPartygroupPersontype;
+    //bi-directional many-to-one association to LaPartygroupPersontype
+    @ManyToOne
+    @JoinColumn(name = "persontypeid", nullable = false, updatable = false)
+    private PersonType laPartygroupPersontype;
 
-	
-	@Column(name="landid")
-	private Long landid;
-	
-	 public SocialTenureRelationship() {
-       super();
-	 }
-	 
-	public String getCertNumber() {
-		return certNumber;
-	}
+    @Column(name = "landid")
+    private Long landid;
 
-	public void setCertNumber(String certNumber) {
-		this.certNumber = certNumber;
-	}
-	
-	public Date getCertIssueDate() {
-		return certIssueDate;
-	}
+    @Column
+    private String sharepercentage;
+    
+    public SocialTenureRelationship() {
+        super();
+    }
 
-	public void setCertIssueDate(Date certIssueDate) {
-		this.certIssueDate = certIssueDate;
-	}
+    public String getCertNumber() {
+        return certNumber;
+    }
 
-	public Long getPersonlandid() {
-		return personlandid;
-	}
+    public void setCertNumber(String certNumber) {
+        this.certNumber = certNumber;
+    }
 
-	public void setPersonlandid(Long personlandid) {
-		this.personlandid = personlandid;
-	}
+    public Date getCertIssueDate() {
+        return certIssueDate;
+    }
 
-	public Integer getCreatedby() {
-		return createdby;
-	}
+    public void setCertIssueDate(Date certIssueDate) {
+        this.certIssueDate = certIssueDate;
+    }
 
-	public void setCreatedby(Integer createdby) {
-		this.createdby = createdby;
-	}
+    public Integer getCertificatetypeid() {
+        return certificatetypeid;
+    }
 
-	public Date getCreateddate() {
-		return createddate;
-	}
+    public void setCertificatetypeid(Integer certificatetypeid) {
+        this.certificatetypeid = certificatetypeid;
+    }
 
-	public void setCreateddate(Date createddate) {
-		this.createddate = createddate;
-	}
+    public Long getPersonlandid() {
+        return personlandid;
+    }
 
-	public Boolean getIsactive() {
-		return isactive;
-	}
+    public void setPersonlandid(Long personlandid) {
+        this.personlandid = personlandid;
+    }
 
-	public void setIsactive(Boolean isactive) {
-		this.isactive = isactive;
-	}
+    public Integer getCreatedby() {
+        return createdby;
+    }
 
-	public Integer getModifiedby() {
-		return modifiedby;
-	}
+    public void setCreatedby(Integer createdby) {
+        this.createdby = createdby;
+    }
 
-	public void setModifiedby(Integer modifiedby) {
-		this.modifiedby = modifiedby;
-	}
+    public Date getCreateddate() {
+        return createddate;
+    }
 
-	
-	public LaExtTransactiondetail getLaExtTransactiondetail() {
-		return laExtTransactiondetail;
-	}
+    public void setCreateddate(Date createddate) {
+        this.createddate = createddate;
+    }
 
-	public Date getModifieddate() {
-		return modifieddate;
-	}
+    public Boolean getIsactive() {
+        return isactive;
+    }
 
-	public void setModifieddate(Date modifieddate) {
-		this.modifieddate = modifieddate;
-	}
+    public void setIsactive(Boolean isactive) {
+        this.isactive = isactive;
+    }
 
-	public void setLaExtTransactiondetail(
-			LaExtTransactiondetail laExtTransactiondetail) {
-		this.laExtTransactiondetail = laExtTransactiondetail;
-	}
+    public Integer getModifiedby() {
+        return modifiedby;
+    }
 
-	public PersonType getLaPartygroupPersontype() {
-		return laPartygroupPersontype;
-	}
+    public void setModifiedby(Integer modifiedby) {
+        this.modifiedby = modifiedby;
+    }
 
-	public Long getPartyid() {
-		return partyid;
-	}
+    public LaExtTransactiondetail getLaExtTransactiondetail() {
+        return laExtTransactiondetail;
+    }
 
-	public void setPartyid(Long partyid) {
-		this.partyid = partyid;
-	}
+    public Date getModifieddate() {
+        return modifieddate;
+    }
 
-	public void setLaPartygroupPersontype(PersonType laPartygroupPersontype) {
-		this.laPartygroupPersontype = laPartygroupPersontype;
-	}
+    public void setModifieddate(Date modifieddate) {
+        this.modifieddate = modifieddate;
+    }
 
-	public Long getLandid() {
-		return landid;
-	}
+    public void setLaExtTransactiondetail(
+            LaExtTransactiondetail laExtTransactiondetail) {
+        this.laExtTransactiondetail = laExtTransactiondetail;
+    }
 
-	public void setLandid(Long landid) {
-		this.landid = landid;
-	}
+    public PersonType getLaPartygroupPersontype() {
+        return laPartygroupPersontype;
+    }
 
-	@Transient
-	public LaParty getLaParty() {
-		return laParty;
-	}
+    public Long getPartyid() {
+        return partyid;
+    }
 
-	@Transient
-	public void setLaParty(LaParty laParty) {
-		this.laParty = laParty;
-	}
+    public void setPartyid(Long partyid) {
+        this.partyid = partyid;
+    }
 
+    public void setLaPartygroupPersontype(PersonType laPartygroupPersontype) {
+        this.laPartygroupPersontype = laPartygroupPersontype;
+    }
 
-	
-	
-	
+    public Long getLandid() {
+        return landid;
+    }
+
+    public void setLandid(Long landid) {
+        this.landid = landid;
+    }
+
+    @Transient
+    public LaParty getLaParty() {
+        return laParty;
+    }
+
+    @Transient
+    public void setLaParty(LaParty laParty) {
+        this.laParty = laParty;
+    }
+
+    public String getSharepercentage() {
+        return sharepercentage;
+    }
+
+    public void setSharepercentage(String sharepercentage) {
+        this.sharepercentage = sharepercentage;
+    }
+
 }

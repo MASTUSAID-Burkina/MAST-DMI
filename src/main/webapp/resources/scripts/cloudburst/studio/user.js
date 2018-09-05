@@ -139,7 +139,10 @@ var CreateEditUser = function (_userId) {
             type: 'GET',
             url: "user/userid/" + _userId,
             success: function (data) {
-                user_role = data.roles;
+                user_role = "";
+                if (data.userRole && data.userRole.length > 0) {
+                    user_role = data.userRole[0].roleBean.name;
+                }
 
                 jQuery("#UserTemplateForm").tmpl(data, {
                     addDatePicker: function () {
@@ -175,7 +178,11 @@ var CreateEditUser = function (_userId) {
 
 
                 jQuery.each(functionalRoles, function (i, role) {
-                    jQuery("#functionalRole").append(jQuery("<option></option>").attr("value", role.name).text(role.description));
+                    if (Global.LANG === "en") {
+                        $("#functionalRole").append(jQuery("<option></option>").attr("value", role.name).text(role.roletype_en));
+                    } else {
+                        $("#functionalRole").append(jQuery("<option></option>").attr("value", role.name).text(role.description));
+                    }
                 });
 
                 //set DD value
@@ -189,7 +196,9 @@ var CreateEditUser = function (_userId) {
 
                 jQuery("#user_active").val((data.active).toString());
                 jQuery("#manager_name").val(data.manager_name);
-                jQuery("#functionalRole").val("ROLE_ADMIN");
+                if (user_role !== "") {
+                    jQuery("#functionalRole").val(user_role);
+                }
                 showSignature("SignatureUser", data.signaturePath);
                 jQuery('.accessKey').show();
                 jQuery('#name').attr('readonly', true);
@@ -314,22 +323,11 @@ function saveUser() {
                 required: true,
                 email: true
             },
-            mobile: {
-                required: true,
-                number: true,
-                minlength: 10,
-                maxlength: 10
-            },
             user_active: "required",
             passwordexpires: "required",
             lastactivitydate: "required",
             managerName: "required",
-            functionalRole: "required",
-            user_gender: "required",
-            address: {
-                required: true,
-                maxlength: 100
-            }
+            functionalRole: "required"
 
         },
         messages: {

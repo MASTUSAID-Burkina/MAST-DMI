@@ -295,7 +295,8 @@ public class AttributeMasterController {
             }
             AttributeMaster attributelst = masterAttributeService.findbyAttributeId(id);
             attributemaster = attributelst;
-            attributemaster.setFieldaliasname(alias);
+            attributemaster.setFieldaliasnameEn(alias);
+            attributemaster.setFieldaliasname(alias_otherlang);
             attributemaster.setSize(size);
 
             try {

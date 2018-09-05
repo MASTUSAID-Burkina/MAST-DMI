@@ -4,9 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.rmsi.mast.studio.domain.fetch.NaturalPersonBasic;
-
 public class Property implements Serializable {
+
     private Long id;
     private String coordinates;
     private String geomType;
@@ -23,11 +22,12 @@ public class Property implements Serializable {
     private String claimTypeCode;
     private int userId;
     private String ukaNumber;
-    
+
     private String document;
     private String documentRefNo;
     private String documentType;
     private String plotNo;
+    private String otherUse;
     
     private Right right;
     private DeceasedPerson deceasedPerson;
@@ -37,266 +37,101 @@ public class Property implements Serializable {
     private List<Media> media = new ArrayList<>();
     private List<ClassificationAttributes> classificationAttributes;
     private List<ResourceCustomAttributes> customAttributes;
-    
-    private List<ResourcePersonOfInterest>  personOfInterestsRes = new ArrayList<>();
+
+    private List<ResourcePersonOfInterest> personOfInterestsRes = new ArrayList<>();
 
     private ResourceAttributeValues resourceAttributes;
     private ResourceLandClassificationMapping resourceLandClassification;
-   
+    private Integer villageId;
 
-	private Dispute dispute;
+    private Dispute dispute;
 
     public Property() {
         super();
     }
-    
 
-    
-  
+    public Integer getVillageId() {
+        return villageId;
+    }
 
+    public void setVillageId(Integer villageId) {
+        this.villageId = villageId;
+    }
 
+    public String getDocument() {
+        return document;
+    }
 
+    public void setDocument(String document) {
+        this.document = document;
+    }
 
+    public String getDocumentRefNo() {
+        return documentRefNo;
+    }
 
+    public void setDocumentRefNo(String documentRefNo) {
+        this.documentRefNo = documentRefNo;
+    }
 
+    public String getDocumentType() {
+        return documentType;
+    }
 
+    public void setDocumentType(String documentType) {
+        this.documentType = documentType;
+    }
 
+    public String getPlotNo() {
+        return plotNo;
+    }
 
+    public void setPlotNo(String plotNo) {
+        this.plotNo = plotNo;
+    }
 
-	public String getDocument() {
-		return document;
-	}
+    public List<ResourcePersonOfInterest> getPersonOfInterestsRes() {
+        return personOfInterestsRes;
+    }
 
+    public void setPersonOfInterestsRes(
+            List<ResourcePersonOfInterest> personOfInterestsRes) {
+        this.personOfInterestsRes = personOfInterestsRes;
+    }
 
+    public List<PersonOfInterest> getPersonOfInterests() {
+        return personOfInterests;
+    }
 
+    public void setPersonOfInterests(List<PersonOfInterest> personOfInterests) {
+        this.personOfInterests = personOfInterests;
+    }
 
+    public List<ResourceCustomAttributes> getCustomAttributes() {
+        return customAttributes;
+    }
 
+    public void setCustomAttributes(List<ResourceCustomAttributes> customAttributes) {
+        this.customAttributes = customAttributes;
+    }
 
+    public List<ClassificationAttributes> getClassificationAttributes() {
+        return classificationAttributes;
+    }
 
+    public void setClassificationAttributes(
+            List<ClassificationAttributes> classificationAttributes) {
+        this.classificationAttributes = classificationAttributes;
+    }
 
+    public ResourceAttributeValues getResourceAttributes() {
+        return resourceAttributes;
+    }
 
+    public void setResourceAttributes(ResourceAttributeValues resourceAttributes) {
+        this.resourceAttributes = resourceAttributes;
+    }
 
-
-
-
-
-	public void setDocument(String document) {
-		this.document = document;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public String getDocumentRefNo() {
-		return documentRefNo;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public void setDocumentRefNo(String documentRefNo) {
-		this.documentRefNo = documentRefNo;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public String getDocumentType() {
-		return documentType;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public void setDocumentType(String documentType) {
-		this.documentType = documentType;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public String getPlotNo() {
-		return plotNo;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public void setPlotNo(String plotNo) {
-		this.plotNo = plotNo;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public List<ResourcePersonOfInterest> getPersonOfInterestsRes() {
-		return personOfInterestsRes;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public void setPersonOfInterestsRes(
-			List<ResourcePersonOfInterest> personOfInterestsRes) {
-		this.personOfInterestsRes = personOfInterestsRes;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public List<PersonOfInterest> getPersonOfInterests() {
-		return personOfInterests;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public void setPersonOfInterests(List<PersonOfInterest> personOfInterests) {
-		this.personOfInterests = personOfInterests;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public List<ResourceCustomAttributes> getCustomAttributes() {
-		return customAttributes;
-	}
-
-
-	public void setCustomAttributes(List<ResourceCustomAttributes> customAttributes) {
-		this.customAttributes = customAttributes;
-	}
-
-
-	public List<ClassificationAttributes> getClassificationAttributes() {
-		return classificationAttributes;
-	}
-
-
-	public void setClassificationAttributes(
-			List<ClassificationAttributes> classificationAttributes) {
-		this.classificationAttributes = classificationAttributes;
-	}
-
-
-	public ResourceAttributeValues getResourceAttributes() {
-		return resourceAttributes;
-	}
-
-	public void setResourceAttributes(ResourceAttributeValues resourceAttributes) {
-		this.resourceAttributes = resourceAttributes;
-	}
-	
     public Long getId() {
         return id;
     }
@@ -448,7 +283,6 @@ public class Property implements Serializable {
 //    public void setPersonOfInterests(List<NaturalPersonBasic> personOfInterests) {
 //        this.personOfInterests = personOfInterests;
 //    }
-
     public List<Attribute> getAttributes() {
         return attributes;
     }
@@ -473,16 +307,21 @@ public class Property implements Serializable {
         this.dispute = dispute;
     }
 
+    public ResourceLandClassificationMapping getResourceLandClassification() {
+        return resourceLandClassification;
+    }
 
-	public ResourceLandClassificationMapping getResourceLandClassification() {
-		return resourceLandClassification;
-	}
+    public void setResourceLandClassification(
+            ResourceLandClassificationMapping resourceLandClassification) {
+        this.resourceLandClassification = resourceLandClassification;
+    }
 
+    public String getOtherUse() {
+        return otherUse;
+    }
 
-	public void setResourceLandClassification(
-			ResourceLandClassificationMapping resourceLandClassification) {
-		this.resourceLandClassification = resourceLandClassification;
-	}
-    
-    
+    public void setOtherUse(String otherUse) {
+        this.otherUse = otherUse;
+    }
+
 }

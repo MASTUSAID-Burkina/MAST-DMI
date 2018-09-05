@@ -35,13 +35,14 @@ import com.rmsi.mast.studio.mobile.dao.SoilQualityValuesDao;
 import com.rmsi.mast.studio.mobile.dao.TenureClassDao;
 import com.rmsi.mast.studio.mobile.dao.hibernate.SpatialUnitHibernateDao;
 import com.rmsi.mast.studio.mobile.service.SpatialUnitService;
-import com.rmsi.mast.studio.util.GeometryConversion;
 import com.rmsi.mast.studio.dao.ClaimTypeDao;
 import com.rmsi.mast.studio.dao.DisputeTypeDao;
 import com.rmsi.mast.studio.dao.DocumentTypeDao;
+import com.rmsi.mast.studio.dao.TitleTypeDao;
 import com.rmsi.mast.studio.domain.AcquisitionType;
 import com.rmsi.mast.studio.domain.DisputeType;
 import com.rmsi.mast.studio.domain.DocumentType;
+import com.rmsi.mast.studio.domain.TitleType;
 import com.rmsi.mast.studio.domain.fetch.ClaimBasic;
 
 @Service
@@ -85,6 +86,9 @@ public class SpatialUnitServiceImp implements SpatialUnitService {
 
     @Autowired
     ClaimTypeDao claimTypeDAO;
+    
+    @Autowired
+    TitleTypeDao titleTypeDAO;
     
     @Autowired
     DisputeTypeDao disputeTypeDao;
@@ -207,6 +211,11 @@ return null;
     @Override
     public List<ClaimType> getClaimTypes() {
         return claimTypeDAO.findAll();
+    }
+    
+    @Override
+    public List<TitleType> getTitleTypes(){
+        return titleTypeDAO.findAll();
     }
     
     @Override

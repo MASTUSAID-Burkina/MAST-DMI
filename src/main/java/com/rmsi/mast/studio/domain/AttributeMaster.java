@@ -14,162 +14,161 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * The persistent class for the attribute_master database table.
- * 
+ *
  */
 @Entity
 @Table(name = "la_ext_attributemaster")
 public class AttributeMaster implements Serializable {
-	private static final long serialVersionUID = 1L;
-	
-	
-	@Id
-	@SequenceGenerator(name="Attribute_master_sequence",sequenceName="la_ext_attributemaster_attributemasterid_seq", allocationSize=1) 
-	@GeneratedValue(strategy=GenerationType.SEQUENCE,generator="Attribute_master_sequence") 
-	private Long attributemasterid;
 
-	private String fieldaliasname;
+    private static final long serialVersionUID = 1L;
 
-	private String fieldname;
+    @Id
+    @SequenceGenerator(name = "Attribute_master_sequence", sequenceName = "la_ext_attributemaster_attributemasterid_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Attribute_master_sequence")
+    private Long attributemasterid;
 
-	@Column(name="isactive")
-	private Boolean isactive;
+    private String fieldaliasname;
 
-	private String listing;
+    @Column(name = "fieldaliasname_en")
+    private String fieldaliasnameEn;
 
-	private Boolean mandatory;
+    private String fieldname;
 
-	private String referencetable;
+    @Column(name = "isactive")
+    private Boolean isactive;
 
-	private String size;
+    private String listing;
 
-	private boolean masterattribute;
-	
-	@ManyToOne
-	@JoinColumn(name="attributecategoryid")
-	private AttributeCategory laExtAttributecategory;
+    private Boolean mandatory;
 
-	//bi-directional many-to-one association to LaExtAttributedatatype
-	@ManyToOne
-	@JoinColumn(name="datatypemasterid")
-	private DatatypeId laExtAttributedatatype;
-	
-	
-    @OneToMany(mappedBy="attributeMaster", cascade=CascadeType.ALL,fetch=FetchType.EAGER)
-	private List<AttributeOptions> options;
-	
-	
-	public AttributeMaster() {
-		}
+    private String referencetable;
 
-	public Long getAttributemasterid() {
-		return attributemasterid;
-	}
+    private String size;
 
-	public void setAttributemasterid(Long attributemasterid) {
-		this.attributemasterid = attributemasterid;
-	}
+    private boolean masterattribute;
 
-	public String getFieldaliasname() {
-		return fieldaliasname;
-	}
+    @ManyToOne
+    @JoinColumn(name = "attributecategoryid")
+    private AttributeCategory laExtAttributecategory;
 
-	public void setFieldaliasname(String fieldaliasname) {
-		this.fieldaliasname = fieldaliasname;
-	}
+    //bi-directional many-to-one association to LaExtAttributedatatype
+    @ManyToOne
+    @JoinColumn(name = "datatypemasterid")
+    private DatatypeId laExtAttributedatatype;
 
-	public String getFieldname() {
-		return fieldname;
-	}
+    @OneToMany(mappedBy = "attributeMaster", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<AttributeOptions> options;
 
-	public void setFieldname(String fieldname) {
-		this.fieldname = fieldname;
-	}
+    public AttributeMaster() {
+    }
 
-	public Boolean getIsactive() {
-		return isactive;
-	}
+    public Long getAttributemasterid() {
+        return attributemasterid;
+    }
 
-	public void setIsactive(Boolean isactive) {
-		this.isactive = isactive;
-	}
+    public void setAttributemasterid(Long attributemasterid) {
+        this.attributemasterid = attributemasterid;
+    }
 
-	public String getListing() {
-		return listing;
-	}
+    public String getFieldaliasname() {
+        return fieldaliasname;
+    }
 
-	public void setListing(String listing) {
-		this.listing = listing;
-	}
+    public void setFieldaliasname(String fieldaliasname) {
+        this.fieldaliasname = fieldaliasname;
+    }
 
-	public Boolean getMandatory() {
-		return mandatory;
-	}
+    public String getFieldaliasnameEn() {
+        return fieldaliasnameEn;
+    }
 
-	public void setMandatory(Boolean mandatory) {
-		this.mandatory = mandatory;
-	}
+    public void setFieldaliasnameEn(String fieldaliasnameEn) {
+        this.fieldaliasnameEn = fieldaliasnameEn;
+    }
 
-	public String getReferencetable() {
-		return referencetable;
-	}
+    public String getFieldname() {
+        return fieldname;
+    }
 
-	public void setReferencetable(String referencetable) {
-		this.referencetable = referencetable;
-	}
+    public void setFieldname(String fieldname) {
+        this.fieldname = fieldname;
+    }
 
-	public String getSize() {
-		return size;
-	}
+    public Boolean getIsactive() {
+        return isactive;
+    }
 
-	public void setSize(String size) {
-		this.size = size;
-	}
+    public void setIsactive(Boolean isactive) {
+        this.isactive = isactive;
+    }
 
-	public AttributeCategory getLaExtAttributecategory() {
-		return laExtAttributecategory;
-	}
+    public String getListing() {
+        return listing;
+    }
 
-	public void setLaExtAttributecategory(AttributeCategory laExtAttributecategory) {
-		this.laExtAttributecategory = laExtAttributecategory;
-	}
+    public void setListing(String listing) {
+        this.listing = listing;
+    }
 
-	public DatatypeId getLaExtAttributedatatype() {
-		return laExtAttributedatatype;
-	}
+    public Boolean getMandatory() {
+        return mandatory;
+    }
 
-	public void setLaExtAttributedatatype(DatatypeId laExtAttributedatatype) {
-		this.laExtAttributedatatype = laExtAttributedatatype;
-	}
+    public void setMandatory(Boolean mandatory) {
+        this.mandatory = mandatory;
+    }
 
-	
-	public boolean isMasterattribute() {
-		return masterattribute;
-	}
+    public String getReferencetable() {
+        return referencetable;
+    }
 
-	public void setMasterattribute(boolean masterattribute) {
-		this.masterattribute = masterattribute;
-	}
+    public void setReferencetable(String referencetable) {
+        this.referencetable = referencetable;
+    }
 
-	public List<AttributeOptions> getOptions() {
-		return options;
-	}
+    public String getSize() {
+        return size;
+    }
 
-	public void setOptions(List<AttributeOptions> options) {
-		this.options = options;
-	}
+    public void setSize(String size) {
+        this.size = size;
+    }
 
-	
-	
-	
-	
-	
+    public AttributeCategory getLaExtAttributecategory() {
+        return laExtAttributecategory;
+    }
+
+    public void setLaExtAttributecategory(AttributeCategory laExtAttributecategory) {
+        this.laExtAttributecategory = laExtAttributecategory;
+    }
+
+    public DatatypeId getLaExtAttributedatatype() {
+        return laExtAttributedatatype;
+    }
+
+    public void setLaExtAttributedatatype(DatatypeId laExtAttributedatatype) {
+        this.laExtAttributedatatype = laExtAttributedatatype;
+    }
+
+    public boolean isMasterattribute() {
+        return masterattribute;
+    }
+
+    public void setMasterattribute(boolean masterattribute) {
+        this.masterattribute = masterattribute;
+    }
+
+    public List<AttributeOptions> getOptions() {
+        return options;
+    }
+
+    public void setOptions(List<AttributeOptions> options) {
+        this.options = options;
+    }
+
 }

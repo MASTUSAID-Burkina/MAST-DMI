@@ -249,12 +249,12 @@ function fillAccordians(_proj_name)
 
                 jQuery.ajax({
                     type: 'GET',
-                    url: "projectattrib/display/16/" + proj_name + "/",
+                    url: "projectattrib/display/8/" + proj_name + "/",
                     success: function (categorydata)
                     {
-                        jQuery("#addPersontbl").empty();
+                        jQuery("#addPOItbl").empty();
                         if (categorydata != null && categorydata != "" && typeof categorydata != "undefined")
-                            jQuery("#categoryattrTemplate").tmpl(categorydata).appendTo("#addPersontbl");
+                            jQuery("#categoryattrTemplate").tmpl(categorydata).appendTo("#addPOItbl");
                     }
                 });
 
@@ -841,7 +841,7 @@ function openAttrDialog(_category)
             break;
 
 
-        case "add_Person":
+        case "poi":
 
             genAttrDialog = $("#attr-dialog-form").dialog({
                 title: $.i18n("gen-attribute"),
@@ -879,7 +879,7 @@ function openAttrDialog(_category)
                 genAttrDialog.dialog("open");
                 jQuery.ajax({
                     type: 'GET',
-                    url: "projectattrib/displaypop/16/" + project + "/",
+                    url: "projectattrib/displaypop/8/" + project + "/",
                     success: function (popdata)
                     {
                         jQuery("#dialogBody").empty();
@@ -1650,9 +1650,9 @@ function saveLayergroup(_option)
         $("#attributecategory").val(_attributecategory);
 
     } else if
-            (_option == 'add_Person') {
+            (_option == 'add_poi') {
 
-        $('#addPersontbl tr').each(function () {
+        $('#addPOItbl tr').each(function () {
             var test = $(this).find("td:first").attr("id");
             idorder.push(test);
 
@@ -1660,7 +1660,7 @@ function saveLayergroup(_option)
 
         });
 
-        _attributecategory = 16;
+        _attributecategory = 8;
 
         $("#attributecategory").val(_attributecategory);
 

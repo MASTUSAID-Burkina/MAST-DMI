@@ -142,7 +142,12 @@
 
         <div id="_splash" class="splash">
             <div id="splash-content">
-                <img id="enter" src="resources/images/studio/splash-logo.png" />
+                <c:if test='${langCode eq "en"}'>
+                    <img id="enter" src="resources/images/splash-logo.png" />
+                </c:if>
+                <c:if test='${langCode ne "en"}'>
+                    <img id="enter" src="resources/images/splash-logo-french.png" />
+                </c:if>
             </div>
         </div>
 

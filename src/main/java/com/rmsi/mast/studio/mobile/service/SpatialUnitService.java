@@ -19,6 +19,7 @@ import com.rmsi.mast.studio.domain.SlopeValues;
 import com.rmsi.mast.studio.domain.SoilQualityValues;
 import com.rmsi.mast.studio.domain.SpatialUnit;
 import com.rmsi.mast.studio.domain.TenureClass;
+import com.rmsi.mast.studio.domain.TitleType;
 import com.rmsi.mast.studio.domain.fetch.ClaimBasic;
 
 public interface SpatialUnitService {
@@ -155,6 +156,8 @@ public interface SpatialUnitService {
      * @return
      */
     List<ClaimType> getClaimTypes();
+    
+    List<TitleType> getTitleTypes();
 
     /**
      * Returns claim type by code

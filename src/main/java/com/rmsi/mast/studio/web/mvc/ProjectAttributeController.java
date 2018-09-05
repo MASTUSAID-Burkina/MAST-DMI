@@ -42,327 +42,276 @@ import com.rmsi.mast.studio.service.AttributeOptionsService;
 import com.rmsi.mast.studio.service.ProjectAttributeService;
 import com.rmsi.mast.studio.service.RoleService;
 import com.rmsi.mast.studio.service.UserService;
+
 @Controller
-public class ProjectAttributeController 
-{
-	
-	private static final Logger logger = Logger.getLogger(ProjectAttributeController.class);
-	
-	@Autowired
-	private ProjectAttributeService projectAttributeService;	
-	
-	@Autowired
-	private AttributeMasterService attributemasterService;	
+public class ProjectAttributeController {
 
-	
-	@Autowired
-	private AttributeCategoryService attributecategoryService;
-	
-	@Autowired
-	UserService userService;
-	
-	@Autowired
-	RoleService roleService;
-	
-	
-	@Autowired
-	UserDAO userDao;
-	
-	
-	@Autowired
-	AttributeCategoryTypeService attributeCategoryTypeService;
-	
-	
-	
-	private List<Surveyprojectattribute> s;	
-	
-	
+    private static final Logger logger = Logger.getLogger(ProjectAttributeController.class);
 
+    @Autowired
+    private ProjectAttributeService projectAttributeService;
 
-	@RequestMapping(value = "/mobileconfig/projectattrib/", method = RequestMethod.GET)
-	@ResponseBody
-	public List<Surveyprojectattribute> list()
-	{
-		return projectAttributeService.findAllSurveyProjects();
-		
-		
-				
-	}
-	
-	
-	
+    @Autowired
+    private AttributeMasterService attributemasterService;
 
-	@RequestMapping(value = "/mobileconfig/projecttype/", method = RequestMethod.GET)
-	@ResponseBody 
-	public List<Project> listproject(Principal principal)
-	{
-		String username = principal.getName();
-		User user = userService.findByUniqueName(username);
-		Long id = user.getId();
-	
-		List<UserRole> role = null;
-		user.getUserRole();
-		String rolename = user.getUserRole().iterator().next().getRoleBean().getName(); //role.iterator().next().getRoleBean().getName();
-		
+    @Autowired
+    private AttributeCategoryService attributecategoryService;
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    RoleService roleService;
+
+    @Autowired
+    UserDAO userDao;
+
+    @Autowired
+    AttributeCategoryTypeService attributeCategoryTypeService;
+
+    private List<Surveyprojectattribute> s;
+
+    @RequestMapping(value = "/mobileconfig/projectattrib/", method = RequestMethod.GET)
+    @ResponseBody
+    public List<Surveyprojectattribute> list() {
+        return projectAttributeService.findAllSurveyProjects();
+
+    }
+
+    @RequestMapping(value = "/mobileconfig/projecttype/", method = RequestMethod.GET)
+    @ResponseBody
+    public List<Project> listproject(Principal principal) {
+        String username = principal.getName();
+        User user = userService.findByUniqueName(username);
+        Long id = user.getId();
+
+        List<UserRole> role = null;
+        user.getUserRole();
+        String rolename = user.getUserRole().iterator().next().getRoleBean().getName(); //role.iterator().next().getRoleBean().getName();
+
 //		role.setName("ROLE_ADMIN");
-		List<Project> Projectlst= new ArrayList<Project>();
-		List<UserProject> UserProjectlst= new ArrayList<UserProject>();
-		
-		try {
-			if(rolename.equals("ROLE_ADMIN"))
-			{
-			Projectlst=projectAttributeService.findallProjects();
-			return Projectlst;
-			}
-			else{
-				
-				UserProjectlst=projectAttributeService.findUserProjects(id);
-				for (int i = 0; i < UserProjectlst.size(); i++) {
-					Projectlst.add(UserProjectlst.get(i).getProject());
-				}
-				
-				return Projectlst;
-			}
-		} catch (Exception e) {
-			
-			logger.error(e);
-			return Projectlst;
-		}
-		
-		
-		
-		
-	}
-	
-	@RequestMapping(value = "/mobileconfig/projectcategory/", method = RequestMethod.GET)
-	@ResponseBody
-	public List<AttributeCategory> listcategory()
-	{
-		List<AttributeCategory> categorylst= new ArrayList<AttributeCategory>();
-		
-		try {
-			
-			categorylst=attributecategoryService.findallAttributeCategories();
-			
-		} catch (Exception e) {
-			
-			logger.error(e);
-			return categorylst;
-		}
-		
-		
-		return categorylst;
-		
-	}
-	
-	 @RequestMapping(value = "/mobileconfig/attribcategoryType/", method = RequestMethod.GET)
-	    @ResponseBody
-	    public List<AttributeCategoryType> getAttributeCategoryTypelist() {
-	        return attributeCategoryTypeService.getAllAttributeCategoryType();
-	    }
-	 
-	 
-	
-	@RequestMapping(value = "/mobileconfig/projectattrib/display/{uid}/{name}/", method = RequestMethod.GET)
-	@ResponseBody
-    public List<Surveyprojectattribute> displaySelectedCategory(@PathVariable Long uid,@PathVariable String name){
-		
-		return projectAttributeService.displaySelectedCategory(uid,name);
-		
-	}
-	
-	@RequestMapping(value = "/mobileconfig/projectattrib/display/{uid}/{name}/{id}", method = RequestMethod.GET)
-	@ResponseBody
-    public List<Surveyprojectattribute> displaySelectedCategory(@PathVariable Long uid,@PathVariable String name,@PathVariable Integer id){
-		
-		return projectAttributeService.displaySelectedCategoryById(uid,name,id);
-		
-	}
-	
-	
+        List<Project> Projectlst = new ArrayList<Project>();
+        List<UserProject> UserProjectlst = new ArrayList<UserProject>();
 
-	@RequestMapping(value = "/mobileconfig/projectattrib/displaypop/{uid}/{project}", method = RequestMethod.GET)
-	@ResponseBody
-		
- public List<AttributeDto> displaySelectedAttribute(@PathVariable Long uid ,@PathVariable String project)
- {
-		List<Surveyprojectattribute> categorylst= new ArrayList<Surveyprojectattribute>();
-		List<AttributeMaster> lstAttributeMaster= new ArrayList<AttributeMaster>();
-		//List<String> lstId= new ArrayList<String>();
-		Map<Long,Long> mapId_uid = new HashMap<Long,Long>();
-		List<AttributeDto> lstattribute = new ArrayList<AttributeDto>();
-		try{
-			categorylst= projectAttributeService.displaySelectedAttribute(uid,project);
-			lstAttributeMaster= attributemasterService.displayAttribute(uid);
+        try {
+            if (rolename.equals("ROLE_ADMIN")) {
+                Projectlst = projectAttributeService.findallProjects();
+                return Projectlst;
+            } else {
 
-			if(categorylst!=null && categorylst.size()>0 )
-			{	
-				for(Surveyprojectattribute obj:categorylst)
-				{
-					//lstId.add(obj.getAttributeMaster().getId()+"");
-					mapId_uid.put(obj.getAttributeMaster().getAttributemasterid(), obj.getUid());
-				}				
-				if(lstAttributeMaster!=null && lstAttributeMaster.size()>0)
-				{
+                UserProjectlst = projectAttributeService.findUserProjects(id);
+                for (int i = 0; i < UserProjectlst.size(); i++) {
+                    Projectlst.add(UserProjectlst.get(i).getProject());
+                }
 
-					for(AttributeMaster obj:lstAttributeMaster)
-					{
-						AttributeDto objAttribute = new AttributeDto();
+                return Projectlst;
+            }
+        } catch (Exception e) {
 
-						//if(lstId.contains(obj.getId()+""))
-						if(mapId_uid.containsKey(obj.getAttributemasterid()))
-						{
-							objAttribute.setAlias(obj.getFieldaliasname());
-							objAttribute.setId(obj.getAttributemasterid());
-							objAttribute.setFlag(true);
-							objAttribute.setUid(mapId_uid.get(obj.getAttributemasterid()));							
-						}else
-						{
-							objAttribute.setAlias(obj.getFieldaliasname());
-							objAttribute.setId(obj.getAttributemasterid());
-							objAttribute.setFlag(false);					
-						}						
-						lstattribute.add(objAttribute);					
-					}
-				}
-			}else  //if accordian is empty
-			{
-				if(lstAttributeMaster!=null && lstAttributeMaster.size()>0)
-				{
+            logger.error(e);
+            return Projectlst;
+        }
 
-					for(AttributeMaster obj:lstAttributeMaster)
-					{
-						AttributeDto objAttribute = new AttributeDto();
-						objAttribute.setAlias(obj.getFieldaliasname());
-						objAttribute.setId(obj.getAttributemasterid());
-						objAttribute.setFlag(false);
+    }
 
-						lstattribute.add(objAttribute);
-					}
-				}
-			}
-		}
-		catch (Exception e) {
-			logger.error(e);
-		}
+    @RequestMapping(value = "/mobileconfig/projectcategory/", method = RequestMethod.GET)
+    @ResponseBody
+    public List<AttributeCategory> listcategory() {
+        List<AttributeCategory> categorylst = new ArrayList<AttributeCategory>();
 
-		return lstattribute;
+        try {
 
- }
+            categorylst = attributecategoryService.findallAttributeCategories();
 
-	@RequestMapping(value = "/mobileconfig/projectattrib/create", method = RequestMethod.POST)
-	@ResponseBody
-	public String createMasterAttribute(HttpServletRequest request, HttpServletResponse response,Principal principal)
-	{	
-		String projName="";	
-		String[] id = null ;
-		long[] mapped_uids = null ;
-		long[] previous_uids = null ;
-		boolean flag=false;
-		Long attributecategory = null;
-		boolean mappedResult = false;
-		List<Long> tmpPrevious_uids = new LinkedList<Long>();
-		
-		
-		
-		User user = userDao.findByName(principal.getName());
-		Integer userid =(int) (user.getId());
+        } catch (Exception e) {
 
+            logger.error(e);
+            return categorylst;
+        }
 
-		try{
-			try{
-				id=ServletRequestUtils.getRequiredStringParameters(request,"alias");
-				flag=true;
-				mapped_uids=ServletRequestUtils.getRequiredLongParameters(request,"aliasuid");
-				previous_uids=ServletRequestUtils.getRequiredLongParameters(request,"hid_aliasuid");
-			}
-			catch(Exception e){				
-				logger.error(e);				
-			}
-			if(id==null)
-			{
-				return "null";
-				
-			}
-			try {
-				List<Long> tmpMapped_uids = new LinkedList<Long>(Arrays.asList(ArrayUtils.toObject(mapped_uids)));
-				tmpPrevious_uids = new LinkedList<Long>(Arrays.asList(ArrayUtils.toObject(previous_uids)));			
-				tmpPrevious_uids.removeAll(tmpMapped_uids);
+        return categorylst;
 
-				if(tmpPrevious_uids.size()>0)
-				{
-					mappedResult = projectAttributeService.checkForProjectAttributeMapping(tmpPrevious_uids);
-				}
+    }
 
-				if(mappedResult)
-				{
-					return "mapping";
-				}
-			} catch (Exception e) {logger.error(e);}
-			if (flag)
-			{
-				projName=ServletRequestUtils.getRequiredStringParameter(request, "project");
-				attributecategory =ServletRequestUtils.getRequiredLongParameter(request, "attributecategory");
-				projectAttributeService.addsurveyProject(id,projName,attributecategory,userid);
-				if(tmpPrevious_uids.size()>0)projectAttributeService.deleteMappedAttribute(tmpPrevious_uids);
-			}
-			else
-			{
-				/*projName=ServletRequestUtils.getRequiredStringParameter(request, "project");
+    @RequestMapping(value = "/mobileconfig/attribcategoryType/", method = RequestMethod.GET)
+    @ResponseBody
+    public List<AttributeCategoryType> getAttributeCategoryTypelist() {
+        return attributeCategoryTypeService.getAllAttributeCategoryType();
+    }
+
+    @RequestMapping(value = "/mobileconfig/projectattrib/display/{uid}/{name}/", method = RequestMethod.GET)
+    @ResponseBody
+    public List<Surveyprojectattribute> displaySelectedCategory(@PathVariable Long uid, @PathVariable String name) {
+
+        return projectAttributeService.displaySelectedCategory(uid, name);
+
+    }
+
+    @RequestMapping(value = "/mobileconfig/projectattrib/display/{uid}/{name}/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public List<Surveyprojectattribute> displaySelectedCategory(@PathVariable Long uid, @PathVariable String name, @PathVariable Integer id) {
+
+        return projectAttributeService.displaySelectedCategoryById(uid, name, id);
+
+    }
+
+    @RequestMapping(value = "/mobileconfig/projectattrib/displaypop/{uid}/{project}", method = RequestMethod.GET)
+    @ResponseBody
+
+    public List<AttributeDto> displaySelectedAttribute(@PathVariable Long uid, @PathVariable String project) {
+        List<Surveyprojectattribute> categorylst = new ArrayList<Surveyprojectattribute>();
+        List<AttributeMaster> lstAttributeMaster = new ArrayList<AttributeMaster>();
+        //List<String> lstId= new ArrayList<String>();
+        Map<Long, Long> mapId_uid = new HashMap<Long, Long>();
+        List<AttributeDto> lstattribute = new ArrayList<AttributeDto>();
+        try {
+            categorylst = projectAttributeService.displaySelectedAttribute(uid, project);
+            lstAttributeMaster = attributemasterService.displayAttribute(uid);
+
+            if (categorylst != null && categorylst.size() > 0) {
+                for (Surveyprojectattribute obj : categorylst) {
+                    //lstId.add(obj.getAttributeMaster().getId()+"");
+                    mapId_uid.put(obj.getAttributeMaster().getAttributemasterid(), obj.getUid());
+                }
+                if (lstAttributeMaster != null && lstAttributeMaster.size() > 0) {
+
+                    for (AttributeMaster obj : lstAttributeMaster) {
+                        AttributeDto objAttribute = new AttributeDto();
+
+                        //if(lstId.contains(obj.getId()+""))
+                        if (mapId_uid.containsKey(obj.getAttributemasterid())) {
+                            objAttribute.setAlias(obj.getFieldaliasname());
+                            objAttribute.setAliasEn(obj.getFieldaliasnameEn());
+                            objAttribute.setId(obj.getAttributemasterid());
+                            objAttribute.setFlag(true);
+                            objAttribute.setUid(mapId_uid.get(obj.getAttributemasterid()));
+                        } else {
+                            objAttribute.setAlias(obj.getFieldaliasname());
+                            objAttribute.setAliasEn(obj.getFieldaliasnameEn());
+                            objAttribute.setId(obj.getAttributemasterid());
+                            objAttribute.setFlag(false);
+                        }
+                        lstattribute.add(objAttribute);
+                    }
+                }
+            } else //if accordian is empty
+             if (lstAttributeMaster != null && lstAttributeMaster.size() > 0) {
+
+                    for (AttributeMaster obj : lstAttributeMaster) {
+                        AttributeDto objAttribute = new AttributeDto();
+                        objAttribute.setAlias(obj.getFieldaliasname());
+                        objAttribute.setAliasEn(obj.getFieldaliasnameEn());
+                        objAttribute.setId(obj.getAttributemasterid());
+                        objAttribute.setFlag(false);
+
+                        lstattribute.add(objAttribute);
+                    }
+                }
+        } catch (Exception e) {
+            logger.error(e);
+        }
+
+        return lstattribute;
+
+    }
+
+    @RequestMapping(value = "/mobileconfig/projectattrib/create", method = RequestMethod.POST)
+    @ResponseBody
+    public String createMasterAttribute(HttpServletRequest request, HttpServletResponse response, Principal principal) {
+        String projName = "";
+        String[] id = null;
+        long[] mapped_uids = null;
+        long[] previous_uids = null;
+        boolean flag = false;
+        Long attributecategory = null;
+        boolean mappedResult = false;
+        List<Long> tmpPrevious_uids = new LinkedList<Long>();
+
+        User user = userDao.findByName(principal.getName());
+        Integer userid = (int) (user.getId());
+
+        try {
+            try {
+                id = ServletRequestUtils.getRequiredStringParameters(request, "alias");
+                flag = true;
+                mapped_uids = ServletRequestUtils.getRequiredLongParameters(request, "aliasuid");
+                previous_uids = ServletRequestUtils.getRequiredLongParameters(request, "hid_aliasuid");
+            } catch (Exception e) {
+                logger.error(e);
+            }
+            if (id == null) {
+                return "null";
+
+            }
+            try {
+                List<Long> tmpMapped_uids = new LinkedList<Long>(Arrays.asList(ArrayUtils.toObject(mapped_uids)));
+                tmpPrevious_uids = new LinkedList<Long>(Arrays.asList(ArrayUtils.toObject(previous_uids)));
+                tmpPrevious_uids.removeAll(tmpMapped_uids);
+
+                if (tmpPrevious_uids.size() > 0) {
+                    mappedResult = projectAttributeService.checkForProjectAttributeMapping(tmpPrevious_uids);
+                }
+
+                if (mappedResult) {
+                    return "mapping";
+                }
+            } catch (Exception e) {
+                logger.error(e);
+            }
+            if (flag) {
+                projName = ServletRequestUtils.getRequiredStringParameter(request, "project");
+                attributecategory = ServletRequestUtils.getRequiredLongParameter(request, "attributecategory");
+                projectAttributeService.addsurveyProject(id, projName, attributecategory, userid);
+                if (tmpPrevious_uids.size() > 0) {
+                    projectAttributeService.deleteMappedAttribute(tmpPrevious_uids);
+                }
+            } else {
+                /*projName=ServletRequestUtils.getRequiredStringParameter(request, "project");
 				attributecategory =ServletRequestUtils.getRequiredLongParameter(request, "attributecategory");
 				projectAttributeService.deleteallcategory(attributecategory, projName);*/
-				return "false";
-			}
-		}
-		catch(Exception e)
-		{			
-			logger.error(e);
-			return "false";
-		}
-		return "true";
-	}
-	
-	// add by RMSI NK for save up and down project attribute start
-	
-	@RequestMapping(value = "/mobileconfig/projectattrib/update", method = RequestMethod.POST)
-	@ResponseBody
-	public boolean updateMasterAttribute(HttpServletRequest request, HttpServletResponse response)
-	
-	{
-		
-		List<Surveyprojectattribute> categorylst= new ArrayList<Surveyprojectattribute>();
-		String projName="";	
-		Long attributecategory = null;
-		String Order_id="";
-		
-		try {
-			Order_id=ServletRequestUtils.getRequiredStringParameter(request,"_optionOrder");
-			projName=ServletRequestUtils.getRequiredStringParameter(request, "project");
-			attributecategory =ServletRequestUtils.getRequiredLongParameter(request, "attributecategory");
-			
-		
-			String [] stringArray = Order_id.split(",");
-		    int length =stringArray.length;
-			long[] result = new long[length];
-			for(int i=0;i<stringArray.length;i++){
-				result[i] = Long.parseLong(stringArray[i]);
-			}
-			
-			projectAttributeService.updatesurveyProject(result,projName,attributecategory);
-			//projectAttributeService.updatesurveyProjectSave(result, projName,attributecategory);
-			
-		} catch (ServletRequestBindingException e) {
-		
-			logger.error(e);
-			return false;
-		}
-		
-		return true;
-		
-	}
-	
-    //add by RMSI NK for save up and down project attribute end
-	    
+                return "false";
+            }
+        } catch (Exception e) {
+            logger.error(e);
+            return "false";
+        }
+        return "true";
+    }
 
-	
+    // add by RMSI NK for save up and down project attribute start
+    @RequestMapping(value = "/mobileconfig/projectattrib/update", method = RequestMethod.POST)
+    @ResponseBody
+    public boolean updateMasterAttribute(HttpServletRequest request, HttpServletResponse response) {
+
+        List<Surveyprojectattribute> categorylst = new ArrayList<Surveyprojectattribute>();
+        String projName = "";
+        Long attributecategory = null;
+        String Order_id = "";
+
+        try {
+            Order_id = ServletRequestUtils.getRequiredStringParameter(request, "_optionOrder");
+            projName = ServletRequestUtils.getRequiredStringParameter(request, "project");
+            attributecategory = ServletRequestUtils.getRequiredLongParameter(request, "attributecategory");
+
+            String[] stringArray = Order_id.split(",");
+            int length = stringArray.length;
+            long[] result = new long[length];
+            for (int i = 0; i < stringArray.length; i++) {
+                result[i] = Long.parseLong(stringArray[i]);
+            }
+
+            projectAttributeService.updatesurveyProject(result, projName, attributecategory);
+            //projectAttributeService.updatesurveyProjectSave(result, projName,attributecategory);
+
+        } catch (ServletRequestBindingException e) {
+
+            logger.error(e);
+            return false;
+        }
+
+        return true;
+
+    }
+
+    //add by RMSI NK for save up and down project attribute end
 }

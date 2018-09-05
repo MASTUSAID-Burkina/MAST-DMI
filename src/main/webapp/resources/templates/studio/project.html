@@ -159,32 +159,6 @@
                 </table>
             </div>
 
-
-            <!---
-            <h3>
-                <a href="#">Hamlet</a>
-            </h3>
-            <div style="height: 150px">
-                <a onclick="javascript:newHamlet('new');" id="project_saveNew"
-                   class="btn02" style="display: block;"><span class="NewBTN">New</span></a>
-
-                <div id=temporaryHamletDiv></div>
-
-            </div>
-            <h3>
-                <a href="#">Land Adjudication Committee Member(s)</a>
-            </h3>
-            <div style="height: 150px">
-                <a onclick="javascript:addTempAdjudicator('new');" id="project_saveNew"
-                   class="btn02" style="display: block;"><span class="NewBTN">New</span></a>
-
-                <div id=temporaryAdjDiv></div>
-
-            </div>
-                        
-            -->
-
-
             <h3>
                 <a href="#" data-i18n="admin-disclaimer"></a>
             </h3>
@@ -223,25 +197,8 @@
         <script id="ProjectTemplateUser" type="text/x-jquery-tmpl">
             <tr>		
             <td colspan="1">
-            <input type="checkbox" id="${username}" name="project_user" value="${id}" class='userCheckbox' onClick="manageProjLink(this);"/> ${username}
-
+                <input type="checkbox" id="${username}" name="project_user" value="${id}" class='userCheckbox' onClick="manageProjLink(this);"/> ${username}
             </td>
-            <!--<td class="tr-${email}"colspan="2" >
-
-            {{if (authkey)}}
-            ${$item.projecturl}${authkey}  
-            {{else}}
-
-            {{/if}}
-
-            </td>-->
-            <!--<td class="tr-${email}" colspan="1">
-            {{if (authkey)}}
-            <a href="#" onClick="javascript:alert('Not Implemented');" >email</a>
-            {{else}}
-
-            {{/if}}
-            </td>-->
             </tr>	
         </script>
 
@@ -335,13 +292,6 @@
             <label class="lblint" data-i18n="viewer-proj"></label>
             </td>
             <td>    
-            <!--
-            {{if (projection)}}
-            <input type="textbox" name="projection.code" id="projection" value="${projection.code}" />    
-            {{else}}
-            <input type="textbox" name="projection.code" id="project_Projection" value="" />        
-            {{/if}}
-            -->
 
             <select name="projection_code" id = "projection_code">
             <option  value="" data-i18n="gen-please-select"></option>         
@@ -352,13 +302,7 @@
             <label class="lblint" data-i18n="viewer-display-proj"></label>
             </td>
             <td>
-            <!--
-            {{if (displayProjection)}}  
-            <input type="textbox" name="displayProjection.code" id="displayProjection" value="${displayProjection.code}" /> 
-            {{else}}
-            <input type="textbox" name="displayProjection.code" id="displayProjection" value="" />
-            {{/if}}          
-            -->
+            
             <select name="displayProjection_code" id = "displayProjection_code">
             <option  value="" data-i18n="gen-please-select"></option>         
             </select>
@@ -421,72 +365,7 @@
             </tr>
             <input type="hidden" name="copyright" id="copyright" value="" />
             <input type="hidden" name="watermask" id="watermask" value="" />
-            <!--tr>
-            <td data-i18n="gen-copyright-lbl">
-            
-            </td>
-            <td>
-            <input type="textbox" name="copyright" id="copyright" value="${copyright}" />
-            </td>
 
-            <td data-i18n="gen-watermark">
-            
-            </td>
-            <td>
-            <input type="textbox" name="watermask" id="watermask" value="${watermask}" />
-            </td>
-
-            </tr-->
-
-            <!--
-            <tr>
-            <td>&nbsp;</td>
-            <td>
-            <input type="hidden" id="active" name="active" value="${active}" />
-            {{if (active)}}       
-            <input type="checkbox" id="active1" name="active1" value="${active}"  CHECKED onClick="changeActiveValue(this);" />   Active        
-            {{else}}
-            <input type="checkbox" id="active1" name="active1" value="${active}" onClick="changeActiveValue(this);"/>   Active 
-            {{/if}}
-
-            </td
-            <td>&nbsp;</td>
-            <td>
-            <input type="hidden" id="cosmetic" name="cosmetic" value="${cosmetic}"/>
-
-            {{if (cosmetic)}}
-
-            <input type="checkbox" id="cosmetic1" name="cosmetic1" value="${cosmetic}"  CHECKED onClick="changeCosmeticValue(this);" />   Cosmetic 
-
-            {{else}}
-
-            <input type="checkbox" id="cosmetic1" name="cosmetic1" value="${cosmetic}" onClick="changeCosmeticValue(this);"/>   Cosmetic 
-
-            {{/if}}
-
-            </td>
-            </tr>
-
-            -->
-
-            <!-- <tr>
-            <td>
-            <label class="lblint">Active Layer</label>
-            </td>
-            <td >
-            <select name="activelayer" id = "activelayer">
-            <option SELECTED value="" data-i18n="gen-please-select"></option>
-            </td>
-
-            <td>
-            <label class="lblint">Overview Layer</label>
-            </td>
-            <td>
-            <select name="overlaymap" id = "overlaymap">
-            <option SELECTED value="" data-i18n="gen-please-select"></option>
-            </td>
-
-            </tr> -->
         </script>
 
         <script id="ProjectTemplateDisclaimer" type="text/x-jquery-tmpl">
@@ -559,11 +438,9 @@
             </select>
             </td>
             <td>
-            <!-- <label class="lblint">Region </label> -->
             <label class="lblint" data-i18n="reg-commune"></label>  
             </td>
             <td>    
-            <!-- <input type="textbox" name="regioncode" id="regioncode" value="" />  -->
             <select class="pagesize" id="CommuneId" name="CommuneId" onchange="getplaceval(this);" >
             <option selected="selected"  value="" data-i18n="gen-please-select"></option>           
             </select>
@@ -571,6 +448,37 @@
             </tr>
 
             <tr>
+            
+            <td>
+            <label class="lblint" data-i18n="reg-mayor-name"></label> 
+            </td> 
+            <td>
+            <input type="textbox" name="mayorname" id="mayorname" value="" /> 
+            </td>
+    
+            <td>
+            <label class="lblint" data-i18n="gen-logo"></label>
+            </td>
+            <td>    
+            <img src="" id="imgProjectLogo" class="projectLogo" />
+            <br />
+            <a href="#" id="linkDeleteProjectLogo" class="deleteLink" onclick="deleteSignature('ProjectLogo')" style="display: none;">
+                <i class="fa fa-times"></i> <span data-i18n="gen-delete"></span>
+            </a>
+            <a href="#" id="linkAddProjectLogo" class="addLink" onclick="uploadSignature('ProjectLogo')">
+                <i class="fa fa-plus"></i> <span data-i18n="gen-add"></span>
+            </a>
+            <input type="hidden" id="hProjectLogo" name="hProjectLogo" />
+            </td>
+    
+            <!--
+            <td>
+            <label class="lblint" data-i18n="reg-cert-num"></label> 
+            </td> 
+            <td>
+            <input type="textbox" name="villagecode" id="villagecode" value="" /> 
+            </td>
+    
             <td>
             <label class="lblint" data-i18n="reg-place"></label>
             </td>
@@ -579,19 +487,14 @@
             <option selected="selected"  value="" data-i18n="gen-please-select"></option>
             </select>  
             </td>
-            <td>
-            <label class="lblint" data-i18n="reg-cert-num"></label> <!--Village certificate number -->
-
-            </td>
-            <td>
-            <input type="textbox" name="villagecode" id="villagecode" value="" /> 
-
-            </td>
+            -->
+    
             </tr>
 
+            <!--
             <tr>
             <td>
-            <label class="lblint" data-i18n="reg-postal-code"></label> <!-- Village Postal Code-->
+            <label class="lblint" data-i18n="reg-postal-code"></label>
             </td>
             <td>
             <input type="textbox" name="villagepostalcode" id="villagepostalcode" value="" />
@@ -606,7 +509,7 @@
 
             <tr>
             <td>
-            <label class="lblint" data-i18n="reg-auth-chairman"></label> <!-- Village Chairman-->
+            <label class="lblint" data-i18n="reg-auth-chairman"></label>
             </td>
             <td>
             <input type="textbox" name="villagechairman" id="villagechairmanId" value="" />
@@ -621,7 +524,7 @@
 
             <tr>
             <td>
-            <label class="lblint" data-i18n="reg-auth-chairman-sign"></label> <!-- Village Chairman Signature-->
+            <label class="lblint" data-i18n="reg-auth-chairman-sign"></label> 
             </td>
             <td>
             <img src="" id="imgSignatureVillageChairman" alt="Signature" class="signatureImage" />
@@ -639,7 +542,7 @@
 
             <tr>
             <td>
-            <label class="lblint" data-i18n="reg-land-officier"></label> <!-- District Land Officer-->
+            <label class="lblint" data-i18n="reg-land-officier"></label> 
             </td>
             <td>
             <input type="textbox" name="districtofficer" id="districtofficerId" value="" />
@@ -651,7 +554,7 @@
 
             </td>
             </tr>
-
+            -->
         </script>
     </form>
     <script type="text/javascript">

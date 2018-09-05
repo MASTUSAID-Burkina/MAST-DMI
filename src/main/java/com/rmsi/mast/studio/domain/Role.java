@@ -34,12 +34,12 @@ public class Role implements Serializable {
 	
 	
     public final static Integer ROLE_ADMIN=1;
-    public final static Integer DPI=2;
-    public final static Integer PM=3;
-    public final static Integer PUBLIC_USER=4;
-    public final static Integer SFR=5;
-    public final static Integer TRUSTED_INTERMEDIARY=6;
-    public final static Integer USER=7;
+    public final static Integer DPI=9;
+    public final static Integer PM=7;
+    public final static Integer PUBLIC_USER=3;
+    public final static Integer SFR=8;
+    public final static Integer TRUSTED_INTERMEDIARY=4;
+    public final static Integer USER=2;
 	
 		
     public Role() {

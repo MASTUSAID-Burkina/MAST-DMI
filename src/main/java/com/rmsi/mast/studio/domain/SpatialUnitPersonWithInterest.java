@@ -1,7 +1,5 @@
 package com.rmsi.mast.studio.domain;
 
-
-
 import java.io.Serializable;
 
 import javax.persistence.*;
@@ -11,247 +9,210 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Timestamp;
 import java.util.Date;
 
-
 /**
- * The persistent class for the la_ext_spatialunit_personwithinterest database table.
- * 
+ * The persistent class for the la_ext_spatialunit_personwithinterest database
+ * table.
+ *
  */
 @Entity
 @Transactional
-@Table(name="la_ext_spatialunit_personwithinterest")
-@NamedQuery(name="SpatialUnitPersonWithInterest.findAll", query="SELECT l FROM SpatialunitPersonwithinterest l")
+@Table(name = "la_ext_spatialunit_personwithinterest")
+@NamedQuery(name = "SpatialUnitPersonWithInterest.findAll", query = "SELECT l FROM SpatialunitPersonwithinterest l")
 public class SpatialUnitPersonWithInterest implements Serializable {
-	private static final long serialVersionUID = 1L;
 
-	@Id
-	@SequenceGenerator(name="LA_EXT_SPATIALUNIT_PERSONWITHINTEREST_ID_GENERATOR" ,sequenceName="la_ext_spatialunit_personwithinterest_id_seq", allocationSize=1 )
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="LA_EXT_SPATIALUNIT_PERSONWITHINTEREST_ID_GENERATOR")
-	private Long id;
+    private static final long serialVersionUID = 1L;
 
-	private String address;
+    @Id
+    @SequenceGenerator(name = "LA_EXT_SPATIALUNIT_PERSONWITHINTEREST_ID_GENERATOR", sequenceName = "la_ext_spatialunit_personwithinterest_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "LA_EXT_SPATIALUNIT_PERSONWITHINTEREST_ID_GENERATOR")
+    private Long id;
 
-	private Integer createdby;
+    private String address;
 
-	@Temporal(TemporalType.DATE)
-	private Date createddate;
+    private Integer createdby;
 
-	@Temporal(TemporalType.DATE)
-	private Date dob;
+    @Temporal(TemporalType.DATE)
+    private Date createddate;
 
-	@Column(name="first_name")
-	private String firstName;
+    @Temporal(TemporalType.DATE)
+    private Date dob;
 
-	private Integer gender;
+    @Column(name = "first_name")
+    private String firstName;
 
-	private Boolean isactive;
+    private Integer gender;
 
-	private Long landid;
+    private Boolean isactive;
 
-	@Column(name="last_name")
-	private String lastName;
+    private Long landid;
 
-	@Column(name="middle_name")
-	private String middleName;
+    @Column(name = "last_name")
+    private String lastName;
 
-	private Integer modifiedby;
+    @Column(name = "middle_name")
+    private String middleName;
 
-	@Temporal(TemporalType.DATE)
-	private Date modifieddate;
+    private Integer modifiedby;
 
-	private Long projectnameid;
+    @Temporal(TemporalType.DATE)
+    private Date modifieddate;
 
-	private Integer relation;
-	
-	
-	private Integer typeid;
-	
-	private Integer transactionid;
-	
+    private Long projectnameid;
 
-	public SpatialUnitPersonWithInterest() {
-	}
+    private Integer relation;
 
+    private Integer typeid;
 
-	public Integer getTransactionid() {
-		return transactionid;
-	}
+    private Integer transactionid;
 
+    @Column
+    private String identityno;
+    
+    public SpatialUnitPersonWithInterest() {
+    }
 
-	public void setTransactionid(Integer transactionid) {
-		this.transactionid = transactionid;
-	}
+    public Integer getTransactionid() {
+        return transactionid;
+    }
 
+    public void setTransactionid(Integer transactionid) {
+        this.transactionid = transactionid;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public String getIdentityno() {
+        return identityno;
+    }
 
+    public void setIdentityno(String identityno) {
+        this.identityno = identityno;
+    }
 
-	public String getAddress() {
-		return address;
-	}
+    public String getAddress() {
+        return address;
+    }
 
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
+    public Integer getCreatedby() {
+        return createdby;
+    }
 
+    public void setCreatedby(Integer createdby) {
+        this.createdby = createdby;
+    }
 
-	public Integer getCreatedby() {
-		return createdby;
-	}
+    public Date getCreateddate() {
+        return createddate;
+    }
 
+    public void setCreateddate(Date createddate) {
+        this.createddate = createddate;
+    }
 
-	public void setCreatedby(Integer createdby) {
-		this.createdby = createdby;
-	}
-
-
-	public Date getCreateddate() {
-		return createddate;
-	}
-
-
-	public void setCreateddate(Date createddate) {
-		this.createddate = createddate;
-	}
-
-
-	public Date getDob() {
-		return dob;
-	}
-
-
-	public void setDob(Date dob) {
-		this.dob = dob;
-	}
-
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-
-	public Integer getGender() {
-		return gender;
-	}
-
-
-	public void setGender(Integer gender) {
-		this.gender = gender;
-	}
-
-
-	public Boolean getIsactive() {
-		return isactive;
-	}
-
-
-	public void setIsactive(Boolean isactive) {
-		this.isactive = isactive;
-	}
-
-
-	public Long getLandid() {
-		return landid;
-	}
-
-
-	public void setLandid(Long landid) {
-		this.landid = landid;
-	}
-
-
-	public String getLastName() {
-		return lastName;
-	}
-
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-
-	public String getMiddleName() {
-		return middleName;
-	}
-
-
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
-	}
-
-
-	public Integer getModifiedby() {
-		return modifiedby;
-	}
-
-
-	public void setModifiedby(Integer modifiedby) {
-		this.modifiedby = modifiedby;
-	}
-
-
-	public Date getModifieddate() {
-		return modifieddate;
-	}
-
-
-	public void setModifieddate(Date modifieddate) {
-		this.modifieddate = modifieddate;
-	}
-
-
-	public Long getProjectnameid() {
-		return projectnameid;
-	}
-
-
-	public void setProjectnameid(Long projectnameid) {
-		this.projectnameid = projectnameid;
-	}
-
-
-	public Integer getRelation() {
-		return relation;
-	}
-
-
-	public void setRelation(Integer relation) {
-		this.relation = relation;
-	}
-
-
-	public Integer getTypeid() {
-		return typeid;
-	}
-
-
-	public void setTypeid(Integer typeid) {
-		this.typeid = typeid;
-	}
-
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+    public Date getDob() {
+        return dob;
+    }
+
+    public void setDob(Date dob) {
+        this.dob = dob;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public Integer getGender() {
+        return gender;
+    }
+
+    public void setGender(Integer gender) {
+        this.gender = gender;
+    }
+
+    public Boolean getIsactive() {
+        return isactive;
+    }
+
+    public void setIsactive(Boolean isactive) {
+        this.isactive = isactive;
+    }
+
+    public Long getLandid() {
+        return landid;
+    }
+
+    public void setLandid(Long landid) {
+        this.landid = landid;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    public Integer getModifiedby() {
+        return modifiedby;
+    }
+
+    public void setModifiedby(Integer modifiedby) {
+        this.modifiedby = modifiedby;
+    }
+
+    public Date getModifieddate() {
+        return modifieddate;
+    }
+
+    public void setModifieddate(Date modifieddate) {
+        this.modifieddate = modifieddate;
+    }
+
+    public Long getProjectnameid() {
+        return projectnameid;
+    }
+
+    public void setProjectnameid(Long projectnameid) {
+        this.projectnameid = projectnameid;
+    }
+
+    public Integer getRelation() {
+        return relation;
+    }
+
+    public void setRelation(Integer relation) {
+        this.relation = relation;
+    }
+
+    public Integer getTypeid() {
+        return typeid;
+    }
+
+    public void setTypeid(Integer typeid) {
+        this.typeid = typeid;
+    }
 
 }

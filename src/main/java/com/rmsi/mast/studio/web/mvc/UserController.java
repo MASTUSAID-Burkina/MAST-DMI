@@ -57,23 +57,22 @@ public class UserController {
 
     @Autowired
     UserService userService;
-   
+
     @Autowired
     RoleService roleService;
 
     @Autowired
     ProjectAttributeService projectAttributeService;
-    
+
     @Autowired
     GenderService genderService;
-   
 
     @Autowired
     UserProjectService userProjectService;
-    
+
     @Autowired
-    UserRoleDAO  userRoleDAO;
-    
+    UserRoleDAO userRoleDAO;
+
     @RequestMapping(value = "/studio/user/", method = RequestMethod.GET)
     @ResponseBody
     public List<User> list() {
@@ -176,13 +175,12 @@ public class UserController {
 
     @RequestMapping(value = "/studio/user/create", method = RequestMethod.POST)
     @ResponseBody
-    public String createUser(HttpServletRequest request, HttpServletResponse response,Principal principal) {
+    public String createUser(HttpServletRequest request, HttpServletResponse response, Principal principal) {
 
-    	
-    	String username = principal.getName();
-		User userObj = userService.findByUniqueName(username);
-		Long id = userObj.getId();
-		
+        String username = principal.getName();
+        User userObj = userService.findByUniqueName(username);
+        Long id = userObj.getId();
+
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Date expDate = null;
         Set<UserRole> roleList = new HashSet<UserRole>();
@@ -221,7 +219,7 @@ public class UserController {
             user.setName(name);
             user.setUsername(userName);
             user.setEmail(emailId);
-           
+
             user.setManager_name("");
 
             if (pass.equals(user.getPassword())) {
@@ -261,49 +259,45 @@ public class UserController {
 
             }
 
-            try{
-            	  defProjName = ServletRequestUtils
-                         .getRequiredStringParameter(request, "defaultproject");
-            	 user.setDefaultproject(defProjName);
-            }catch(Exception e)
-            {
-            	e.printStackTrace();
+            try {
+                defProjName = ServletRequestUtils
+                        .getRequiredStringParameter(request, "defaultproject");
+                user.setDefaultproject(defProjName);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-           
-            try{
-           	 String mobile = ServletRequestUtils
+
+            try {
+                String mobile = ServletRequestUtils
                         .getRequiredStringParameter(request, "mobile");
-           	 user.setPhone(mobile);
-           }catch(Exception e)
-           {
-           	e.printStackTrace();
-           }
-            
-            
-            try{
-            	
-            	 String gender = ServletRequestUtils
-                 .getRequiredStringParameter(request, "user_gender");
-            	 user.setGender(Integer.parseInt(gender));
-            	 
-            }catch(Exception e)
-            {
-            	e.printStackTrace();
+                user.setPhone(mobile);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            
-            try{
-            	
-           	 String address = ServletRequestUtils
-                .getRequiredStringParameter(request, "address");
-           	 user.setAddress(address);
-           	 
-           }catch(Exception e)
-           {
-           	e.printStackTrace();
-           }
-            
-            
-            
+
+            try {
+                String gender = ServletRequestUtils
+                        .getRequiredStringParameter(request, "user_gender");
+                if (gender == null || gender.equals("")) {
+                    user.setGender(null);
+                } else {
+                    user.setGender(Integer.parseInt(gender));
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+
+                String address = ServletRequestUtils
+                        .getRequiredStringParameter(request, "address");
+                user.setAddress(address);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             user.setPasswordexpires(expDate);
 
             user.setLastactivitydate(new Date());
@@ -322,7 +316,6 @@ public class UserController {
                 roleList.add(userRole);
             }
 
-            
             user.setUserRole(roleList);
 
             String authkey = generateAuthKey(user.getEmail(), user.getPassword());
@@ -331,8 +324,7 @@ public class UserController {
             user.setModifiedby(id);
             user.setCreateddate(new Date());
             user.setModifieddate(new Date());
-          
-            
+
             user = userService.addUser(user);
             return "true";
 
@@ -442,8 +434,7 @@ public class UserController {
     public User getUserByUserId(@PathVariable String id) {
         System.out.println("------------userid:" + id);
         User usr = userService.findUserByUserId(Integer.parseInt(id));
-        
-        
+
         return usr;
     }
 
@@ -475,10 +466,10 @@ public class UserController {
         return projectAttributeService.findallProjects();
 
     }
-    
+
     @RequestMapping(value = "/studio/Allgender/", method = RequestMethod.GET)
     @ResponseBody
-    public  List<Gender> AllGender() {
+    public List<Gender> AllGender() {
         return genderService.getAllGender();
 
     }
@@ -489,24 +480,20 @@ public class UserController {
         String username = request.getParameter("username");
         List<UserProject> userprojectlst = new ArrayList<UserProject>();
         User usr = userService.findUserByName(username);
-        userprojectlst= userProjectService.findAllUserProjectByUserID(usr.getId());
-        Set<Project> project=new HashSet<Project>();
-        if(userprojectlst.size()>0)
-        {
-        	for(UserProject obj :userprojectlst)
-        	{
-        		obj.getProject().setProjectArea(null);
-        		obj.getProject().setProjectBaselayers(null);
-        		obj.getProject().setProjectLayergroups(null);
-        		obj.getProject().setUserProjects(null);
-        		project.add(obj.getProject());
-        	}
-        	
-        	usr.setProject(project);
+        userprojectlst = userProjectService.findAllUserProjectByUserID(usr.getId());
+        Set<Project> project = new HashSet<Project>();
+        if (userprojectlst.size() > 0) {
+            for (UserProject obj : userprojectlst) {
+                obj.getProject().setProjectArea(null);
+                obj.getProject().setProjectBaselayers(null);
+                obj.getProject().setProjectLayergroups(null);
+                obj.getProject().setUserProjects(null);
+                project.add(obj.getProject());
+            }
+
+            usr.setProject(project);
         }
-        
-        
-        
+
         return usr;
     }
 
@@ -585,7 +572,7 @@ public class UserController {
             Role userrole = new Role();
             userrole = roleService.findRoleByName("ROLE_PUBLICUSER");
             roleList.add(userrole);
-           ////@ user.setRoles(roleList);
+            ////@ user.setRoles(roleList);
 
             String authkey = generateAuthKey(user.getEmail(), user.getPassword());
             user.setAuthkey(authkey);
@@ -612,7 +599,5 @@ public class UserController {
             return false;
         }
     }
-
-   
 
 }

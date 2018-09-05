@@ -4,9 +4,13 @@ var selectedItem = null;
 var AttributeCategoryList = null;
 var AttributeCategorytypeList = null;
 var _Optext_Id = 1;
-
+var catNameField = "categoryName";
+                
 function MasterAttribute(_selectedItem)
 {
+    if (Global.LANG === "en") {
+        catNameField = "categoryNameEn";
+    }
     selectedItem = _selectedItem;
     jQuery.ajax({
         url: "dataType/",
@@ -66,9 +70,9 @@ function displayRefreshedMasterAttr(_attrcategory)
                 jQuery("#masterAttr_btnNew").show();
 
                 jQuery.each(DataList, function (i, _dataobj) {
-                    if (DataList[i].datatypeId != 5) {
+                    //if (DataList[i].datatypeId != 5) {
                         jQuery("#type").append(jQuery("<option></option>").attr("value", _dataobj.datatypeId).text(_dataobj.datatype));
-                    }
+                    //}
                 });
 
 
@@ -76,7 +80,7 @@ function displayRefreshedMasterAttr(_attrcategory)
 
                 jQuery.each(AttributeCategoryList, function (i, _categoryobj) {
                     //jQuery("#category").append(jQuery("<option></option>").attr("value", _categoryobj.attributecategoryid).text(_categoryobj.categoryName)); 
-                    jQuery("#category_sel").append(jQuery("<option></option>").attr("value", _categoryobj.attributecategoryid).text(_categoryobj.categoryName));
+                    jQuery("#category_sel").append(jQuery("<option></option>").attr("value", _categoryobj.attributecategoryid).text(_categoryobj[catNameField]));
                 });
 
 
@@ -151,7 +155,7 @@ function changeCatType(_this)
                 $("#category").empty();
                 jQuery("#category").append(jQuery("<option></option>").attr("value", "").text($.i18n("gen-please-select")));
                 jQuery.each(data, function (i, _categoryobj) {
-                    jQuery("#category").append(jQuery("<option></option>").attr("value", _categoryobj.attributecategoryid).text(_categoryobj.categoryName));
+                    jQuery("#category").append(jQuery("<option></option>").attr("value", _categoryobj.attributecategoryid).text(_categoryobj[catNameField]));
                 });
 
 
@@ -351,7 +355,7 @@ function displaySelectedCategoryBytype(id)
             $("#category_sel").empty();
             jQuery("#category_sel").append(jQuery("<option></option>").attr("value", "").text($.i18n("gen-please-select")));
             jQuery.each(data, function (i, _categoryobj) {
-                jQuery("#category_sel").append(jQuery("<option></option>").attr("value", _categoryobj.attributecategoryid).text(_categoryobj.categoryName));
+                jQuery("#category_sel").append(jQuery("<option></option>").attr("value", _categoryobj.attributecategoryid).text(_categoryobj[catNameField]));
 
             });
 
@@ -383,7 +387,7 @@ function editmasterAttr(id)
         success: function (data) {
 
             jQuery("#primeryky").val(data[0].attributemasterid);
-            jQuery("#alias").val(data[0].fieldaliasname);
+            jQuery("#alias").val(data[0].fieldaliasnameEn);
             jQuery("#alias_other").val(data[0].fieldaliasname);
             jQuery("#fieldName").val(data[0].fieldname);
             jQuery("#size").val(data[0].size);
@@ -400,7 +404,7 @@ function editmasterAttr(id)
                         $("#category").empty();
                         jQuery("#category").append(jQuery("<option></option>").attr("value", "").text($.i18n("gen-please-select")));
                         jQuery.each(objattribute, function (i, _categoryobj) {
-                            jQuery("#category").append(jQuery("<option></option>").attr("value", _categoryobj.attributecategoryid).text(_categoryobj.categoryName));
+                            jQuery("#category").append(jQuery("<option></option>").attr("value", _categoryobj.attributecategoryid).text(_categoryobj[catNameField]));
 
                         });
                         jQuery("#category").val(data[0].laExtAttributecategory.attributecategoryid);
@@ -424,7 +428,7 @@ function editmasterAttr(id)
                         $("#category").empty();
                         jQuery("#category").append(jQuery("<option></option>").attr("value", "").text($.i18n("gen-please-select")));
                         jQuery.each(objattribute, function (i, _categoryobj) {
-                            jQuery("#category").append(jQuery("<option></option>").attr("value", _categoryobj.attributecategoryid).text(_categoryobj.categoryName));
+                            jQuery("#category").append(jQuery("<option></option>").attr("value", _categoryobj.attributecategoryid).text(_categoryobj[catNameField]));
 
                         });
 
@@ -513,6 +517,7 @@ function updateEditAttribute()
     $("#addAttributeformID").validate({
         rules: {
             alias: "required",
+            alias_other: "required",
             fieldName: "required",
             type: "required",
             size: {
@@ -525,6 +530,7 @@ function updateEditAttribute()
         },
         messages: {
             alias: $.i18n("err-enter-alias"),
+            alias_other: $.i18n("mob-alias-other-lang"),
             fieldName: $.i18n("err-enter-field-name"),
             type: $.i18n("err-eneter-attr-type"),
             size: $.i18n("err-enter-numeric-attr-size"),

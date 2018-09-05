@@ -7,72 +7,74 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
 
 /**
  * The persistent class for the attribute_category database table.
- * 
+ *
  */
 @Entity
-@Table(name="la_ext_attributecategory")
+@Table(name = "la_ext_attributecategory")
 public class AttributeCategory implements Serializable {
-	private static final long serialVersionUID = 1L;
 
-	@Id
-	private Long attributecategoryid;
+    private static final long serialVersionUID = 1L;
 
-	@Column(name="categoryname")
-	private String categoryName;
-	
-	private Integer categorydisplayorder;
-	
-	@ManyToOne
-	@JoinColumn(name="categorytypeid")
-	private AttributeCategoryType categorytype;
+    @Id
+    private Long attributecategoryid;
 
-	public AttributeCategory() {
-	}
-	
-	
+    @Column(name = "categoryname")
+    private String categoryName;
 
-	public Integer getCategorydisplayorder() {
-		return categorydisplayorder;
-	}
+    @Column(name = "categoryname_en")
+    private String categoryNameEn;
 
+    private Integer categorydisplayorder;
 
+    @ManyToOne
+    @JoinColumn(name = "categorytypeid")
+    private AttributeCategoryType categorytype;
 
-	public void setCategorydisplayorder(Integer categorydisplayorder) {
-		this.categorydisplayorder = categorydisplayorder;
-	}
+    public AttributeCategory() {
+    }
 
+    public Integer getCategorydisplayorder() {
+        return categorydisplayorder;
+    }
 
+    public void setCategorydisplayorder(Integer categorydisplayorder) {
+        this.categorydisplayorder = categorydisplayorder;
+    }
 
-	public Long getAttributecategoryid() {
-		return attributecategoryid;
-	}
+    public Long getAttributecategoryid() {
+        return attributecategoryid;
+    }
 
-	public void setAttributecategoryid(Long attributecategoryid) {
-		this.attributecategoryid = attributecategoryid;
-	}
+    public void setAttributecategoryid(Long attributecategoryid) {
+        this.attributecategoryid = attributecategoryid;
+    }
 
-	public String getCategoryName() {
-		return categoryName;
-	}
+    public String getCategoryName() {
+        return categoryName;
+    }
 
-	public void setCategoryName(String categoryName) {
-		this.categoryName = categoryName;
-	}
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
 
-	public AttributeCategoryType getCategorytype() {
-		return categorytype;
-	}
+    public AttributeCategoryType getCategorytype() {
+        return categorytype;
+    }
 
-	public void setCategorytype(AttributeCategoryType categorytype) {
-		this.categorytype = categorytype;
-	}
+    public void setCategorytype(AttributeCategoryType categorytype) {
+        this.categorytype = categorytype;
+    }
 
-	
-	
+    public String getCategoryNameEn() {
+        return categoryNameEn;
+    }
+
+    public void setCategoryNameEn(String categoryNameEn) {
+        this.categoryNameEn = categoryNameEn;
+    }
+
 }

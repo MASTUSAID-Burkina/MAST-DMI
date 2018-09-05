@@ -83,42 +83,36 @@ public class ProjectController {
     @Autowired
     UserService userService;
 
-    
-    @Autowired 
+    @Autowired
     BaselayerService baselayerService;
-    
+
     @Autowired
     private ProjectionService projectionService;
 
     @Autowired
     private UnitService unitService;
-    
+
     @Autowired
     private OutputformatService outputformatService;
 
     @Autowired
     private BookmarkService bookmarkService;
-    
-    
+
     @Autowired
     private LayerGroupService layerGroupService;
-    
-    
+
     @Autowired
     private ProjectAreaService projectAreaService;
-    
-    
+
     @Autowired
-    private ProjectRegionService  projectRegionService;
-    
-    
+    private ProjectRegionService projectRegionService;
+
     @Autowired
     private ProjectionService ProjectionService;
-    
+
     @Autowired
     LaSpatialunitgroupService LaSpatialunitgroupService;
-    
-    
+
     @Autowired
     UserProjectService userProjectService;
 
@@ -160,34 +154,31 @@ public class ProjectController {
     public void deleteProjectById(@PathVariable String id) {
         projectService.deleteProjectById(Integer.parseInt(id));
     }
-    
-    
+
     @RequestMapping(value = "/studio/defaultproject", method = RequestMethod.GET)
     @ResponseBody
     public void gatAllProjectName() {
         projectService.getAllProjectNames();
     }
-    
-    
-   
+
     @RequestMapping(value = "/studio/project/create", method = RequestMethod.POST)
     @ResponseBody
-    public String createProject(HttpServletRequest request, HttpServletResponse response,Principal principal) throws ServletRequestBindingException {
+    public String createProject(HttpServletRequest request, HttpServletResponse response, Principal principal) throws ServletRequestBindingException {
 
         String projectName;
         Project project;
         String extention;
-        
+
         String username = principal.getName();
-		User userObj = userService.findByUniqueName(username);
-		
-		Long user_id = userObj.getId();
-		extention = ServletRequestUtils.getRequiredStringParameter(request, "extention");
-		String ar[] = extention.split("/");
-       
+        User userObj = userService.findByUniqueName(username);
+
+        Long user_id = userObj.getId();
+        extention = ServletRequestUtils.getRequiredStringParameter(request, "extention");
+        String ar[] = extention.split("/");
+
         try {
             projectName = ServletRequestUtils.getRequiredStringParameter(request, "name");
-           
+
             String idseq = ServletRequestUtils.getRequiredStringParameter(request, "hid_idseq");
             if ("".equals(idseq)) {
                 if (projectService.checkduplicatename(projectName)) {
@@ -216,12 +207,12 @@ public class ProjectController {
             //project.setOverlaymap(ServletRequestUtils.getRequiredStringParameter(request, "overlaymap"));
             //project.setRestrictedextent(ServletRequestUtils.getRequiredStringParameter(request, "restrictedextent"));
             project.setUnit(unitService.findUnitById(Integer.parseInt(ServletRequestUtils.getRequiredStringParameter(request, "project_unit"))));
-         //  project.setDisplayProjection(projectionService.findProjectionByName(ServletRequestUtils.getRequiredStringParameter(request, "displayProjection.code")));
+            //  project.setDisplayProjection(projectionService.findProjectionByName(ServletRequestUtils.getRequiredStringParameter(request, "displayProjection.code")));
             project.setProjection(projectionService.findProjectionById(Integer.parseInt(ServletRequestUtils.getRequiredStringParameter(request, "projection_code"))));
             project.setOutputformat(outputformatService.findOutputformatById(Integer.parseInt(ServletRequestUtils.getRequiredStringParameter(request, "project_outputFormat"))));
             project.setCreatedby(1);
             project.setCreateddate(new Date());
-            
+
             String layerGroup[] = request.getParameterValues("selectedLayergroups");
             String users[] = request.getParameterValues("project_user");
             String baselayers[] = null;
@@ -241,154 +232,85 @@ public class ProjectController {
             String regionId = "";
             String districtId = "";
             String communeid = "";
-            String placeId="";
             String id = "";
-            String districtOfficer = "";
-            String villageChairman = "";
-            String approvingExecutive = "";
-            String certificationNumber = "";
-            String postalcode = "";
-            String vcmeetingdate = "";
-
+            String mayorName = "";
+           
             try {
                 try {
-                	countryId = ServletRequestUtils.getRequiredStringParameter(request, "countryId");
-                	if(countryId!="")
-                	{
-                		LaSpatialunitgroup objLaSpatialunitgroupService=LaSpatialunitgroupService.findLaSpatialunitgroupById(1);
-                		ProjectRegion objProjectRegion =projectRegionService.findProjectRegionById(Integer.parseInt(countryId));
-                		projectArea.setLaSpatialunitgroup1(objLaSpatialunitgroupService);
-                		projectArea.setLaSpatialunitgroupHierarchy1(objProjectRegion);
-                		
-                	}
+                    countryId = ServletRequestUtils.getRequiredStringParameter(request, "countryId");
+                    if (countryId != "") {
+                        LaSpatialunitgroup objLaSpatialunitgroupService = LaSpatialunitgroupService.findLaSpatialunitgroupById(1);
+                        ProjectRegion objProjectRegion = projectRegionService.findProjectRegionById(Integer.parseInt(countryId));
+                        projectArea.setLaSpatialunitgroup1(objLaSpatialunitgroupService);
+                        projectArea.setLaSpatialunitgroupHierarchy1(objProjectRegion);
+
+                    }
                 } catch (Exception e) {
                     logger.error(e);
                 }
                 try {
-                	regionId = ServletRequestUtils.getRequiredStringParameter(request, "regionId");
-                	if(regionId!=""){
-                		
-                		LaSpatialunitgroup objLaSpatialunitgroupService=LaSpatialunitgroupService.findLaSpatialunitgroupById(2);
-                		ProjectRegion objProjectRegion =projectRegionService.findProjectRegionById(Integer.parseInt(regionId));
-                		projectArea.setLaSpatialunitgroup2(objLaSpatialunitgroupService);
-                		projectArea.setLaSpatialunitgroupHierarchy2(objProjectRegion);
-                	}
-                	
+                    regionId = ServletRequestUtils.getRequiredStringParameter(request, "regionId");
+                    if (regionId != "") {
+
+                        LaSpatialunitgroup objLaSpatialunitgroupService = LaSpatialunitgroupService.findLaSpatialunitgroupById(2);
+                        ProjectRegion objProjectRegion = projectRegionService.findProjectRegionById(Integer.parseInt(regionId));
+                        projectArea.setLaSpatialunitgroup2(objLaSpatialunitgroupService);
+                        projectArea.setLaSpatialunitgroupHierarchy2(objProjectRegion);
+                    }
+
                 } catch (Exception e) {
                     logger.error(e);
                 }
                 try {
-                	districtId = ServletRequestUtils.getRequiredStringParameter(request, "districtId");
-                	if(districtId!=""){
-                		
-                		LaSpatialunitgroup objLaSpatialunitgroupService=LaSpatialunitgroupService.findLaSpatialunitgroupById(3);
-                		ProjectRegion objProjectRegion =projectRegionService.findProjectRegionById(Integer.parseInt(districtId));
-                		projectArea.setLaSpatialunitgroup3(objLaSpatialunitgroupService);
-                		projectArea.setLaSpatialunitgroupHierarchy3(objProjectRegion);
-                	}
+                    districtId = ServletRequestUtils.getRequiredStringParameter(request, "districtId");
+                    if (districtId != "") {
+
+                        LaSpatialunitgroup objLaSpatialunitgroupService = LaSpatialunitgroupService.findLaSpatialunitgroupById(3);
+                        ProjectRegion objProjectRegion = projectRegionService.findProjectRegionById(Integer.parseInt(districtId));
+                        projectArea.setLaSpatialunitgroup3(objLaSpatialunitgroupService);
+                        projectArea.setLaSpatialunitgroupHierarchy3(objProjectRegion);
+                    }
                 } catch (Exception e) {
                     logger.error(e);
                 }
                 try {
-                	communeid = ServletRequestUtils.getRequiredStringParameter(request, "CommuneId");
-                	if(communeid!=""){
-                		
-                		LaSpatialunitgroup objLaSpatialunitgroupService=LaSpatialunitgroupService.findLaSpatialunitgroupById(4);
-                		ProjectRegion objProjectRegion =projectRegionService.findProjectRegionById(Integer.parseInt(communeid));
-                		projectArea.setLaSpatialunitgroup4(objLaSpatialunitgroupService);
-                		projectArea.setLaSpatialunitgroupHierarchy4(objProjectRegion);
-                	}
+                    communeid = ServletRequestUtils.getRequiredStringParameter(request, "CommuneId");
+                    if (communeid != "") {
+
+                        LaSpatialunitgroup objLaSpatialunitgroupService = LaSpatialunitgroupService.findLaSpatialunitgroupById(4);
+                        ProjectRegion objProjectRegion = projectRegionService.findProjectRegionById(Integer.parseInt(communeid));
+                        projectArea.setLaSpatialunitgroup4(objLaSpatialunitgroupService);
+                        projectArea.setLaSpatialunitgroupHierarchy4(objProjectRegion);
+                    }
                 } catch (Exception e) {
                     logger.error(e);
                 }
-                try {
-                	placeId = ServletRequestUtils.getRequiredStringParameter(request, "placeId");
-                	if(placeId!=""){
-                		
-                		LaSpatialunitgroup objLaSpatialunitgroupService=LaSpatialunitgroupService.findLaSpatialunitgroupById(5);
-                		ProjectRegion objProjectRegion =projectRegionService.findProjectRegionById(Integer.parseInt(placeId));
-                		projectArea.setLaSpatialunitgroup5(objLaSpatialunitgroupService);
-                		projectArea.setLaSpatialunitgroupHierarchy5(objProjectRegion);
-                	}
-                } catch (Exception e) {
-                    logger.error(e);
-                }
+            
                 try {
                     id = ServletRequestUtils.getRequiredStringParameter(request, "hid_id");
                 } catch (Exception e) {
                     logger.error(e);
                 }
+              
                 try {
-                    villageChairman = ServletRequestUtils.getRequiredStringParameter(request, "villagechairman");
-                } catch (Exception e) {
-                    logger.error(e);
-                }
-                try {
-                    approvingExecutive = ServletRequestUtils.getRequiredStringParameter(request, "executiveofficer");
-                } catch (Exception e) {
-                    logger.error(e);
-                }
-                try {
-                    districtOfficer = ServletRequestUtils.getRequiredStringParameter(request, "districtofficer");
-                } catch (Exception e) {
-                    logger.error(e);
-                }
-                try {
-                	certificationNumber = ServletRequestUtils.getRequiredStringParameter(request, "villagecode");
-                } catch (Exception e) {
-                    logger.error(e);
-                }
-               
-                try {
-                	postalcode = ServletRequestUtils.getRequiredStringParameter(request, "villagepostalcode");
-                } catch (Exception e) {
-                    logger.error(e);
-                }
-                try {
-                    vcmeetingdate = ServletRequestUtils.getRequiredStringParameter(request, "vcmeetingdate");
+                    mayorName = ServletRequestUtils.getRequiredStringParameter(request, "mayorname");
                 } catch (Exception e) {
                     logger.error(e);
                 }
 
-                if (id != "") {
+                if (!"".equals(id)) {
                     projectArea.setProjectareaid(Long.parseLong(id));
                     projectArea.setModifiedby(user_id.intValue());
                     projectArea.setModifieddate(new Date());
                 }
 
-                  projectArea.setIsactive(true);
-                  projectArea.setCreatedby(user_id.intValue());
-                  projectArea.setCreateddate(new Date());
-                  projectArea.setAuthorizedmember(villageChairman);
-                  projectArea.setExecutiveofficer(approvingExecutive);
-                  projectArea.setLandofficer(districtOfficer);
-                  projectArea.setCertificatenumber(certificationNumber);
-                  projectArea.setPostalcode(postalcode);
-                  try {
-					projectArea.setAuthorizedmembersignature(ServletRequestUtils.getStringParameter(request, "hSignatureVillageChairman", "")+"."+ar[1]);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					//e.printStackTrace();
-				}
-                  try {
-					projectArea.setExecutiveofficersignature(ServletRequestUtils.getStringParameter(request, "hSignatureVillageExecutive", "")+"."+ar[1]);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					//e.printStackTrace();
-				}
-                  try {
-					projectArea.setLandofficersignature(ServletRequestUtils.getStringParameter(request, "hSignatureDistrictOfficer", "")+"."+ar[1]);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					//e.printStackTrace();
-				}
-                  projectArea.setProject(project);
-
-                if (StringUtils.isEmpty(vcmeetingdate)) {
-                    projectArea.setVcMeetingDate(null);
-                } else {
-                    projectArea.setVcMeetingDate(new SimpleDateFormat("yyyy-MM-dd").parse(vcmeetingdate));
-                }
+                projectArea.setIsactive(true);
+                projectArea.setCreatedby(user_id.intValue());
+                projectArea.setCreateddate(new Date());
+                projectArea.setMayorname(mayorName);
+                projectArea.setLogo(ServletRequestUtils.getStringParameter(request, "hProjectLogo", ""));
+                
+                projectArea.setProject(project);
                 projectAreaset.add(projectArea);
             } catch (Exception e) {
                 logger.error(e);
@@ -441,8 +363,7 @@ public class ProjectController {
             project.setProjectArea(projectAreaset);
 
             projectService.addProject(project);
-                    
-            
+
             return "ProjectAdded";
         } catch (Exception e) {
             logger.error(e);
@@ -481,14 +402,12 @@ public class ProjectController {
         return results;
     }
 
-   
     @RequestMapping(value = "/studio/projectcontry/", method = RequestMethod.GET)
     @ResponseBody
     public List<ProjectRegion> getList() {
         return projectService.findAllCountry();
     }
 
-   
     @RequestMapping(value = "/studio/projectregion/{Id}", method = RequestMethod.GET)
     @ResponseBody
     public List<ProjectRegion> getList(@PathVariable Integer Id) {
@@ -512,12 +431,11 @@ public class ProjectController {
     public List<ProjectRegion> getListHamlet(@PathVariable Integer Id) {
         return projectService.findPlaceByVillage(Id);
     }
-    
-    
+
     @RequestMapping(value = "/studio/projection", method = RequestMethod.GET)
     @ResponseBody
     public List<Projection> getAllProjection() {
-    	
+
         return projectionService.findAllProjection();
     }
 
@@ -530,16 +448,17 @@ public class ProjectController {
         List<Integer> lstRole = new ArrayList<Integer>();
         lstRole.add(Role.DPI);
         lstRole.add(Role.SFR);
-        lstRole.add(Role.ROLE_ADMIN);
-        
+        lstRole.add(Role.TRUSTED_INTERMEDIARY);
+        lstRole.add(Role.PM);
+
         List<UserRole> userroleid = projectService.findAlluserrole(lstRole);
 
         for (int i = 0; i < userroleid.size(); i++) {
 
-        	Integer  id = (int)userroleid.get(i).getUser().getId();
+            Integer id = (int) userroleid.get(i).getUser().getId();
 
-           userid.add(id);
-        	
+            userid.add(id);
+
         }
         try {
 
@@ -591,7 +510,7 @@ public class ProjectController {
                 signature = mpFile.getBytes();
                 String fileName = mpFile.getOriginalFilename();
                 String uid = UUID.randomUUID().toString();
-               
+
                 fileName = uid + "." + fileName.substring(fileName.indexOf(".") + 1, fileName.length()).toLowerCase();
 
                 String outDirPath = FileUtils.getFielsFolder(request) + "resources" + File.separator + "signatures";
@@ -622,14 +541,14 @@ public class ProjectController {
         File signature = new File(FileUtils.getFielsFolder(request) + "resources" + File.separator + "signatures" + File.separator + fileName + ".gif");
         File signature2 = new File(FileUtils.getFielsFolder(request) + "resources" + File.separator + "signatures" + File.separator + fileName + ".png");
         File signature3 = new File(FileUtils.getFielsFolder(request) + "resources" + File.separator + "signatures" + File.separator + fileName + ".jpg");
-        if(signature.exists() ||signature2.exists() ||signature3.exists() ){
-        	
-        	return true;
-        	
-        }else{
-        
-        	return false;
-        
+        if (signature.exists() || signature2.exists() || signature3.exists()) {
+
+            return true;
+
+        } else {
+
+            return false;
+
         }
     }
 
@@ -637,59 +556,70 @@ public class ProjectController {
     @ResponseBody
     public void getSignature(@PathVariable String fileName, HttpServletRequest request, HttpServletResponse response) {
         try {
-        	byte[] data = null ;
+            byte[] data = null;
             Path path = Paths.get(FileUtils.getFielsFolder(request) + "resources" + File.separator + "signatures" + File.separator + fileName + ".jpeg");
 
             try {
-				if (path.toFile().exists()) {
-				   // writeEmptyImage(request, response);
-				    data = Files.readAllBytes(path);
-				    response.setHeader("Content-Type", "image/jpeg");
-				    response.setContentLength(data.length);
-				}
-				
-				
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+                if (path.toFile().exists()) {
+                    // writeEmptyImage(request, response);
+                    data = Files.readAllBytes(path);
+                    response.setHeader("Content-Type", "image/jpeg");
+                    response.setContentLength(data.length);
+                }
+
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             
+            path = Paths.get(FileUtils.getFielsFolder(request) + "resources" + File.separator + "signatures" + File.separator + fileName + ".jpg");
+
+            try {
+                if (path.toFile().exists()) {
+                    // writeEmptyImage(request, response);
+                    data = Files.readAllBytes(path);
+                    response.setHeader("Content-Type", "image/jpeg");
+                    response.setContentLength(data.length);
+                }
+
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
             Path path1 = Paths.get(FileUtils.getFielsFolder(request) + "resources" + File.separator + "signatures" + File.separator + fileName + ".png");
-            
+
             try {
-				if (path1.toFile().exists()) {
-				  //  writeEmptyImage(request, response);
-				    data = Files.readAllBytes(path1);
-				    response.setHeader("Content-Type", "image/png");
-				    response.setContentLength(data.length);
-				}
-				
-				
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-            
+                if (path1.toFile().exists()) {
+                    //  writeEmptyImage(request, response);
+                    data = Files.readAllBytes(path1);
+                    response.setHeader("Content-Type", "image/png");
+                    response.setContentLength(data.length);
+                }
+
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
             Path path2 = Paths.get(FileUtils.getFielsFolder(request) + "resources" + File.separator + "signatures" + File.separator + fileName + ".gif");
-            
+
             try {
-				if (path2.toFile().exists()) {
-				   // writeEmptyImage(request, response);
-				    data = Files.readAllBytes(path2);
-				    response.setHeader("Content-Type", "image/jpg");
-				    response.setContentLength(data.length);
-				}
-				
-				
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-            
-           
-           // data = Files.readAllBytes(path);
-		   // response.setHeader("Content-Type", "image/png");
-           // response.setContentLength(data.length);
+                if (path2.toFile().exists()) {
+                    // writeEmptyImage(request, response);
+                    data = Files.readAllBytes(path2);
+                    response.setHeader("Content-Type", "image/jpg");
+                    response.setContentLength(data.length);
+                }
+
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            // data = Files.readAllBytes(path);
+            // response.setHeader("Content-Type", "image/png");
+            // response.setContentLength(data.length);
             response.addHeader("Content-disposition", "inline; inline; filename=\"" + fileName + "\"");
 
             try (OutputStream out = response.getOutputStream()) {
@@ -713,29 +643,28 @@ public class ProjectController {
                 return false;
             }
         }
-        
+
         File signature1 = new File(FileUtils.getFielsFolder(request) + "resources" + File.separator + "signatures" + File.separator + fileName + ".png");
         if (signature1.exists()) {
             try {
-            	signature1.delete();
+                signature1.delete();
             } catch (Exception e) {
                 logger.error(e);
                 return false;
             }
         }
-        
-        
+
         File signature2 = new File(FileUtils.getFielsFolder(request) + "resources" + File.separator + "signatures" + File.separator + fileName + ".jpeg");
         if (signature2.exists()) {
             try {
-            	signature2.delete();
+                signature2.delete();
             } catch (Exception e) {
                 logger.error(e);
                 return false;
             }
         }
         return true;
-    } 
+    }
 
     public void writeEmptyImage(HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -752,22 +681,17 @@ public class ProjectController {
             logger.error(e);
         }
     }
-    
-    
+
     @RequestMapping(value = "/studio/project/Allproject/{id}", method = RequestMethod.GET)
     @ResponseBody
     public List<UserProject> getAllUserProject(@PathVariable String id) {
         return userProjectService.findAllUserProjectByUserID(Long.parseLong(id));
     }
-    
-    
+
     @RequestMapping(value = "/studio/project/info", method = RequestMethod.GET)
     @ResponseBody
-    public List<ProjectData>  gatAllProjectInfo() {
-        return  projectService.getAllProjectInfo();
+    public List<ProjectData> gatAllProjectInfo() {
+        return projectService.getAllProjectInfo();
     }
-    
-    
-   
-    
+
 }

@@ -30,18 +30,18 @@ function displayRefreshedProjectData(_project)
 
                 jQuery("#projectdata-div").append(template);
                 jQuery("#projectdata-div").i18n();
-                
+
                 jQuery('#projectDataFormDiv').css("visibility", "visible");
 
                 //$("#projectData_project").val(_project);
 
                 jQuery("#projectDataTemplate").tmpl(data).appendTo("#AttchFileListBody");
                 $("#AttchFileListBody").i18n();
-                
+
                 jQuery("#category_sel").append(jQuery("<option></option>").attr("value", "All").text($.i18n("gen-all")));
                 jQuery.each(DataList, function (i, _dataobj) {
 
-                    jQuery("#category_sel").append(jQuery("<option></option>").attr("value", _dataobj.name).text(_dataobj.name));
+                    jQuery("#category_sel").append(jQuery("<option></option>").attr("value", _dataobj.projectnameid).text(_dataobj.name));
 
                 });
 
@@ -67,34 +67,21 @@ function displayRefreshedProjectData(_project)
     });
 }
 
-function uploadFile()
-{
-
-
+function uploadFile() {
     var project = $("#category_sel").val();
     var formData = new FormData();
     var file = $('#fileUploadSpatial')[0].files[0];
-
     var alias = $("#alias").val();
 
-
-    if (project === "All")
-    {
+    if (project === "All") {
         jAlert($.i18n("err-select-proj-first"), $.i18n("err-alert"));
-
         displayCategory();
         //displayRefreshedProjectData();
-
-
-    } else if (alias === "")
-    {
+    } else if (alias === "") {
         jAlert($.i18n("err-enter-alias"), $.i18n("err-alert"));
-    } else if (typeof (file) === "undefined")
-    {
-
+    } else if (typeof (file) === "undefined") {
         jAlert($.i18n("err-select-file-to-upload"), $.i18n("err-alert"));
-    } else
-    {
+    } else {
         formData.append("spatialdata", file);
         formData.append("ProjectID", project);
         formData.append("alias", alias);
@@ -108,11 +95,10 @@ function uploadFile()
             processData: false,
             success: function (data, textStatus, jqXHR)
             {
-                if (data == "mbtiles") {
+                if (data == "Invalid") {
                     jAlert($.i18n("err-select-mbtiles"), $.i18n("err-alert"));
 
-                } else
-                {
+                } else {
                     jAlert($.i18n("reg-file-uploaded"), $.i18n("gen-info"));
                     //displayRefreshedProjectData(project);
                     displaySelectedCategory(project);
@@ -170,7 +156,7 @@ function  displaySelectedCategory(name)
                 {
                     jQuery("#projectDataTemplate").tmpl(categorydata).appendTo("#AttchFileListBody");
                     $("#AttchFileListBody").i18n();
-                    
+
                     $("#projectDataTable").tablesorter({
                         headers: {5: {sorter: false}, 7: {sorter: false}},
                         debug: false, sortList: [[0, 0]], widgets: ['zebra']})

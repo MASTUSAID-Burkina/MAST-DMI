@@ -71,7 +71,7 @@ public class SpatialUnitHibernateDao extends
     @Override
     public SpatialUnit findByImeiandTimeStamp(String imeiNumber, Date date) {
 
-        String query = "select s from SpatialUnit s where s.Imei =:imeiNumber";
+        String query = "select s from SpatialUnit s where s.imei =:imeiNumber";
 
         try {
         	Integer id=Integer.parseInt(imeiNumber);
