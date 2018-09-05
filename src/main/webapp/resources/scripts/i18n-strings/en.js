@@ -665,8 +665,13 @@ LANGUAGES.en = {
     "err-select-boss": "Select Reporting To",
     "err-select-role": "Select Role",
     "err-enter-alfanum-value": "Enter Alpha Numeric value in Username",
+<<<<<<< HEAD
     "err-cant-delete-user-boss": "Data Can not be Deleted. Used as reporting Manager",
     "err-enter-cfv-agent": "Please enter CFV Agent",
     "err-enter-village-code": "Please enter Village Code",
     "err-failed-upload": "Failed uploading file"
 };
+=======
+    "err-cant-delete-user-boss": "Data Can not be Deleted. Used as reporting Manager"
+};
+>>>>>>> 8c433067820a8fee71da7137bd29557261641371
