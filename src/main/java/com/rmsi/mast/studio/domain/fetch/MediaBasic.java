@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -19,13 +18,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.hibernate.annotations.BatchSize;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.rmsi.mast.studio.domain.LaExtTransactiondetail;
 import com.rmsi.mast.studio.domain.LaParty;
 import com.rmsi.mast.studio.domain.Outputformat;
-import com.rmsi.mast.studio.domain.SpatialUnit;
 
 @Entity
 @Table(name = "la_ext_documentdetails")
@@ -74,10 +68,8 @@ public class MediaBasic implements Serializable {
     @JoinColumn(name = "partyid", insertable = false, updatable = false)
     private LaParty laParty;
 
-    //bi-directional many-to-one association to LaSpatialunitLand
-    @ManyToOne
-    @JoinColumn(name = "landid", insertable = false, updatable = false)
-    private ClaimBasic laSpatialunitLand;
+    @Column
+    private Long landid;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "parentuid")
@@ -102,6 +94,14 @@ public class MediaBasic implements Serializable {
 
     public void setDocumentid(Integer documentid) {
         this.documentid = documentid;
+    }
+
+    public Long getLandid() {
+        return landid;
+    }
+
+    public void setLandid(Long landid) {
+        this.landid = landid;
     }
 
     public Integer getCreatedby() {
@@ -184,15 +184,6 @@ public class MediaBasic implements Serializable {
         this.laParty = laParty;
     }
 
-    @JsonIgnore
-    public ClaimBasic getLaSpatialunitLand() {
-        return laSpatialunitLand;
-    }
-
-    public void setLaSpatialunitLand(ClaimBasic laSpatialunitLand) {
-        this.laSpatialunitLand = laSpatialunitLand;
-    }
-
     public List<MediaAttributeValue> getAttributes() {
         return attributes;
     }
@@ -200,97 +191,4 @@ public class MediaBasic implements Serializable {
     public void setAttributes(List<MediaAttributeValue> attributes) {
         this.attributes = attributes;
     }
-
-//    @Id
-//    private int gid;
-//
-//    @Column(name = "mediatype")
-//    private String mediaType;
-//
-//    @Column
-//    private Long usin;
-//    
-//    @Column(name = "dispute_id")
-//    private Long disputeId;
-//    
-//    @Column
-//    private Boolean active;
-//    
-//    @Column(name = "social_tenure_gid")
-//    private Integer rightId;
-//    
-//    @Column(name = "person_gid")
-//    private Long personId;
-//    
-//    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "parent_id")
-//    private List<MediaAttributeValue> attributes;
-//    
-//    public MediaBasic() {
-//        super();
-//    }
-//
-//    public int getGid() {
-//        return gid;
-//    }
-//
-//    public void setGid(int gid) {
-//        this.gid = gid;
-//    }
-//
-//    public String getMediaType() {
-//        return mediaType;
-//    }
-//
-//    public void setMediaType(String mediaType) {
-//        this.mediaType = mediaType;
-//    }
-//
-//    public Long getUsin() {
-//        return usin;
-//    }
-//
-//    public void setUsin(Long usin) {
-//        this.usin = usin;
-//    }
-//
-//    public Long getDisputeId() {
-//        return disputeId;
-//    }
-//
-//    public void setDisputeId(Long disputeId) {
-//        this.disputeId = disputeId;
-//    }
-//
-//    public Boolean getActive() {
-//        return active;
-//    }
-//
-//    public void setActive(Boolean active) {
-//        this.active = active;
-//    }
-//
-//    public Integer getRightId() {
-//        return rightId;
-//    }
-//
-//    public void setRightId(Integer rightId) {
-//        this.rightId = rightId;
-//    }
-//
-//    public Long getPersonId() {
-//        return personId;
-//    }
-//
-//    public void setPersonId(Long personId) {
-//        this.personId = personId;
-//    }
-//
-//    public List<MediaAttributeValue> getAttributes() {
-//        return attributes;
-//    }
-//
-//    public void setAttributes(List<MediaAttributeValue> attributes) {
-//        this.attributes = attributes;
-//    }
 }

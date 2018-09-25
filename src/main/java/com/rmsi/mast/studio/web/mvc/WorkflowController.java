@@ -39,398 +39,341 @@ import com.rmsi.mast.studio.service.WorkflowActionService;
 import com.rmsi.mast.studio.service.WorkflowService;
 import com.rmsi.mast.viewer.service.LaExtRegistrationLandShareTypeService;
 
-
 @Controller
 public class WorkflowController {
 
-	
-	 @Autowired
-	 private WorkflowService  workflowService;
-	
-	
-	 @Autowired
-	 private UserService userService;
-	 
-	 
-	 @Autowired
-	 private WorkflowActionService workflowActionService;
-	 
-	 
-	 @Autowired
-	 WorkflowStatusHistoryDAO  workflowStatusHistoryDAO;
-	 
-	 @Autowired
-	 ProjectDAO projectDAO;
-	
-	@Autowired
-	SpatialUnitDao spatialUnitDao;
-	
-	
-     @Autowired
-	 private SpatialUnitService spatialUnitService;
-	
-	 @Autowired
-	 private ProjectRegionService  projectRegionService;
-	 
-	 
-	 @Autowired
-	 private ProjectAreaService projectAreaService;
-	 
-	 
-	 @Autowired
-	 private ClaimBasicService claimBasicService;
-	 
-	 
-	 @Autowired
-	 private LaExtRegistrationLandShareTypeService laExtRegistrationLandShareTypeService;
+    @Autowired
+    private WorkflowService workflowService;
 
+    @Autowired
+    private UserService userService;
 
-	private Timestamp date;
-	 
-	 
-	@RequestMapping(value = "/viewer/landrecords/workflow", method = RequestMethod.GET)
+    @Autowired
+    private WorkflowActionService workflowActionService;
+
+    @Autowired
+    WorkflowStatusHistoryDAO workflowStatusHistoryDAO;
+
+    @Autowired
+    ProjectDAO projectDAO;
+
+    @Autowired
+    SpatialUnitDao spatialUnitDao;
+
+    @Autowired
+    private SpatialUnitService spatialUnitService;
+
+    @Autowired
+    private ProjectRegionService projectRegionService;
+
+    @Autowired
+    private ProjectAreaService projectAreaService;
+
+    @Autowired
+    private ClaimBasicService claimBasicService;
+
+    @Autowired
+    private LaExtRegistrationLandShareTypeService laExtRegistrationLandShareTypeService;
+
+    private Timestamp date;
+
+    @RequestMapping(value = "/viewer/landrecords/workflow", method = RequestMethod.GET)
     @ResponseBody
     public List<Workflow> getWorkflow() {
         return workflowService.getAllWorkflow();
     }
-	
-	
-	
-	 @RequestMapping(value = "/viewer/landrecords/workflowAction/{id}/{project}/{landid}", method = RequestMethod.GET)
-     @ResponseBody
-     public List<WorkflowActionmapping> getworkflowAction(@PathVariable String id, @PathVariable String project,@PathVariable Long landid, Principal principal) {
-		User objuser= userService.findByUniqueName( principal.getName());
-		Integer roleid =objuser.getUserRole().iterator().next().getRoleBean().getRoleid();
-	    Project objproject= projectDAO.findByName(project);
-	   Integer workflowdefId= objproject.getWorkflowdefid();
-	   
-	   List<WorkflowActionmapping>  lst= workflowActionService.getWorkflowActionmapping(Integer.parseInt(id), roleid ,workflowdefId);
-	
-	   return lst;
-	   
-		
-	 }
-	 
-	 
-	 
-	 
-	 @RequestMapping(value = "/viewer/landrecords/action/approve/{land}/{workflowId}", method = RequestMethod.POST)
-		@ResponseBody
-		public Integer actionApprove(@PathVariable Long land, @PathVariable Integer workflowId, Principal principal,HttpServletRequest request, HttpServletResponse response) {
 
-			
-			
-			String comments="";
-			try {
-				comments = ServletRequestUtils.getRequiredStringParameter(request, "commentsStatusWorkflow");
-			} catch (ServletRequestBindingException e) {
-				
-			}
+    @RequestMapping(value = "/viewer/landrecords/workflowAction/{id}/{project}/{landid}", method = RequestMethod.GET)
+    @ResponseBody
+    public List<WorkflowActionmapping> getworkflowAction(@PathVariable String id, @PathVariable String project, @PathVariable Long landid, Principal principal) {
+        User objuser = userService.findByUniqueName(principal.getName());
+        Integer roleid = objuser.getUserRole().iterator().next().getRoleBean().getRoleid();
 
-			String username = principal.getName();
-			User user = userService.findByUniqueName(username);
-			long userid = user.getId();
-			return workflowActionService.actionApprove(land, userid,workflowId,comments);
-			
+        List<WorkflowActionmapping> lst = workflowActionService.getWorkflowActionmapping(Integer.parseInt(id), roleid);
 
-		}
-	 
-	 
-	 @RequestMapping(value = "/viewer/landrecords/action/reject/{land}/{workflowId}", method = RequestMethod.POST)
-		@ResponseBody
-		public Integer actionReject(@PathVariable Long land, @PathVariable Integer workflowId, Principal principal,HttpServletRequest request, HttpServletResponse response) {
+        return lst;
+    }
 
-			
-			
-			String comments="";
-			try {
-				comments = ServletRequestUtils.getRequiredStringParameter(request, "commentsStatusWorkflow");
-			} catch (ServletRequestBindingException e) {
-				
-			}
+    @RequestMapping(value = "/viewer/landrecords/action/approve/{land}/{workflowId}", method = RequestMethod.POST)
+    @ResponseBody
+    public Integer actionApprove(@PathVariable Long land, @PathVariable Integer workflowId, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 
-			String username = principal.getName();
-			User user = userService.findByUniqueName(username);
-			long userid = user.getId();
-			return workflowActionService.actionReject(land, userid,workflowId,comments);
-			
+        String comments = "";
+        try {
+            comments = ServletRequestUtils.getRequiredStringParameter(request, "commentsStatusWorkflow");
+        } catch (ServletRequestBindingException e) {
 
-		}
-	 
-	 
-	 
-	 @RequestMapping(value = "/viewer/landrecords/action/register/{land}/{workflowId}", method = RequestMethod.POST)
-		@ResponseBody
-		public Integer actionRegister(@PathVariable Long land, @PathVariable Integer workflowId, Principal principal,HttpServletRequest request, HttpServletResponse response) {
+        }
 
-			
-			
-			String comments="";
-			try {
-				comments = ServletRequestUtils.getRequiredStringParameter(request, "commentsStatusWorkflow");
-			} catch (ServletRequestBindingException e) {
-				
-			}
+        String username = principal.getName();
+        User user = userService.findByUniqueName(username);
+        long userid = user.getId();
+        return workflowActionService.actionApprove(land, userid, workflowId, comments);
 
-			String username = principal.getName();
-			User user = userService.findByUniqueName(username);
-			Long userid = user.getId();
-			
-			if(workflowId==4){
+    }
 
-				String  _userDefineparcelnum="";
+    @RequestMapping(value = "/viewer/landrecords/action/reject/{land}/{workflowId}", method = RequestMethod.POST)
+    @ResponseBody
+    public Integer actionReject(@PathVariable Long land, @PathVariable Integer workflowId, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 
-				try {
-					ClaimBasic spatialUnit = spatialUnitService.getClaimsBasicByLandId(land).get(0);
-					if(null!=spatialUnit){
+        String comments = "";
+        try {
+            comments = ServletRequestUtils.getRequiredStringParameter(request, "commentsStatusWorkflow");
+        } catch (ServletRequestBindingException e) {
 
-						ProjectArea objProjectArea= projectAreaService.findProjectAreaByProjectId(spatialUnit.getProjectnameid()); 
+        }
 
-						if(null!=objProjectArea && null!=objProjectArea.getLaSpatialunitgroupHierarchy1()){
+        String username = principal.getName();
+        User user = userService.findByUniqueName(username);
+        long userid = user.getId();
+        return workflowActionService.actionReject(land, userid, workflowId, comments);
 
-							_userDefineparcelnum=_userDefineparcelnum+objProjectArea.getLaSpatialunitgroupHierarchy1().getAreaCode() ;
-						}
+    }
 
-						if(null!=objProjectArea && null!=objProjectArea.getLaSpatialunitgroupHierarchy2()){
+    @RequestMapping(value = "/viewer/landrecords/action/register/{land}/{workflowId}", method = RequestMethod.POST)
+    @ResponseBody
+    public Integer actionRegister(@PathVariable Long land, @PathVariable Integer workflowId, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 
-							_userDefineparcelnum=_userDefineparcelnum+objProjectArea.getLaSpatialunitgroupHierarchy2().getAreaCode() ;
-						}
+        String comments = "";
+        try {
+            comments = ServletRequestUtils.getRequiredStringParameter(request, "commentsStatusWorkflow");
+        } catch (ServletRequestBindingException e) {
 
-						if(null!=objProjectArea && null!=objProjectArea.getLaSpatialunitgroupHierarchy3()){
+        }
 
-							_userDefineparcelnum=_userDefineparcelnum+objProjectArea.getLaSpatialunitgroupHierarchy3().getAreaCode() ;
+        String username = principal.getName();
+        User user = userService.findByUniqueName(username);
+        Long userid = user.getId();
 
-						}
-						_userDefineparcelnum=_userDefineparcelnum+spatialUnit.getLandid();
+        if (workflowId == 4) {
 
-						spatialUnit.setUdparcelno(_userDefineparcelnum);
-						
-						Date date=new Date();
-						Timestamp timestamp = new Timestamp(date.getTime());
-						
-						spatialUnit.setModifieddate(timestamp);
+            String _userDefineparcelnum = "";
 
-						claimBasicService.saveClaimBasicDAO(spatialUnit);
+            try {
+                ClaimBasic spatialUnit = spatialUnitService.getClaimsBasicByLandId(land).get(0);
+                if (null != spatialUnit) {
 
-					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+                    ProjectArea objProjectArea = projectAreaService.findProjectAreaByProjectId(spatialUnit.getProjectnameid());
 
-			}
+                    if (null != objProjectArea && null != objProjectArea.getLaSpatialunitgroupHierarchy1()) {
 
+                        _userDefineparcelnum = _userDefineparcelnum + objProjectArea.getLaSpatialunitgroupHierarchy1().getAreaCode();
+                    }
 
-			int i= workflowActionService.actionRegister(land, userid,workflowId,comments);
-			if(i>0){
-				
-				ClaimBasic spatialUnit = spatialUnitService.getClaimsBasicByLandId(land).get(0);
-				
-				LaExtRegistrationLandShareType objLaExtRegistrationLandShareType = new LaExtRegistrationLandShareType();
-				objLaExtRegistrationLandShareType.setLandid(spatialUnit.getLandid());
-				objLaExtRegistrationLandShareType.setLandsharetypeid((long)spatialUnit.getLaRightLandsharetype().getLandsharetypeid());
-				objLaExtRegistrationLandShareType.setIsactive(true);
-				objLaExtRegistrationLandShareType.setCreateddate(new Date());
-				objLaExtRegistrationLandShareType.setCreatedby(userid.intValue());
-				try{
-				laExtRegistrationLandShareTypeService.addLaExtRegistrationLandShareType(objLaExtRegistrationLandShareType);
-				}catch(Exception e){
-					e.printStackTrace();
-					return 0;
-				}
-			}
-			return 1;
-			
+                    if (null != objProjectArea && null != objProjectArea.getLaSpatialunitgroupHierarchy2()) {
 
-		}
-	
-	 
-	    @RequestMapping(value = "/viewer/landrecords/action/verify/{land}/{workflowId}", method = RequestMethod.POST)
-		@ResponseBody
-		public Integer actionVerification(@PathVariable Long land, @PathVariable Integer workflowId, Principal principal,HttpServletRequest request, HttpServletResponse response) {
+                        _userDefineparcelnum = _userDefineparcelnum + objProjectArea.getLaSpatialunitgroupHierarchy2().getAreaCode();
+                    }
 
-			
-			
-			String comments="";
-			try {
-				comments = ServletRequestUtils.getRequiredStringParameter(request, "commentsStatusWorkflow");
-			} catch (ServletRequestBindingException e) {
-				
-			}
+                    if (null != objProjectArea && null != objProjectArea.getLaSpatialunitgroupHierarchy3()) {
 
-			String username = principal.getName();
-			User user = userService.findByUniqueName(username);
-			long userid = user.getId();
-			return workflowActionService.actionVerification(land, userid,workflowId,comments);
-			
+                        _userDefineparcelnum = _userDefineparcelnum + objProjectArea.getLaSpatialunitgroupHierarchy3().getAreaCode();
 
-		}
-	 
-	    @RequestMapping(value = "/viewer/landrecords/action/delete/{land}/{workflowId}", method = RequestMethod.POST)
-		@ResponseBody
-		public Integer actionDelete(@PathVariable Long land, @PathVariable Integer workflowId, Principal principal,HttpServletRequest request, HttpServletResponse response) {
+                    }
+                    _userDefineparcelnum = _userDefineparcelnum + spatialUnit.getLandid();
 
-			
-			
-			String comments="";
-			try {
-				comments = ServletRequestUtils.getRequiredStringParameter(request, "commentsStatusWorkflow");
-			} catch (ServletRequestBindingException e) {
-				
-			}
+                    spatialUnit.setUdparcelno(_userDefineparcelnum);
 
-			String username = principal.getName();
-			User user = userService.findByUniqueName(username);
-			long userid = user.getId();
-			return workflowActionService.actiondelete(land, userid,workflowId,comments);
-			
+                    Date date = new Date();
+                    Timestamp timestamp = new Timestamp(date.getTime());
 
-		}
-	    
-	    
-	    @RequestMapping(value = "/viewer/landrecords/workflow/comment/{land}", method = RequestMethod.POST)
-		@ResponseBody
-		public List<WorkflowStatusHistory> getWorkflowStatusHistory(@PathVariable Long land)
-		{
-	    	List<WorkflowStatusHistory> lstWorkflowStatusHistory= new ArrayList<WorkflowStatusHistory>();
-	    	lstWorkflowStatusHistory =workflowStatusHistoryDAO.getWorkflowStatusHistoryBylandId(land);
-	    	if(lstWorkflowStatusHistory.size()>0)
-	    	{
-	    	
-	    		for(WorkflowStatusHistory objWorkflowStatusHistory :lstWorkflowStatusHistory)
-	    		{
-	    			
-	    			User objuser=userService.findUserByUserId(objWorkflowStatusHistory.getUserid());
-	    			objWorkflowStatusHistory.setUser(objuser);
-	    		}
-	    		
-	    	}
-	    	return lstWorkflowStatusHistory;
-	    	
-		}
-	
-	    
-	    @RequestMapping(value = "/viewer/landrecords/action/getUserParcel/{land}", method = RequestMethod.GET)
-	  		@ResponseBody
-	  		public UserParcel getUserParcel(@PathVariable Long land, Principal principal,HttpServletRequest request, HttpServletResponse response) {
-	  	    	
-	  	    	UserParcel objUserParcel = new UserParcel();
-	  	    	
-	  	   	 try {
-	  				ClaimBasic spatialUnit = spatialUnitService.getClaimsBasicByLandId(land).get(0);
-	  				 if(null!=spatialUnit){
-	  					 
-	  					 ProjectArea objProjectArea= projectAreaService.findProjectAreaByProjectId(spatialUnit.getProjectnameid()); 
-	  					 
-	  					 if(null!=objProjectArea && null!=objProjectArea.getLaSpatialunitgroupHierarchy1()){
-	  						 
-	  						 objUserParcel.setHierarchy1(objProjectArea.getLaSpatialunitgroupHierarchy1().getAreaCode());
-	  					 }
-	  					 
-	  					 if(null!=objProjectArea && null!=objProjectArea.getLaSpatialunitgroupHierarchy2()){
-	  						 
-	  						 objUserParcel.setHierarchy2(objProjectArea.getLaSpatialunitgroupHierarchy2().getAreaCode());
-	  					 }
-	  					 
-	  				    if(null!=objProjectArea && null!=objProjectArea.getLaSpatialunitgroupHierarchy3()){
-	  						 
-	  				    	 objUserParcel.setHierarchy3(objProjectArea.getLaSpatialunitgroupHierarchy3().getAreaCode());
-	  					
-	  				    }
-	  				    
-	  				    if(spatialUnit.getUdparcelno()==""){
-	  				    objUserParcel.setLandid(spatialUnit.getLandid());
-	  				    }else{
-	  				    
-	  				    	String str=	spatialUnit.getUdparcelno();
-	  				    	StringBuilder sb = new StringBuilder();
-	  				    	for (int i = str.length() - 1; i >= 0; i --) {
-	  				    	    char c = str.charAt(i);
-	  				    	    if (Character.isDigit(c)) {
-	  				    	        sb.insert(0, c);
-	  				    	    } else {
-	  				    	        break;
-	  				    	    }
-	  				    	}
-	  				    	String result = sb.toString();
-	  				    	 objUserParcel.setLandid(Long.parseLong(result)); 
-	  				    
-	  				    }
+                    spatialUnit.setModifieddate(timestamp);
 
-	  				    
-	  					 
-	  				 }
-	  			} catch (Exception e) {
-	  				// TODO Auto-generated catch block
-	  				e.printStackTrace();
-	  			}
-	  	   	 
-	  	   	 
-	  	    	return objUserParcel;
-	  	    	
-	  	    }
+                    claimBasicService.saveClaimBasicDAO(spatialUnit);
 
-	  	   
-	  		 @RequestMapping(value = "/viewer/landrecords/action/savenewparcel/{land}", method = RequestMethod.POST)
-	  			@ResponseBody
-	  			public boolean updateParcel(@PathVariable Long land, Principal principal,HttpServletRequest request, HttpServletResponse response) {
+                }
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 
-	  				
-	  				
-	  				String hierarchy1="";
-	  				String hierarchy2="";
-	  				String hierarchy3="";
-	  				String parcelId="";
-	  				
-	  				String userDefineParcel="";
-	  				try {
-	  					hierarchy1 = ServletRequestUtils.getRequiredStringParameter(request, "hierarchy1");
-	  					userDefineParcel=userDefineParcel+hierarchy1;
-	  				} catch (ServletRequestBindingException e) {
-	  					
-	  				}
-	  				
-	  			
-	  				try {
-	  					hierarchy2 = ServletRequestUtils.getRequiredStringParameter(request, "hierarchy1");
-	  					userDefineParcel=userDefineParcel+hierarchy2;
-	  				} catch (ServletRequestBindingException e) {
-	  					
-	  				}
+        }
 
-	  				
-	  				
-	  				try {
-	  					hierarchy3 = ServletRequestUtils.getRequiredStringParameter(request, "hierarchy1");
-	  					userDefineParcel=userDefineParcel+hierarchy3;
-	  				} catch (ServletRequestBindingException e) {
-	  					
-	  				}
+        int i = workflowActionService.actionRegister(land, userid, workflowId, comments);
+        if (i > 0) {
 
-	  				try {
-	  					parcelId = ServletRequestUtils.getRequiredStringParameter(request, "parcelId");
-	  					userDefineParcel=userDefineParcel+parcelId;
-	  				} catch (ServletRequestBindingException e) {
-	  					
-	  				}
-	  				
-	  				
-	  				try{
-	  				 ClaimBasic spatialUnit = spatialUnitService.getClaimsBasicByLandId(land).get(0);
-	  				 if(null!=spatialUnit){
-	  					 spatialUnit.setUdparcelno(userDefineParcel);
-	  					 claimBasicService.saveClaimBasicDAO(spatialUnit);
-	  				 }
-	  				
-	  				}catch(Exception e){
-	  					e.printStackTrace();
-	  					return false;
-	  				}
-	  				 
-	  				
-	  				
-	  				return true;
+            ClaimBasic spatialUnit = spatialUnitService.getClaimsBasicByLandId(land).get(0);
 
-	  			}
-	  		 
+            LaExtRegistrationLandShareType objLaExtRegistrationLandShareType = new LaExtRegistrationLandShareType();
+            objLaExtRegistrationLandShareType.setLandid(spatialUnit.getLandid());
+            objLaExtRegistrationLandShareType.setLandsharetypeid((long) spatialUnit.getLaRightLandsharetype().getLandsharetypeid());
+            objLaExtRegistrationLandShareType.setIsactive(true);
+            objLaExtRegistrationLandShareType.setCreateddate(new Date());
+            objLaExtRegistrationLandShareType.setCreatedby(userid.intValue());
+            try {
+                laExtRegistrationLandShareTypeService.addLaExtRegistrationLandShareType(objLaExtRegistrationLandShareType);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return 0;
+            }
+        }
+        return 1;
+
+    }
+
+    @RequestMapping(value = "/viewer/landrecords/action/verify/{land}/{workflowId}", method = RequestMethod.POST)
+    @ResponseBody
+    public Integer actionVerification(@PathVariable Long land, @PathVariable Integer workflowId, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+
+        String comments = "";
+        try {
+            comments = ServletRequestUtils.getRequiredStringParameter(request, "commentsStatusWorkflow");
+        } catch (ServletRequestBindingException e) {
+
+        }
+
+        String username = principal.getName();
+        User user = userService.findByUniqueName(username);
+        long userid = user.getId();
+        return workflowActionService.actionVerification(land, userid, workflowId, comments);
+
+    }
+
+    @RequestMapping(value = "/viewer/landrecords/action/delete/{land}/{workflowId}", method = RequestMethod.POST)
+    @ResponseBody
+    public Integer actionDelete(@PathVariable Long land, @PathVariable Integer workflowId, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+
+        String comments = "";
+        try {
+            comments = ServletRequestUtils.getRequiredStringParameter(request, "commentsStatusWorkflow");
+        } catch (ServletRequestBindingException e) {
+
+        }
+
+        String username = principal.getName();
+        User user = userService.findByUniqueName(username);
+        long userid = user.getId();
+        return workflowActionService.actiondelete(land, userid, workflowId, comments);
+
+    }
+
+    @RequestMapping(value = "/viewer/landrecords/workflow/comment/{land}", method = RequestMethod.POST)
+    @ResponseBody
+    public List<WorkflowStatusHistory> getWorkflowStatusHistory(@PathVariable Long land) {
+        List<WorkflowStatusHistory> lstWorkflowStatusHistory = new ArrayList<WorkflowStatusHistory>();
+        lstWorkflowStatusHistory = workflowStatusHistoryDAO.getWorkflowStatusHistoryBylandId(land);
+        if (lstWorkflowStatusHistory.size() > 0) {
+
+            for (WorkflowStatusHistory objWorkflowStatusHistory : lstWorkflowStatusHistory) {
+
+                User objuser = userService.findUserByUserId(objWorkflowStatusHistory.getUserid());
+                objWorkflowStatusHistory.setUser(objuser);
+            }
+
+        }
+        return lstWorkflowStatusHistory;
+
+    }
+
+    @RequestMapping(value = "/viewer/landrecords/action/getUserParcel/{land}", method = RequestMethod.GET)
+    @ResponseBody
+    public UserParcel getUserParcel(@PathVariable Long land, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+
+        UserParcel objUserParcel = new UserParcel();
+
+        try {
+            ClaimBasic spatialUnit = spatialUnitService.getClaimsBasicByLandId(land).get(0);
+            if (null != spatialUnit) {
+
+                ProjectArea objProjectArea = projectAreaService.findProjectAreaByProjectId(spatialUnit.getProjectnameid());
+
+                if (null != objProjectArea && null != objProjectArea.getLaSpatialunitgroupHierarchy1()) {
+
+                    objUserParcel.setHierarchy1(objProjectArea.getLaSpatialunitgroupHierarchy1().getAreaCode());
+                }
+
+                if (null != objProjectArea && null != objProjectArea.getLaSpatialunitgroupHierarchy2()) {
+
+                    objUserParcel.setHierarchy2(objProjectArea.getLaSpatialunitgroupHierarchy2().getAreaCode());
+                }
+
+                if (null != objProjectArea && null != objProjectArea.getLaSpatialunitgroupHierarchy3()) {
+
+                    objUserParcel.setHierarchy3(objProjectArea.getLaSpatialunitgroupHierarchy3().getAreaCode());
+
+                }
+
+                if (spatialUnit.getUdparcelno() == "") {
+                    objUserParcel.setLandid(spatialUnit.getLandid());
+                } else {
+
+                    String str = spatialUnit.getUdparcelno();
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = str.length() - 1; i >= 0; i--) {
+                        char c = str.charAt(i);
+                        if (Character.isDigit(c)) {
+                            sb.insert(0, c);
+                        } else {
+                            break;
+                        }
+                    }
+                    String result = sb.toString();
+                    objUserParcel.setLandid(Long.parseLong(result));
+
+                }
+
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return objUserParcel;
+
+    }
+
+    @RequestMapping(value = "/viewer/landrecords/action/savenewparcel/{land}", method = RequestMethod.POST)
+    @ResponseBody
+    public boolean updateParcel(@PathVariable Long land, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+
+        String hierarchy1 = "";
+        String hierarchy2 = "";
+        String hierarchy3 = "";
+        String parcelId = "";
+
+        String userDefineParcel = "";
+        try {
+            hierarchy1 = ServletRequestUtils.getRequiredStringParameter(request, "hierarchy1");
+            userDefineParcel = userDefineParcel + hierarchy1;
+        } catch (ServletRequestBindingException e) {
+
+        }
+
+        try {
+            hierarchy2 = ServletRequestUtils.getRequiredStringParameter(request, "hierarchy1");
+            userDefineParcel = userDefineParcel + hierarchy2;
+        } catch (ServletRequestBindingException e) {
+
+        }
+
+        try {
+            hierarchy3 = ServletRequestUtils.getRequiredStringParameter(request, "hierarchy1");
+            userDefineParcel = userDefineParcel + hierarchy3;
+        } catch (ServletRequestBindingException e) {
+
+        }
+
+        try {
+            parcelId = ServletRequestUtils.getRequiredStringParameter(request, "parcelId");
+            userDefineParcel = userDefineParcel + parcelId;
+        } catch (ServletRequestBindingException e) {
+
+        }
+
+        try {
+            ClaimBasic spatialUnit = spatialUnitService.getClaimsBasicByLandId(land).get(0);
+            if (null != spatialUnit) {
+                spatialUnit.setUdparcelno(userDefineParcel);
+                claimBasicService.saveClaimBasicDAO(spatialUnit);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+
+    }
+
 }

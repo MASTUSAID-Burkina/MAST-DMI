@@ -21,6 +21,9 @@ public class PoiBasic implements Serializable {
 
     @Id
     private Long id;
+    
+    @Column
+    private Long landid;
 
     @Column(name = "first_name")
     private String firstName;
@@ -46,21 +49,9 @@ public class PoiBasic implements Serializable {
     
     @Column(name = "identityno")
     private String idNumber;
-    
-    @ManyToOne
-    @JoinColumn(name = "landid", insertable = false, updatable = false)
-    private ClaimBasic laSpatialunitLand;
-    
+  
     public PoiBasic(){
         
-    }
-
-    public ClaimBasic getLaSpatialunitLand() {
-        return laSpatialunitLand;
-    }
-
-    public void setLaSpatialunitLand(ClaimBasic laSpatialunitLand) {
-        this.laSpatialunitLand = laSpatialunitLand;
     }
 
     public Long getId() {
@@ -69,6 +60,14 @@ public class PoiBasic implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getLandid() {
+        return landid;
+    }
+
+    public void setLandid(Long landid) {
+        this.landid = landid;
     }
 
     public String getFirstName() {

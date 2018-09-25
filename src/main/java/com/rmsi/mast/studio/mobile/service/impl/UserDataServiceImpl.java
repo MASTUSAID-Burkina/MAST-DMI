@@ -36,6 +36,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.rmsi.mast.studio.dao.RelationshipTypeDao;
 import com.rmsi.mast.studio.dao.UserDAO;
+import com.rmsi.mast.studio.dao.WorkflowDAO;
+import com.rmsi.mast.studio.dao.WorkflowStatusHistoryDAO;
 import com.rmsi.mast.studio.domain.AcquisitionType;
 import com.rmsi.mast.studio.domain.AttributeMaster;
 import com.rmsi.mast.studio.domain.AttributeMasterResourcePOI;
@@ -130,6 +132,7 @@ import com.rmsi.mast.viewer.dao.LaExtTransactiondetailDao;
 import com.rmsi.mast.viewer.dao.LaPartyDao;
 import com.rmsi.mast.viewer.dao.ProjectRegionDao;
 import com.rmsi.mast.viewer.dao.SpatialUnitDeceasedPersonDao;
+import com.rmsi.mast.viewer.dao.StatusDAO;
 import com.rmsi.mast.viewer.service.RegistrationRecordsService;
 import com.vividsolutions.jts.io.WKTReader;
 
@@ -326,6 +329,14 @@ public class UserDataServiceImpl implements UserDataService {
     @Autowired
     ProjectRegionDao projRegionDao;
 
+    @Autowired
+    WorkflowStatusHistoryDAO workflowStatusHistoryDAO;
+
+    @Autowired
+    StatusDAO statusDAO;
+
+    @Autowired
+    WorkflowDAO workflowDAO;
 //    @Autowired
 //    DisputeBasicDAO disputeBasicDao;
     private static final Logger logger = Logger.getLogger(UserDataServiceImpl.class.getName());
@@ -464,7 +475,7 @@ public class UserDataServiceImpl implements UserDataService {
                 su.setImei(prop.getImei());
                 setPropAttibutes(su, prop);
 
-                su.setArea(geomConverter.getArea(prop.getCoordinates()));
+                su.setArea(su.getGeometry().getArea());
                 serverPropId = spatialUnitDao.addSpatialUnit(su).getLandid();
                 spatialUnitDao.clear();
 
@@ -480,6 +491,24 @@ public class UserDataServiceImpl implements UserDataService {
                 transaction.setRemarks("");
                 transaction.setProcessid(1l);
                 LaExtTransactiondetail LaExtTransactionObj = laExtTransactiondetailDao.addLaExtTransactiondetail(transaction);
+
+                // Add history
+                WorkflowStatusHistory sunitHistory = new WorkflowStatusHistory();
+                sunitHistory.setComments("");
+                sunitHistory.setCreatedby((int) userId);
+                sunitHistory.setIsactive(true);
+                sunitHistory.setLandid(serverPropId);
+                sunitHistory.setCreateddate(new Date());
+                sunitHistory.setUserid((int) userId);
+                sunitHistory.setStatuschangedate(new Date());
+                sunitHistory.setStatus(statusDAO.getStatusById(1));
+                if(su.getClaimtypeid() == 1){
+                    sunitHistory.setWorkflow(workflowDAO.getWorkflowByid(1));
+                } else {
+                    sunitHistory.setWorkflow(workflowDAO.getWorkflowByid(10));
+                }
+
+                workflowStatusHistoryDAO.addWorkflowStatusHistory(sunitHistory);
 
                 // Save property attributes
                 List<AttributeValues> attributes = createAttributesList(projectAttributes, prop.getAttributes());
@@ -539,7 +568,7 @@ public class UserDataServiceImpl implements UserDataService {
                         right.setIsactive(true);
 
                         setRightAttributes(right, prop.getRight());
-                        
+
                         SocialTenureRelationship socialTenurerelationship = socialTenureDao.addSocialTenure(right);
                         attributes = createAttributesList(projectAttributes, prop.getRight().getAttributes());
                         attributeValuesDao.addAttributeValues(attributes, socialTenurerelationship.getPersonlandid());
@@ -723,13 +752,13 @@ public class UserDataServiceImpl implements UserDataService {
         if (!StringUtils.isEmpty(propRight.getCertDate())) {
             right.setCertIssueDate(new SimpleDateFormat("yyyy-MM-dd").parse(propRight.getCertDate()));
         }
-        
+
         right.setCertNumber(propRight.getCertNumber());
-        
+
         if (propRight.getCertTypeId() != null && propRight.getCertTypeId() > 0) {
             right.setCertificatetypeid(propRight.getCertTypeId());
         }
-        
+
         right.setIsactive(true);
 
         for (Attribute attribute : propRight.getAttributes()) {
@@ -738,7 +767,7 @@ public class UserDataServiceImpl implements UserDataService {
 
             if (id == 12) {
                 right.setSharepercentage(value);
-            } 
+            }
         }
     }
 
@@ -833,7 +862,8 @@ public class UserDataServiceImpl implements UserDataService {
             } else if (id == 22) {
                 AttributeOptions attOptions = attributeOptionsDao.getAttributeOptionsId(Integer.parseInt(attribute.getValue()));
                 naturalPerson.setLaPartygroupMaritalstatus(maritalStatusDao.getMaritalStatusById(attOptions.getAttributeoptionsid()));
-            } if (id == 1155) {
+            }
+            if (id == 1155) {
                 if (!value.equalsIgnoreCase("")) {
                     AttributeOptions attOptions = attributeOptionsDao.getAttributeOptionsId(Integer.parseInt(attribute.getValue()));
                     naturalPerson.setLaPartygroupPersontype(personTypeDao.getPersonTypeById(attOptions.getParentid()));
@@ -868,16 +898,17 @@ public class UserDataServiceImpl implements UserDataService {
             } else if (id == 270) {
                 naturalPerson.setBirthPlace(attribute.getValue());
             } else if (id == 269) {
-                if(!StringUtils.isEmpty(attribute.getValue()) && !attribute.getValue().equals("0")){
-                    naturalPerson.setNopId(Integer.parseInt(attribute.getValue()));
+                if (!StringUtils.isEmpty(attribute.getValue()) && !attribute.getValue().equals("0")) {
+                    AttributeOptions attOptions = attributeOptionsDao.getAttributeOptionsId(Integer.parseInt(attribute.getValue()));
+                    naturalPerson.setNopId(attOptions.getParentid());
                 }
             } else if (id == 271) {
-                if(!StringUtils.isEmpty(attribute.getValue())){
+                if (!StringUtils.isEmpty(attribute.getValue())) {
                     Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(value);
                     naturalPerson.setIdCardDate(date1);
                 }
             } else if (id == 294) {
-                if(!StringUtils.isEmpty(attribute.getValue())){
+                if (!StringUtils.isEmpty(attribute.getValue())) {
                     Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(value);
                     naturalPerson.setMandateDate(date1);
                 }
@@ -927,8 +958,20 @@ public class UserDataServiceImpl implements UserDataService {
                 } else if (attribute.getId() == 13) {
                     parcel.setOccupancylength(Integer.parseInt(attribute.getValue()));
                 } else if (attribute.getId() == 16) {
-                    AttributeOptions attOptions = attributeOptionsDao.getAttributeOptionsId(Integer.parseInt(attribute.getValue()));
-                    parcel.setLaBaunitLandusetype(landUseTypeDao.getLandUseTypeBylandusetypeId(attOptions.getParentid()));
+                    if (!StringUtils.isEmpty(attribute.getValue())) {
+                        String[] landUses = attribute.getValue().split(",");
+                        String landUseCodes = "";
+
+                        for (String landUse : landUses) {
+                            AttributeOptions attrOption = attributeOptionsDao.getAttributeOptionsId(Integer.parseInt(landUse.trim()));
+                            if (landUseCodes.length() > 0) {
+                                landUseCodes += "," + attrOption.getParentid().toString();
+                            } else {
+                                landUseCodes = attrOption.getParentid().toString();
+                            }
+                        }
+                        parcel.setLandusetypeid(landUseCodes);
+                    }
                 } else if (attribute.getId() == 37) {
                     AttributeOptions attOptions = attributeOptionsDao.getAttributeOptionsId(Integer.parseInt(attribute.getValue()));
                     parcel.setLaBaunitLandtype(landTypeDao.getLandTypeBylandtypeId(attOptions.getParentid()));

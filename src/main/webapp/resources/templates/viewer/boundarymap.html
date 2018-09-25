@@ -1,0 +1,180 @@
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>MAST</title>
+    </head>
+    <body>
+        <div class="PrintWrapperLandScape">
+            <div class="personalDetails-wrap"
+                 style="border: 3px solid #333; border-bottom: none;">
+                <div class="topInfo  row-fluid" style="border-bottom: 3px solid #333;">
+                    <!-- <img src="resources/images/header.jpg" /> -->
+
+                    <div class="span4">
+                        <p class="text-left">
+                            <strong>REGION DU :<span class="text-org" id="region_boundary"></span></strong>
+                        </p>
+                        <p class="text-left">
+                            <strong>PROVINCE DU : <span class="text-org"
+                                                        id="province_boundary"> </span></strong>
+                        </p>
+
+
+                    </div>
+                    <div class="span4">
+                        <div class="commune_logo text-center">
+                            <!-- <img src="resources/images/viewer/commune.jpg" /> -->
+                        </div>
+                    </div>
+                    <div class="span4">
+                        <p class="text-left">
+                            <strong>COMMUNE DU : <span class="text-org" id="commune_boundary">
+                                </span></strong>
+                        </p>
+                        <p class="text-left">
+                            <strong>SERVICE FONCIER RURAL </strong>
+                        </p>
+                    </div>
+                </div>
+
+
+                <div class="personalDetails alt">
+                    <div class="map-container" style="border: 1px solid #333;">
+
+                        <p class="type text-center">
+                            <strong>CROQUIS DE DELIMITATION</strong>
+                        </p>
+                        <div style="overflow: hidden">
+                            <div class="CCROMap-area">
+
+                                <div id="boundary_map"></div>
+                                <img src="resources/images/compass.png" class="map-compass">
+                            </div>
+                            <div class="CCROMap-area-content">
+                                <p class="type">
+                                    <strong>COORDONNEES GEODESIQUES</strong>
+                                </p>
+                                <!--      <table class="amendbeforeAfterTable">
+<tr>
+<th>Point</th>
+<th>X</th>
+<th>Y</th>
+
+</tr>
+<tr><td>1</td>
+<td>756489,257</td>
+<td>1332451,192</td>
+</tr>
+<tr><td>2</td>
+<td>756572,193</td>
+<td>1332407,257</td>
+</tr>
+<tr><td>3</td>
+<td>756567,134</td>
+<td>1332347,132</td>
+</tr>
+<tr><td>4</td>
+<td>756484,814</td>
+<td>1332390,115</td>
+</tr>
+
+</table> -->
+                                <div id="vertexList">
+                                    <table class="amendbeforeAfterTable">
+
+                                        <tr>
+                                            <th>POINT</th>
+                                            <th>X</th>
+                                            <th>Y</th>
+                                        </tr>
+
+                                        <tbody id="vertexTableBody_map">
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <p class="type">
+                                    <strong>Voisin</strong>
+                                </p>
+                                <table class="amendbeforeAfterTable">
+                                    <tr>
+                                        <th>Lieu</th>
+                                        <th>Nom</th>
+
+                                    </tr>
+                                    <tbody id="neighbourTableBody">
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <p>
+                            Echelle <strong>1:800</strong>
+                        </p>
+
+
+                    </div>
+                </div>
+                <div class="personalDetails alt">
+                    <div class="map-container">
+                        <p class="text-center">
+                            <strong>TERRAIN SIS HORS LOTISSEMENT A <span
+                                    id="boudary_villagename"></span><br /> Popriétaire <span
+                                    id="boudary_name"></span><br /> Demande N°<span
+                                    id="boudary_application_no"></span></strong>
+                        </p>
+
+                        <p class="text-right">
+                            Levé et dressé le <span id="boudary_applicationdate"></span> par<br />
+                            Agent domanial<br /> du Service Foncier Rural
+                            de Boudry
+                        </p>
+
+                        <p class="text-center">
+                            <strong>Système de coordonnées UTM WGS 1984 Zone 30N</strong>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+        </div>
+        <div>
+            <button class="print_form" class="btn v-top-20" style="float: right"
+                    onclick="printForm();">Print</button>
+
+        </div>
+
+
+
+        <input id="usin_primerykey" value="" type="hidden">
+        <script id="vertexTable_map" type="text/x-jquery-tmpl">
+            <tr> 
+            <td>
+            ${index}
+            </td>                                                                       
+            <td>
+            ${x}
+            </td>
+
+            <td>
+            ${y}
+            </td>
+            </tr>
+        </script>
+
+        <script id="neighbourTable" type="text/x-jquery-tmpl">
+            <tr> 
+
+            <td>
+            ${location}
+            </td>
+            <td>
+            ${name}
+            </td>
+            </tr>
+        </script>
+    </body>
+</html>

@@ -107,15 +107,45 @@ public class ClaimBasic implements Serializable {
     private String udparcelno;
 
     private String other_use;
+   
+    @Column(name = "application_no")
+    private String appNum;
+
+    @Column(name = "pv_no")
+    private String pvNum;
+
+    @Column(name = "apfr_no")
+    private String apfrNum;
     
-    public String getOther_use() {
-        return other_use;
-    }
-
-    public void setOther_use(String other_use) {
-        this.other_use = other_use;
-    }
-
+    @Column
+    private Integer section;
+    
+    @Column(name = "parcel_no_in_section")
+    private Long parcelNoInSection;
+    
+    @Column(name = "noa_id")
+    private Integer noaId;
+    
+    @Column(name = "parcelno")
+    private String parcelNum;
+    
+    @Temporal(javax.persistence.TemporalType.DATE)
+    private Date applicationdate;
+    
+    @Temporal(javax.persistence.TemporalType.DATE)
+    private Date issuancedate;
+    
+    @Temporal(javax.persistence.TemporalType.DATE)
+    @Column(name = "public_notice_startdate")
+    private Date publicNoticeStartDate;
+    
+    @Temporal(javax.persistence.TemporalType.DATE)
+    @Column(name = "public_notice_enddate")
+    private Date publicNoticeEndDate;
+    
+    @Column(name = "registrationno")
+    private String registrationNum;
+    
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "parentuid")
     private List<ClaimAttributeValue> attributes;
@@ -126,10 +156,12 @@ public class ClaimBasic implements Serializable {
     @OneToMany(mappedBy = "laSpatialunitLand", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     List<RightBasic> rights;
     
-    @OneToMany(mappedBy = "laSpatialunitLand", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "landid")
     List<PoiBasic> pois;
 
-    @OneToMany(mappedBy = "laSpatialunitLand", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "landid")
     List<MediaBasic> media;
     //  
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -146,10 +178,8 @@ public class ClaimBasic implements Serializable {
     @JoinColumn(name = "landtypeid")
     private LandType laBaunitLandtype;
 
-    //bi-directional many-to-one association to LaBaunitLandusetype
-    @ManyToOne
-    @JoinColumn(name = "landusetypeid")
-    private LandUseType laBaunitLandusetype;
+    @Column
+    private String landusetypeid;
 
     //bi-directional many-to-one association to LaExtSlopevalue
     @ManyToOne
@@ -231,6 +261,10 @@ public class ClaimBasic implements Serializable {
     @JoinColumn(name = "hierarchyid6")
     private ProjectRegion laSpatialunitgroupHierarchy6;
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "usin")
+    List<SpatialUnitExtension> parcelExtensions;
+    
     private Integer occupancylength;
 
     private Integer tenureclassid;
@@ -241,6 +275,14 @@ public class ClaimBasic implements Serializable {
     public ClaimBasic() {
     }
 
+    public String getOther_use() {
+        return other_use;
+    }
+
+    public void setOther_use(String other_use) {
+        this.other_use = other_use;
+    }
+    
     public String getCoordinates() {
         return coordinates;
     }
@@ -295,6 +337,14 @@ public class ClaimBasic implements Serializable {
 
     public void setAttributes(List<ClaimAttributeValue> attributes) {
         this.attributes = attributes;
+    }
+
+    public String getLandusetypeid() {
+        return landusetypeid;
+    }
+
+    public void setLandusetypeid(String landusetypeid) {
+        this.landusetypeid = landusetypeid;
     }
 
     public List<DisputeBasic> getDisputes() {
@@ -463,14 +513,6 @@ public class ClaimBasic implements Serializable {
 
     public void setLaBaunitLandtype(LandType laBaunitLandtype) {
         this.laBaunitLandtype = laBaunitLandtype;
-    }
-
-    public LandUseType getLaBaunitLandusetype() {
-        return laBaunitLandusetype;
-    }
-
-    public void setLaBaunitLandusetype(LandUseType laBaunitLandusetype) {
-        this.laBaunitLandusetype = laBaunitLandusetype;
     }
 
     public SlopeValues getLaExtSlopevalue() {
@@ -653,5 +695,109 @@ public class ClaimBasic implements Serializable {
 
     public void setPois(List<PoiBasic> pois) {
         this.pois = pois;
+    }
+
+    public String getAppNum() {
+        return appNum;
+    }
+
+    public void setAppNum(String appNum) {
+        this.appNum = appNum;
+    }
+
+    public String getPvNum() {
+        return pvNum;
+    }
+
+    public void setPvNum(String pvNum) {
+        this.pvNum = pvNum;
+    }
+
+    public String getApfrNum() {
+        return apfrNum;
+    }
+
+    public void setApfrNum(String apfrNum) {
+        this.apfrNum = apfrNum;
+    }
+
+    public Integer getSection() {
+        return section;
+    }
+
+    public void setSection(Integer section) {
+        this.section = section;
+    }
+
+    public Long getParcelNoInSection() {
+        return parcelNoInSection;
+    }
+
+    public void setParcelNoInSection(Long parcelNoInSection) {
+        this.parcelNoInSection = parcelNoInSection;
+    }
+
+    public Integer getNoaId() {
+        return noaId;
+    }
+
+    public void setNoaId(Integer noaId) {
+        this.noaId = noaId;
+    }
+
+    public String getParcelNum() {
+        return parcelNum;
+    }
+
+    public void setParcelNum(String parcelNum) {
+        this.parcelNum = parcelNum;
+    }
+
+    public Date getApplicationdate() {
+        return applicationdate;
+    }
+
+    public void setApplicationdate(Date applicationdate) {
+        this.applicationdate = applicationdate;
+    }
+
+    public Date getIssuancedate() {
+        return issuancedate;
+    }
+
+    public void setIssuancedate(Date issuancedate) {
+        this.issuancedate = issuancedate;
+    }
+
+    public Date getPublicNoticeStartDate() {
+        return publicNoticeStartDate;
+    }
+
+    public void setPublicNoticeStartDate(Date publicNoticeStartDate) {
+        this.publicNoticeStartDate = publicNoticeStartDate;
+    }
+
+    public Date getPublicNoticeEndDate() {
+        return publicNoticeEndDate;
+    }
+
+    public void setPublicNoticeEndDate(Date publicNoticeEndDate) {
+        this.publicNoticeEndDate = publicNoticeEndDate;
+    }
+
+    public String getRegistrationNum() {
+        return registrationNum;
+    }
+
+    public void setRegistrationNum(String registrationNum) {
+        this.registrationNum = registrationNum;
+    }
+
+    public List<SpatialUnitExtension> getParcelExtensions() {
+        return parcelExtensions;
+    }
+
+    public void setParcelExtensions(List<SpatialUnitExtension> parcelExtensions) {
+        this.parcelExtensions = parcelExtensions;
     }
 }

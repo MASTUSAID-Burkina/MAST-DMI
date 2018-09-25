@@ -42,7 +42,7 @@ public interface ProjectService {
 	@Transactional
 	void updateProject(Project project);
 
-	Project findProjectById(Long id);
+	Project findProjectById(Integer id);
 	List<Project> findAllProjects();
         List<ProjectDetails> getAllProjectsDetails();
 	Project findProjectByName(String name);	

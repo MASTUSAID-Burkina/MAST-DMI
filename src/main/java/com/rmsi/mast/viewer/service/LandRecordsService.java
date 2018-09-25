@@ -1,6 +1,7 @@
 package com.rmsi.mast.viewer.service;
 
 import com.rmsi.mast.studio.domain.AcquisitionType;
+import com.rmsi.mast.studio.domain.ApplicationNature;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import com.rmsi.mast.studio.domain.LandType;
 import com.rmsi.mast.studio.domain.LandUseType;
 import com.rmsi.mast.studio.domain.MaritalStatus;
 import com.rmsi.mast.studio.domain.NaturalPerson;
+import com.rmsi.mast.studio.domain.NatureOfPower;
 import com.rmsi.mast.studio.domain.NonNaturalPerson;
 import com.rmsi.mast.studio.domain.OccupancyType;
 import com.rmsi.mast.studio.domain.Person;
@@ -38,6 +40,7 @@ import com.rmsi.mast.studio.domain.SourceDocument;
 import com.rmsi.mast.studio.domain.SpatialUnit;
 import com.rmsi.mast.studio.domain.Status;
 import com.rmsi.mast.studio.domain.TenureClass;
+import com.rmsi.mast.studio.domain.TitleType;
 import com.rmsi.mast.studio.domain.Unit;
 import com.rmsi.mast.studio.domain.fetch.AttributeValuesFetch;
 import com.rmsi.mast.studio.domain.fetch.ClaimProfile;
@@ -55,7 +58,6 @@ import com.rmsi.mast.studio.domain.fetch.ProjectDetails;
 import com.rmsi.mast.studio.domain.fetch.RegistryBook;
 import com.rmsi.mast.studio.domain.fetch.ReportCertificateFetch;
 import com.rmsi.mast.studio.domain.fetch.SpatialUnitBasic;
-import com.rmsi.mast.studio.domain.fetch.SpatialUnitGeom;
 import com.rmsi.mast.studio.domain.fetch.SpatialUnitTable;
 import com.rmsi.mast.studio.domain.fetch.SpatialUnitTemp;
 import com.rmsi.mast.studio.domain.fetch.SpatialunitDeceasedPerson;
@@ -110,20 +112,20 @@ public interface LandRecordsService {
     List<SpatialUnitTable> findSpatialUnitbyId(Long id);
 
     SpatialUnitBasic getSpatialUnitBasic(Long usin);
-    
+
     SpatialUnitTable getSpatialUnit(Long id);
-    
+
     SpatialUnit getParcelGeometry(long usin);
-    
+
     @Transactional
     boolean referClaim(SpatialUnitTable claim, long userId);
-    
+
     @Transactional
     boolean makeClaimValidated(SpatialUnitTable claim, long userId);
-    
+
     @Transactional
     boolean approveClaim(SpatialUnitTable claim, long userId);
-    
+
     /**
      * @return spatial Unit result from spatial_unit Table
      *
@@ -174,14 +176,12 @@ public interface LandRecordsService {
     @Transactional
     NaturalPerson editnatural(NaturalPerson naturalPerson);
 
-    
     @Transactional
     NonNaturalPerson addNonNaturalPerson(NonNaturalPerson nonNaturalPerson);
-    
-    
+
     @Transactional
     NaturalPerson updateNaturalPersonDataForEdit(NaturalPerson np);
-    
+
     /**
      * @return MaritalStatus obj
      * @param Marital_Id
@@ -208,7 +208,7 @@ public interface LandRecordsService {
      *
      */
     List<SocialTenureRelationship> findAllSocialTenureByUsin(Long id);
-    
+
     List<SocialTenureRelationship> findBatchAllSocialTenureByUsin(Long transid);
 
     /**
@@ -217,7 +217,7 @@ public interface LandRecordsService {
      *
      */
     List<NonNaturalPerson> nonnaturalPersonById(Long id);
-    
+
     NonNaturalPerson getNonNaturalPersonBy(Long id);
 
     /**
@@ -273,7 +273,7 @@ public interface LandRecordsService {
      *
      */
     List<SocialTenureRelationship> findSocialTenureByGid(Integer id);
-    
+
     SocialTenureRelationship getSocialTenure(Integer id);
 
     /**
@@ -290,13 +290,13 @@ public interface LandRecordsService {
     List<SourceDocument> findMultimediaByUsin(Long id);
 
     List<Dispute> getDisputes(long usin);
-    
+
     List<DisputeType> getDisputeTypes();
-    
+
     DisputeType getDisputeType(int code);
-    
+
     Dispute getDispute(long id);
-    
+
     /**
      * @return All SourceDocument
      *
@@ -430,9 +430,9 @@ public interface LandRecordsService {
     List<AcquisitionType> findAllAcquisitionTypes();
 
     List<DocumentType> getDocumentTypes();
-    
+
     DocumentType getDocumentType(long code);
-    
+
     /**
      * @return AcquisitionType Object
      * @param code
@@ -671,6 +671,7 @@ public interface LandRecordsService {
      *
      */
     SourceDocument getdocumentByPerson(Long person_gid);
+
     SourceDocument getdocumentByPersonfortransaction(Long transactionid, Long personid);
 
     /**
@@ -729,7 +730,7 @@ public interface LandRecordsService {
      * @return List<Personwithinterest>
      */
     List<SpatialunitPersonwithinterest> findpersonInterestByUsin(Long usin);
-    
+
     SpatialunitPersonwithinterest getPoi(Long id);
 
     /**
@@ -753,7 +754,7 @@ public interface LandRecordsService {
      * @return list<usin> to generate UKA
      */
     List<Long> findUsinforUKAGeneration(String project, String hamletCode);
-    
+
     String findNextUkaNumber(String ukaPrefix);
 
     /**
@@ -818,91 +819,105 @@ public interface LandRecordsService {
      * @return All ID types
      */
     List<IdType> getIdTypes();
-    
+
     IdType getIdType(int code);
-    
+
     @Transactional
     Dispute updateDispute(Dispute dispute);
-    
+
     @Transactional
     boolean deleteDispute(Dispute dispute);
-    
+
     @Transactional
     boolean resolveDispute(Dispute dispute);
-    
+
     @Transactional
     boolean deleteDisputant(Long disputeId, Long partyId);
-   
+
     List<ClaimSummary> getClaimsForAdjudicationForms(Long usin, int startRecord, int endRecord, int statusId, String projectName);
-    
+
     List<ClaimSummary> getClaimsForCcro(Long usin, int startRecord, int endRecord, String projectName);
-    
+
     ProjectDetails getProjectDetails(String projectName);
-    
+
     List<RegistryBook> getRegistryBook(String projectName, long usin);
-    
+
     ClaimProfile getClaimsProfile(String projectName);
-    
+
     List<PersonForEditing> getPersonsForEditing(String projectName, long usin, String firstName, String lastName, String middleName, String idNumber, Integer claimNumber, String neighbourN, String neighbourS, String neighbourE, String neighbourW);
-    
+
     PersonForEditing updatePersonForEditing(PersonForEditing pfe) throws Exception;
-    
-    
-    
+
     List<SpatialUnitTemp> AllSpatialUnitTemp(Integer id);
-    
-    List<LaSpatialunitLand> findAllSpatialUnitTemp_P(String defaultProject, int startfrom);
-    
-    
-    List<LaSpatialunitLand> search(Long status, Integer claimType, String project, String communeId,String transId,String parcelId,Integer startpos);
 
-	List<ReportCertificateFetch> getCertificatedetailsbytransactionid(Long usin);
-	
-	List<Object> findsummaryreport(String project);
+    List<LaSpatialunitLand> search(String lang, Integer claimType, int project, String parcelId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int appStatus, Integer startpos);
 
-	List<Object> findprojectdetailedsummaryreport(String project);
-	List<Object> findprojectapplicationstatussummaryreport(String project);
-	List<Object> findprojectapplicationtypesummaryreport(String project);
-	List<Object> findprojectdetailedsummaryreportForCommune(String communeid);
-	List<Object> findprojectworkflowsummaryreport(String project);
-	List<ReportCertificateFetch> getCertificatedetailsinbatch(Long startRecord,Long endRecord);   
-	List<Object> findprojectTenureTypesLandUnitsummaryreport(String project);		
-    Integer getTotalrecordByProject(String project);
-    
-    Integer  searchCount(Long status, Integer claimType, String project,String communeId,String transId,String parcelId);
-    
-    
-    Integer spatialUnitWorkflowCount(int[] workflow_ids,int[] claim_ids,int[] status_ids, String project);
-    
-    List<LaSpatialunitLand> getspatialUnitWorkFlowResult(int[] workflow_ids,int[] claim_ids,int[] status_ids, Integer startfrom, String project);
+    List<ReportCertificateFetch> getCertificatedetailsbytransactionid(Long usin);
 
-	List<OwnerHistoryForFetch>  getownerhistorydetails(Long landid);
+    List<Object> findsummaryreport(String project);
+
+    List<Object> findprojectdetailedsummaryreport(String project);
+
+    List<Object> findprojectapplicationstatussummaryreport(String project);
+
+    List<Object> findprojectapplicationtypesummaryreport(String project);
+
+    List<Object> findprojectdetailedsummaryreportForCommune(String communeid);
+
+    List<Object> findprojectworkflowsummaryreport(String project);
+
+    List<ReportCertificateFetch> getCertificatedetailsinbatch(Long startRecord, Long endRecord);
+
+    List<Object> findprojectTenureTypesLandUnitsummaryreport(String project);
+
+    Integer getTotalrecordByProject(int project);
+
+    Integer searchCount(Integer claimType, int project, String parcelId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int appStatus);
+
+    Integer spatialUnitWorkflowCount(int[] workflow_ids, int project);
+
+    List<LaSpatialunitLand> getspatialUnitWorkFlowResult(String lang, int[] workflow_ids, Integer startfrom, int project);
+
+    List<OwnerHistoryForFetch> getownerhistorydetails(Long landid);
 
     @Transactional
-	String checkruntopologychecks(String projectName);
-	List<LeaseHistoryForFetch>  getleasehistorydetails(Long landid);
-	List<MortageHistoryForFetch>  getmortagagedetails(Long landid);
-	List<TransactionHistoryForFetch>  gettransactiondetails(Long landid);
-	List<LeaseHistoryForFetch>  findleasedetailbylandid(Long transactionid,Long landid);
-	List<LeaseHistoryForFetch>  findsurrenderleasedetailbylandid(Long transactionid,Long landid);
-	List<MortageHistoryForFetch>  findmortagagedetailbylandid(Long transactionid,Long landid);
-	List<MortageHistoryForFetch>  findSurrendermortagagedetailbylandid(Long transactionid,Long landid);
-	List<UploadedDocumentDetailsForFetch>  viewdocumentdetailbytransactioid(Long transactionid);
-	
-	List<DataCorrectionReport> getDataCorrectionReport(Long transactionid,Long landId);
-	
-	List<DataCorrectionReport> getBatchDataCorrectionReport(Long transactionid);
-	List<PoiReport> getDataCorrectionReportPOI(Long transactionid,Long landId);
-	
-	List<PoiReport> getBatchDataCorrectionReportPOI(Long transactionidstart,Long transactionidend);
+    String checkruntopologychecks(String projectName);
 
-	List<PersonsReport> getDataCorrectionPersonsReport(Long transactionid,Long landId);
-	
-	List<PersonsReport> getBatchDataCorrectionPersonsReport(Long transactionidstart,Long transactionidend);
+    List<LeaseHistoryForFetch> getleasehistorydetails(Long landid);
 
-	
-	List<FarmReport> getFarmReportByLandId(Long landId);
+    List<MortageHistoryForFetch> getmortagagedetails(Long landid);
 
-	List<Object> findLiberiaFarmummaryreport(String project);
+    List<TransactionHistoryForFetch> gettransactiondetails(Long landid);
+
+    List<LeaseHistoryForFetch> findleasedetailbylandid(Long transactionid, Long landid);
+
+    List<LeaseHistoryForFetch> findsurrenderleasedetailbylandid(Long transactionid, Long landid);
+
+    List<MortageHistoryForFetch> findmortagagedetailbylandid(Long transactionid, Long landid);
+
+    List<MortageHistoryForFetch> findSurrendermortagagedetailbylandid(Long transactionid, Long landid);
+
+    List<UploadedDocumentDetailsForFetch> viewdocumentdetailbytransactioid(Long transactionid);
+
+    List<DataCorrectionReport> getDataCorrectionReport(Long transactionid, Long landId);
+
+    List<DataCorrectionReport> getBatchDataCorrectionReport(Long transactionid);
+
+    List<PoiReport> getDataCorrectionReportPOI(Long transactionid, Long landId);
+
+    List<PoiReport> getBatchDataCorrectionReportPOI(Long transactionidstart, Long transactionidend);
+
+    List<PersonsReport> getDataCorrectionPersonsReport(Long transactionid, Long landId);
+
+    List<PersonsReport> getBatchDataCorrectionPersonsReport(Long transactionidstart, Long transactionidend);
+
+    List<FarmReport> getFarmReportByLandId(Long landId);
+
+    List<Object> findLiberiaFarmummaryreport(String project);
     
+    List<ApplicationNature> getApplicationNatures();
+    
+    List<NatureOfPower> getNatureOfPowers();
+    
+    List<TitleType> getTitleTypes();
 }

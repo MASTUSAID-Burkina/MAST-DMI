@@ -435,7 +435,7 @@ LANGUAGES.fr = {
     "reg-workflow-stage": "FR_Workflow Stage",
     "reg-app-stage": "FR_Application Stage",
     "reg-workflow-comments-summ": "FR_Workflow Comments History",
-    "reg-tran-type": "FR_Transaction Type",
+    "reg-tran-type": "FR_Parcel Type",
     "reg-app-status": "FR_Application Status",
     "reg-land-occupant": "FR_Land Occupant",
     "reg-update-user-parcel-num": "FR_Update User Define parcel Number",

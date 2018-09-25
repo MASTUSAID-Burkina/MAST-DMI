@@ -8,7 +8,7 @@ import com.rmsi.mast.studio.domain.Project;
 import com.rmsi.mast.studio.domain.fetch.ProjectData;
 import com.rmsi.mast.studio.domain.fetch.ProjectDetails;
 
-public interface ProjectDAO extends GenericDAO<Project, Long> {
+public interface ProjectDAO extends GenericDAO<Project, Integer> {
 	
 	Project findByName(String name);
 	Project findByProjectId(Integer name);

@@ -26,7 +26,6 @@ import org.hibernate.annotations.GenerationTime;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vividsolutions.jts.geom.Geometry;
 
-//import org.postgis.Geometry;
 /**
  * Entity implementation class for Entity: SpatialUnit
  *
@@ -35,21 +34,13 @@ import com.vividsolutions.jts.geom.Geometry;
 @Table(name = "la_spatialunit_land")
 public class SpatialUnit implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
-//    private static final long serialVersionUID = 1L;
     @Id
     @SequenceGenerator(name = "pk_la_spatialunit_land", sequenceName = "la_spatialunit_land_landid_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pk_la_spatialunit_land")
     private Long landid;
 
-    /*	 @SequenceGenerator(name = "la_spatialunit_land_id_seq", sequenceName = "la_spatialunit_land_id_seq", allocationSize = 1)
-	 @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "la_spatialunit_land_id_seq")
-	 @Column(name = "id")
-	 private Integer id;*/
     @Column(name = "ogc_fid")
     private Integer ogc_fid;
 
@@ -68,8 +59,6 @@ public class SpatialUnit implements Serializable {
     @Column(name = "geometrytype")
     private String geometrytype;
 
-//	@Column(name="hierarchyid6")
-//	private Integer hierarchyid6;
     @Column
     private String imei;
 
@@ -101,21 +90,51 @@ public class SpatialUnit implements Serializable {
 
     private Integer workflowstatusid;
 
-    /*@ManyToOne
-	@JoinColumn(name="projectnameid")*/
     private Integer projectnameid;
 
-//	@Column(name="spatialunitgroupid6")
-//	private Integer spatialunitgroupid6;
     @Temporal(TemporalType.DATE)
     private Date surveydate;
 
     private String other_use;
 
-//  @ManyToOne
-//	@JoinColumn(name="tenureclassid")
-//	private TenureClass laRightTenureclass;
-//  
+    @Column(name = "application_no")
+    private String appNum;
+
+    @Column(name = "pv_no")
+    private String pvNum;
+
+    @Column(name = "apfr_no")
+    private String apfrNum;
+    
+    @Column
+    private Integer section;
+    
+    @Column(name = "parcel_no_in_section")
+    private Long parcelNoInSection;
+    
+    @Column(name = "noa_id")
+    private Integer noaId;
+    
+    @Column(name = "parcelno")
+    private String parcelNum;
+    
+    @Temporal(javax.persistence.TemporalType.DATE)
+    private Date applicationdate;
+    
+    @Temporal(javax.persistence.TemporalType.DATE)
+    private Date issuancedate;
+    
+    @Temporal(javax.persistence.TemporalType.DATE)
+    @Column(name = "public_notice_startdate")
+    private Date publicNoticeStartDate;
+    
+    @Temporal(javax.persistence.TemporalType.DATE)
+    @Column(name = "public_notice_enddate")
+    private Date publicNoticeEndDate;
+    
+    @Column(name = "registrationno")
+    private String registrationNum;
+    
     public String getOther_use() {
         return other_use;
     }
@@ -124,32 +143,10 @@ public class SpatialUnit implements Serializable {
         this.other_use = other_use;
     }
 
-//  @Column(name = "the_geom", columnDefinition = "Geometry")
-//  private Geometry theGeom;
-//  @Column(columnDefinition = "geometry(LineString,4326)")
-//  private LineString line;
-//
-//  @Column(columnDefinition = "geometry(Point,4326)")
-//  private Point point;
-//
-// 
-//	
-//  @Column(columnDefinition = "geometry(Polygon,4326)")
-//  private Polygon polygon;
-    //bi-directional many-to-one association to LaExtDisputelandmapping
-    /*@OneToMany(mappedBy="laSpatialunitLand")
-	private List<LaExtDisputelandmapping> laExtDisputelandmappings;
-     */
-    //bi-directional many-to-one association to LaExtDocumentdetail
-//	@OneToMany(mappedBy="laSpatialunitLand")
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "landid")
     private List<SourceDocument> laExtDocumentdetails;
 
-    //bi-directional many-to-one association to LaExtPersonlandmapping
-    /*@OneToMany(mappedBy="laSpatialunitLand")
-	private List<SocialTenureRelationship> laExtPersonlandmappings;
-     */
     //bi-directional many-to-one association to LaBaunitLandsoilquality
     @ManyToOne
     @JoinColumn(name = "landsoilqualityid")
@@ -160,10 +157,8 @@ public class SpatialUnit implements Serializable {
     @JoinColumn(name = "landtypeid")
     private LandType laBaunitLandtype;
 
-    //bi-directional many-to-one association to LaBaunitLandusetype
-    @ManyToOne
-    @JoinColumn(name = "landusetypeid")
-    private LandUseType laBaunitLandusetype;
+    @Column
+    private String landusetypeid;
 
     //bi-directional many-to-one association to LaExtSlopevalue
     @ManyToOne
@@ -180,8 +175,6 @@ public class SpatialUnit implements Serializable {
     @JoinColumn(name = "acquisitiontypeid")
     private AcquisitionType laRightAcquisitiontype;
 
-//	 @Formula("get_coordinates(the_geom)")
-//   private String geometryformula;
     @Column(name = "claimtypeid")
     private Integer claimtypeid;
 
@@ -190,11 +183,6 @@ public class SpatialUnit implements Serializable {
     @JoinColumn(name = "landsharetypeid")
     private ShareType laRightLandsharetype;
 
-    //bi-directional many-to-one association to LaRightTenureclass
-    /*@ManyToOne
-	@JoinColumn(name="tenureclassid")
-	private TenureClass laRightTenureclass;
-     */
     //bi-directional many-to-one association to LaSpatialunitgroup
     @ManyToOne
     @JoinColumn(name = "spatialunitgroupid1")
@@ -432,14 +420,6 @@ public class SpatialUnit implements Serializable {
         this.surveydate = surveydate;
     }
 
-    /*	public List<LaExtDisputelandmapping> getLaExtDisputelandmappings() {
-		return laExtDisputelandmappings;
-	}
-
-	public void setLaExtDisputelandmappings(
-			List<LaExtDisputelandmapping> laExtDisputelandmappings) {
-		this.laExtDisputelandmappings = laExtDisputelandmappings;
-	}*/
     public List<SourceDocument> getLaExtDocumentdetails() {
         return laExtDocumentdetails;
     }
@@ -448,14 +428,6 @@ public class SpatialUnit implements Serializable {
         this.laExtDocumentdetails = laExtDocumentdetails;
     }
 
-    /*public List<SocialTenureRelationship> getLaExtPersonlandmappings() {
-		return laExtPersonlandmappings;
-	}
-
-	public void setLaExtPersonlandmappings(
-			List<SocialTenureRelationship> laExtPersonlandmappings) {
-		this.laExtPersonlandmappings = laExtPersonlandmappings;
-	}*/
     public SoilQualityValues getLaBaunitLandsoilquality() {
         return laBaunitLandsoilquality;
     }
@@ -472,12 +444,12 @@ public class SpatialUnit implements Serializable {
         this.laBaunitLandtype = laBaunitLandtype;
     }
 
-    public LandUseType getLaBaunitLandusetype() {
-        return laBaunitLandusetype;
+    public String getLandusetypeid() {
+        return landusetypeid;
     }
 
-    public void setLaBaunitLandusetype(LandUseType laBaunitLandusetype) {
-        this.laBaunitLandusetype = laBaunitLandusetype;
+    public void setLandusetypeid(String landusetypeid) {
+        this.landusetypeid = landusetypeid;
     }
 
     public SlopeValues getLaExtSlopevalue() {
@@ -661,13 +633,103 @@ public class SpatialUnit implements Serializable {
         this.geomStr = geomStr;
     }
 
-    /*public Integer getId() {
-		return id;
-	}
+    public String getAppNum() {
+        return appNum;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}*/
+    public void setAppNum(String appNum) {
+        this.appNum = appNum;
+    }
+
+    public String getPvNum() {
+        return pvNum;
+    }
+
+    public void setPvNum(String pvNum) {
+        this.pvNum = pvNum;
+    }
+
+    public String getApfrNum() {
+        return apfrNum;
+    }
+
+    public void setApfrNum(String apfrNum) {
+        this.apfrNum = apfrNum;
+    }
+
+    public Integer getSection() {
+        return section;
+    }
+
+    public void setSection(Integer section) {
+        this.section = section;
+    }
+
+    public Long getParcelNoInSection() {
+        return parcelNoInSection;
+    }
+
+    public void setParcelNoInSection(Long parcelNoInSection) {
+        this.parcelNoInSection = parcelNoInSection;
+    }
+
+    public Integer getNoaId() {
+        return noaId;
+    }
+
+    public void setNoaId(Integer noaId) {
+        this.noaId = noaId;
+    }
+
+    public String getParcelNum() {
+        return parcelNum;
+    }
+
+    public void setParcelNum(String parcelNum) {
+        this.parcelNum = parcelNum;
+    }
+
+    public Date getApplicationdate() {
+        return applicationdate;
+    }
+
+    public void setApplicationdate(Date applicationdate) {
+        this.applicationdate = applicationdate;
+    }
+
+    public Date getIssuancedate() {
+        return issuancedate;
+    }
+
+    public void setIssuancedate(Date issuancedate) {
+        this.issuancedate = issuancedate;
+    }
+
+    public Date getPublicNoticeStartDate() {
+        return publicNoticeStartDate;
+    }
+
+    public void setPublicNoticeStartDate(Date publicNoticeStartDate) {
+        this.publicNoticeStartDate = publicNoticeStartDate;
+    }
+
+    public Date getPublicNoticeEndDate() {
+        return publicNoticeEndDate;
+    }
+
+    public void setPublicNoticeEndDate(Date publicNoticeEndDate) {
+        this.publicNoticeEndDate = publicNoticeEndDate;
+    }
+
+    public String getRegistrationNum() {
+        return registrationNum;
+    }
+
+    public void setRegistrationNum(String registrationNum) {
+        this.registrationNum = registrationNum;
+    }
+
+    
     public Integer getOgc_fid() {
         return ogc_fid;
     }

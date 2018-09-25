@@ -18,10 +18,10 @@ public class ClaimType implements Serializable {
      */
     private static final long serialVersionUID = 1L;
     // private static final long serialVersionUID = 1L;
-    public static final String CODE_NEW = "newClaim";
-    public static final String CODE_EXISTING = "existingClaim";
+    public static final String CODE_NEW = "1";
+    public static final String CODE_EXISTING = "2";
     public static final String CODE_DISPUTED = "dispute";
-    public static final String CODE_UNCLAIMED = "unclaimed";
+    public static final String CODE_UNCLAIMED = "5";
 
     @Id
     @Column(name = "claimtypeid")

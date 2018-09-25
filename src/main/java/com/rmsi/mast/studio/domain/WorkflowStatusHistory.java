@@ -5,21 +5,7 @@ import java.util.Date;
 
 import javax.persistence.*;
 
-/**
- * Entity implementation class for Entity: WorkflowStatusHistory
- *
-package model;
 
-import java.io.Serializable;
-import javax.persistence.*;
-import java.sql.Timestamp;
-import java.util.Date;
-
-
-/**
- * The persistent class for the la_ext_landworkflowhistory database table.
- * 
- */
 @Entity
 @Table(name="la_ext_landworkflowhistory")
 public class WorkflowStatusHistory implements Serializable {

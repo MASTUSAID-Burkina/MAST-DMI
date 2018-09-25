@@ -6,92 +6,96 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Set;
 
-
 /**
  * The persistent class for the la_ext_workflow database table.
- * 
+ *
  */
 @Entity
-@Table(name="la_ext_workflow")
+@Table(name = "la_ext_workflow")
 public class Workflow implements Serializable {
-	private static final long serialVersionUID = 1L;
 
-	@Id
-	private Integer workflowid;
+    private static final long serialVersionUID = 1L;
 
-	private Boolean isactive;
+    @Id
+    private Integer workflowid;
 
-	private String workflow;
+    private Boolean isactive;
 
-	@Column(name="workflow_en")
-	private String workflowEn;
+    private String workflow;
 
-	private Integer workfloworder;
-	
-	@ManyToOne
-	@JoinColumn(name="workflowdefid")
-	private LaExtWorkflowdef laExtWorkflowdef;
-	
-	
+    @Column(name = "workflow_en")
+    private String workflowEn;
 
-	//bi-directional many-to-one association to LaExtWorkflowactionmapping
-	@OneToMany(mappedBy="workflow", fetch=FetchType.EAGER)
-	@javax.persistence.OrderBy("worder")
-	@JsonIgnore
-	private Set<WorkflowActionmapping> workflowactionmappings;
+    private Integer workfloworder;
 
-	public Integer getWorkflowid() {
-		return workflowid;
-	}
+    @Column(name = "claim_type")
+    private Integer claimType;
+    
+    @ManyToOne
+    @JoinColumn(name = "workflowdefid")
+    private LaExtWorkflowdef laExtWorkflowdef;
 
-	public void setWorkflowid(Integer workflowid) {
-		this.workflowid = workflowid;
-	}
+    //bi-directional many-to-one association to LaExtWorkflowactionmapping
+    @OneToMany(mappedBy = "workflow", fetch = FetchType.EAGER)
+    @javax.persistence.OrderBy("worder")
+    @JsonIgnore
+    private Set<WorkflowActionmapping> workflowactionmappings;
 
-	public Boolean getIsactive() {
-		return isactive;
-	}
+    public Integer getWorkflowid() {
+        return workflowid;
+    }
 
-	public void setIsactive(Boolean isactive) {
-		this.isactive = isactive;
-	}
+    public void setWorkflowid(Integer workflowid) {
+        this.workflowid = workflowid;
+    }
 
-	public String getWorkflow() {
-		return workflow;
-	}
+    public Boolean getIsactive() {
+        return isactive;
+    }
 
-	public void setWorkflow(String workflow) {
-		this.workflow = workflow;
-	}
+    public void setIsactive(Boolean isactive) {
+        this.isactive = isactive;
+    }
 
-	public String getWorkflowEn() {
-		return workflowEn;
-	}
+    public String getWorkflow() {
+        return workflow;
+    }
 
-	public void setWorkflowEn(String workflowEn) {
-		this.workflowEn = workflowEn;
-	}
+    public void setWorkflow(String workflow) {
+        this.workflow = workflow;
+    }
 
-	public Integer getWorkfloworder() {
-		return workfloworder;
-	}
+    public String getWorkflowEn() {
+        return workflowEn;
+    }
 
-	public void setWorkfloworder(Integer workfloworder) {
-		this.workfloworder = workfloworder;
-	}
+    public void setWorkflowEn(String workflowEn) {
+        this.workflowEn = workflowEn;
+    }
 
-	public Set<WorkflowActionmapping> getWorkflowactionmappings() {
-		return workflowactionmappings;
-	}
+    public Integer getWorkfloworder() {
+        return workfloworder;
+    }
 
-	public void setWorkflowactionmappings(
-			Set<WorkflowActionmapping> workflowactionmappings) {
-		this.workflowactionmappings = workflowactionmappings;
-	}
+    public void setWorkfloworder(Integer workfloworder) {
+        this.workfloworder = workfloworder;
+    }
 
-	
-	
-	
-	
-	
+    public Set<WorkflowActionmapping> getWorkflowactionmappings() {
+        return workflowactionmappings;
+    }
+
+    public void setWorkflowactionmappings(
+            Set<WorkflowActionmapping> workflowactionmappings) {
+        this.workflowactionmappings = workflowactionmappings;
+    }
+
+    public Integer getClaimType() {
+        return claimType;
+    }
+
+    public void setClaimType(Integer claimType) {
+        this.claimType = claimType;
+    }
+
 }

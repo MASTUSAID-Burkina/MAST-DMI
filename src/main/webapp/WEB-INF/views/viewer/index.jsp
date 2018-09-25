@@ -119,7 +119,9 @@
         <link rel="stylesheet"
               href="<c:url value="resources/styles/viewer/jsgrid-theme.min.css" />"
               type="text/css" media="screen, projection" />
-
+        <link rel="stylesheet"
+            href="<c:url value="resources/styles/viewer/jquery.multiselect.css" />"
+            type="text/css" media="screen, projection" />
         <!--[if IE 7]>  
         <link rel="stylesheet"
                 href="<c:url value="resources/styles/viewer/ie7.css" />"

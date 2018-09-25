@@ -17,7 +17,7 @@ public class WorkflowHibernateDAO   extends GenericHibernateDAO<Workflow, Long> 
 	public List<Workflow> getAllWorkflow() {
 	
 		List<Workflow> lstWorkflow= new ArrayList<Workflow>();
-		String queryString = "select w from Workflow w   where w.isactive= true  and w.workflowid!=6 order by w.workfloworder";
+		String queryString = "select w from Workflow w   where w.isactive= true order by w.claimType, w.workfloworder";
 		
 		try {
 			lstWorkflow= getEntityManager().createQuery(queryString).getResultList();

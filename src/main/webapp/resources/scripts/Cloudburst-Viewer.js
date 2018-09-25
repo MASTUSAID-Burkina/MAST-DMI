@@ -1,4 +1,4 @@
-(function() {
+(function () {
     /**
      * Before creating the Cloudburst namespace, check to see if
      * Cloudburst.singleFile is true.  This occurs if the
@@ -7,7 +7,7 @@
      * Cloudburst.js and Cloudburst/SingleFile.js.
      */
     var singleFile = (typeof Cloudburst == "object" && Cloudburst.singleFile);
-    
+
     /**
      * Relative path of this script.
      */
@@ -47,21 +47,23 @@
          * Returns:
          * {String} Path to this script
          */
-        _getScriptLocation: (function() {
+        _getScriptLocation: (function () {
             var r = new RegExp("(^|(.*?\\/))(" + scriptName + ")(\\?|$)"),
-                s = document.getElementsByTagName('script'),
-                src, m, l = "";
-            for(var i=0, len=s.length; i<len; i++) {
+                    s = document.getElementsByTagName('script'),
+                    src, m, l = "";
+            for (var i = 0, len = s.length; i < len; i++) {
                 src = s[i].getAttribute('src');
-                if(src) {
+                if (src) {
                     var m = src.match(r);
-                    if(m) {
+                    if (m) {
                         l = m[1];
                         break;
                     }
                 }
             }
-            return (function() { return l; });
+            return (function () {
+                return l;
+            });
         })()
     };
 
@@ -75,99 +77,94 @@
      * When we *are* part of a SFL build we do not dynamically include the 
      * Cloudburst library code as it will be appended at the end of this file.
      */
-    if(!singleFile) {
+    if (!singleFile) {
         if (!jsFiles) {
             jsFiles = [
-               "/cloudburst/viewer/util.js",
-               "/cloudburst/viewer/jsts.min.js",
-               "/cloudburst/viewer/turf.min.js",
-               //"openlayers/OpenLayers.js",
-               //"openlayers/Watermark.js",
-               // "openlayers/MapQuestOSM.js",
-               // "openlayers/LayerSwitcherNew.js",
-               
-               "openlayers/ol-debug.js",
-              // "openlayers/UndoRedo.js",
-               "jquery-1.8.3/jquery-1.8.3.min.js",               
-               "jquery-1.6.3/jquery.cookie.js",
-               "jquery-1.6.3/jquery.formHints.js",
-               "jquery-ui-1.12.1/jquery-ui.min.js",
-               "jquery-i18n/jquery.i18n.js",
-               "jquery-localize/jquery.localize.js",
-               "jquery-meerkat/jquery.meerkat.1.3.min.js",
-               "jquery-tmpl/jquery.tmpl.min.js",
-               "jquery-alert/jquery.alerts.js",
-               "jquery.a-tools/jquery.a-tools-1.5.2.min.js",
-               "jquery-tiptip/jquery.tipTip.js",
-               "jquery-timeout/js/timeoutwindow.js",
-               "msdropdown/js/jquery.dd.js",               
-               "contextmenu/jquery.contextMenu.js",
-               "qtip2/jquery.qtip.min.js",
-               "jqGrid/jquery.jqGrid.min.js",
-               "dynatree/jquery.dynatree.js",
-               "jcarousel/lib/jquery.jcarousel.js",
-               "jquery-dropdown/js/jquery.ui.dropdown.js",
-               "jquery-spinner/ui.spinner.js",
-               "colorpicker/js/colorpicker.js",
-               "xmljs/tinyxmldom.js",
-               "xmljs/tinyxmlw3cdom.js",
-               "xmljs/tinyxmlsax.js",
-               "xmljs/tinyxmlxpath.js",               
-               "tablesorter/jquery.tablesorter.min.js",
-               "tablesorter/addons/pager/jquery.tablesorter.pager.js",
-               "tablesorter/addons/filter/jquery.tablesorter.filer.js",
-               "jquery-validate/jquery.validate.js",
-               "jquery-form/jquery.form.js",
-               "/cloudburst/viewer/Base64.js",
-               "/cloudburst/Constant.js",
-               "/cloudburst/SpatialVue_Constants.js",
-               "/cloudburst/viewer/Common.js",
-               "/cloudburst/viewer/Viewer.js",
-               "/cloudburst/viewer/Toolbar.js",
-               "/cloudburst/viewer/Navi.js",
+                "/cloudburst/viewer/util.js",
+                "/cloudburst/viewer/jsts.min.js",
+                "/cloudburst/viewer/turf.min.js",
+                "/cloudburst/Constant.js",
+                "openlayers/ol-debug.js",
+                "jquery-1.8.3/jquery-1.8.3.min.js",
+                "jquery-1.6.3/jquery.cookie.js",
+                "jquery-1.6.3/jquery.formHints.js",
+                "jquery-ui-1.12.1/jquery-ui.min.js",
+                "jquery-i18n/jquery.i18n.js",
+                "jquery-localize/jquery.localize.js",
+                "jquery-meerkat/jquery.meerkat.1.3.min.js",
+                "jquery-tmpl/jquery.tmpl.min.js",
+                "jquery-alert/jquery.alerts.js",
+                "jquery.a-tools/jquery.a-tools-1.5.2.min.js",
+                "jquery-tiptip/jquery.tipTip.js",
+                "jquery-timeout/js/timeoutwindow.js",
+                "msdropdown/js/jquery.dd.js",
+                "contextmenu/jquery.contextMenu.js",
+                "qtip2/jquery.qtip.min.js",
+                "jqGrid/jquery.jqGrid.min.js",
+                "dynatree/jquery.dynatree.js",
+                "jcarousel/lib/jquery.jcarousel.js",
+                "jquery-dropdown/js/jquery.ui.dropdown.js",
+                "jquery-spinner/ui.spinner.js",
+                "colorpicker/js/colorpicker.js",
+                "xmljs/tinyxmldom.js",
+                "xmljs/tinyxmlw3cdom.js",
+                "xmljs/tinyxmlsax.js",
+                "xmljs/tinyxmlxpath.js",
+                "tablesorter/jquery.tablesorter.min.js",
+                "tablesorter/addons/pager/jquery.tablesorter.pager.js",
+                "tablesorter/addons/filter/jquery.tablesorter.filer.js",
+                "jquery-validate/jquery.validate.js",
+                "jquery-form/jquery.form.js",
+                "/cloudburst/viewer/Base64.js",
+                "/cloudburst/Constant.js",
+                "/cloudburst/SpatialVue_Constants.js",
+                "/cloudburst/viewer/Common.js",
+                "/cloudburst/viewer/Viewer.js",
+                "/cloudburst/viewer/Toolbar.js",
+                "/cloudburst/viewer/Navi.js",
                 "/cloudburst/viewer/Search.js",
                 "/cloudburst/viewer/ZoomToXY.js",
-              "/cloudburst/viewer/ExportData.js",
-              "/cloudburst/viewer/Bookmark.js",
-               "/cloudburst/viewer/SaveProject.js",
-               "/cloudburst/viewer/Selection.js",
-               "/cloudburst/viewer/Query1.js",
-               "/cloudburst/viewer/Result.js",
-               "/cloudburst/viewer/LayerManager.js",
-               "/cloudburst/viewer/SaveQuery.js",
-               "/cloudburst/viewer/Thematic.js",
-               "/cloudburst/viewer/measure.js",
-			   "/cloudburst/viewer/Print.js",
-              //"/cloudburst/viewer/Info.js",
-               "/cloudburst/viewer/Maptip.js",
-               "/cloudburst/viewer/Markup.js",
-               "/cloudburst/viewer/DynaLayers.js",
-               "/cloudburst/viewer/FileUpload.js",
-               "/cloudburst/viewer/TextStyle.js",
-               "/cloudburst/viewer/Editing.js",
-               "/cloudburst/viewer/TaskManager.js",
-               //"/cloudburst/viewer/OpenProject.js",
-               "/cloudburst/viewer/ExportMap.js",               
-               "mtl-script/osgridref.js",
-               "/cloudburst/viewer/UserProjects.js",
-               "/cloudburst/viewer/LandRecords.js",
-               "/cloudburst/viewer/RegistrationRecords.js",
-			    "/cloudburst/viewer/resource.js",
-               "/cloudburst/viewer/mapLoader.js",
+                "/cloudburst/viewer/ExportData.js",
+                "/cloudburst/viewer/Bookmark.js",
+                "/cloudburst/viewer/SaveProject.js",
+                "/cloudburst/viewer/Selection.js",
+                "/cloudburst/viewer/Query1.js",
+                "/cloudburst/viewer/Result.js",
+                "/cloudburst/viewer/LayerManager.js",
+                "/cloudburst/viewer/SaveQuery.js",
+                "/cloudburst/viewer/Thematic.js",
+                "/cloudburst/viewer/measure.js",
+                "/cloudburst/viewer/Print.js",
+                "/cloudburst/viewer/Form.js",
+                "/cloudburst/viewer/Maptip.js",
+                "/cloudburst/viewer/Markup.js",
+                "/cloudburst/viewer/DynaLayers.js",
+                "/cloudburst/viewer/FileUpload.js",
+                "/cloudburst/viewer/TextStyle.js",
+                "/cloudburst/viewer/Editing.js",
+                "/cloudburst/viewer/TaskManager.js",
+                "/cloudburst/viewer/boundaryMap.js",
+                "/cloudburst/viewer/ExportMap.js",
+                "mtl-script/osgridref.js",
+                "/cloudburst/viewer/UserProjects.js",
+                "/cloudburst/viewer/LandRecords.js",
+                "/cloudburst/viewer/RegistrationRecords.js",
+                "/cloudburst/viewer/resource.js",
+                "/cloudburst/viewer/mapLoader.js",
                 "/cloudburst/viewer/mapImage.js",
-                "/cloudburst/viewer/proj4js-combined.js",
+                "/cloudburst/viewer/proj4.js",
                 "/cloudburst/viewer/Intersection.js",
-                "jsgrid/jsgrid.min.js"
-			  
-               
-            ]; // etc.
+                "jsgrid/jsgrid.min.js",
+                "/cloudburst/viewer/jquery.multiselect.js",
+                "/cloudburst/viewer/AreaMap.js"
+            ]; 
         }
 
         var scriptTags = new Array(jsFiles.length);
         var host = Cloudburst._getScriptLocation() + "resources/scripts/";
-        for (var i=0, len=jsFiles.length; i<len; i++) {
+        for (var i = 0, len = jsFiles.length; i < len; i++) {
             scriptTags[i] = "<script src='" + host + jsFiles[i] +
-                                   "'></script>"; 
+                    "'></script>";
         }
         if (scriptTags.length > 0) {
             document.write(scriptTags.join(""));

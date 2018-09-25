@@ -306,7 +306,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	//@Cacheable(cacheName = "projectFBNCache")
-	public Project findProjectById(Long id) {
+	public Project findProjectById(Integer id) {
 		return projectDAO.findById(id, false);
 
 	}

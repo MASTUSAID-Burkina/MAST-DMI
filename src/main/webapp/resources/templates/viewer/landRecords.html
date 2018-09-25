@@ -33,15 +33,57 @@
         });
     });
     $(function () {
-        $("#land_type,#other_use,#neighbor_north,#neighbor_east,#neighbor_west,#neighbor_south,#tenureclass_id,#tenure_type,#tenureDuration,#existing_use,#proposed_use,#aquisition_id,#area").on('change', function () {
-            $(this).addClass('addBg');
-            $("#parcelsavebutton").prop("disabled", false).show();
+        $("#land_type,#other_use,#neighbor_north,#neighbor_east,#neighbor_west,#neighbor_south,#tenure_type,#tenureDuration,#existing_use,#proposed_use,#aquisition_id,#area").on('change', function () {
+            //$(this).addClass('addBg');
+            //$("#parcelsavebutton").prop("disabled", false).show();
 
         });
     })
 </script>
 
+<style>
+    .mapAlign {
+        width: 260px;
+        float: left;
+        border: 1px solid #c5dbec;
+    }
 
+    .mapHeading {
+        border-bottom: 1px solid #c5dbec;
+        text-align: center;
+        font-weight: bold;
+        line-height: 30px;
+        color: #114477;
+        background: #e7eff8;
+    }
+
+    .setVertexTable {
+        width: 380px;
+        margin-left: 16px;
+        float: left;
+    }
+
+    .btn1.padding0 {
+        padding: 0 12px;
+        float: right;
+    }
+
+    .vertexTableAlign {
+        line-height: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #114477;
+    }
+
+    .amendbeforeAfterTable {
+        width: 100%;
+        border-right: 1px solid #c5dbec;
+        border-bottom: 1px solid #c5dbec;
+        background: #fff;
+        margin-bottom: 10px;
+    }
+
+</style>
 
 <div class="container-fluid">
 
@@ -61,26 +103,47 @@
                     <form id="landrecordsform" action="" onsubmit="return false;">
                         <table class="filter-details"  class="no-sort">
                             <tr>
+                                <td>
+                                    <label data-i18n="reg-parcel-id"></label>
+                                    <input type="text" name="parce_id" id="parce_id" value="" onkeypress="return checkNumber(event)" style="width:80px;">
+                                </td>
 
                                 <td>
-                                    <label data-i18n="reg-communinty"></label>
-                                    <select name="community_id" id="community_id" class="input-medium">
+                                    <label data-i18n="reg-app-number"></label> 
+                                    <input type="text" name="app_num" id="app_num" value="" style="width:120px;">
+                                </td>
+
+                                <td>
+                                    <label data-i18n="reg-pv-number"></label> 
+                                    <input type="text" name="pv_num" id="pv_num" value=""  style="width:100px;">
+                                </td>
+
+                                <td>
+                                    <label data-i18n="reg-apfr-number"></label> 
+                                    <input type="text" name="apfr_num" id="apfr_num" value=""  style="width:100px;">
+                                </td>
+
+                                <td>
+                                    <label data-i18n="reg-firstname"></label> 
+                                    <input type="text" name="first_name" id="first_name" value="" class="input-medium">
+                                </td>
+
+                                <td>
+                                    <label data-i18n="reg-app-type"></label>
+                                    <select name="app_type" id="app_type" class="input-medium">
                                     </select>
                                 </td>
 
                                 <td>
-                                    <label data-i18n="reg-tran-id"></label> 
-                                    <input type="text" name="transaction_id" id="transaction_id" onkeypress="return checkNumber(event)" value="" class="input-medium">
-                                </td>
-
-                                <td>
-                                    <label data-i18n="reg-parcel-id"></label>
-                                    <input type="text" name="parce_id" id="parce_id" value="" onkeypress="return checkNumber(event)" class="input-medium">
+                                    <label data-i18n="reg-app-status"></label>
+                                    <select name="app_status" id="app_status" class="input-medium">
+                                    </select>
                                 </td>
 
                                 <td>
                                     <button class="btn1 v-top-18" onclick="javascript:search();" data-i18n="gen-search"></button>
                                     <button class="btn v-top-24" onclick="clearSearch();" data-i18n="gen-clear"></button>
+                                    <input type="hidden" name="lang_search" id="lang_search" />
                                 </td>
                             </tr>
                         </table>
@@ -92,108 +155,60 @@
 
                     <form id="updatebyWorkflow" class="cmxform" action="" onsubmit="return false;">
                         <input type="hidden" name="type" id="type" value="">
+                        <input type="hidden" name="workflow_lang" id="workflow_lang" value="">
                         <div id="vtab" class="vtab">
 
                             <ul id="workflowDiv">
-                                <li class="login selected "><span class="langchange" key="Workflow_Summary" data-i18n="reg-workflow-sum"></span>&nbsp;</li>
+                                <li class="login selected ">
+                                    <span data-i18n="reg-workflow-sum"></span>&nbsp;
+                                </li>
 
-
-
+                                <li>
+                                    <ul>
+                                        <li>
+                                            <input type="checkbox" id="select_all"  /> 
+                                            <span data-i18n="gen-select-all"></span>
+                                        </li>
+                                    </ul>
+                                </li>
 
                                 <div id="workflow-accordion" style="text-align: left;" class="ui-accordion ui-widget ui-helper-reset ui-accordion-icons" role="tablist">
                                     <h3>
-                                        <a href="#"><span id="new" class="langchange" key="New" data-i18n="reg-workflow-stage"></span></a>
+                                        <a href="#"><span id="new" data-i18n="gen-new"></span></a>
                                     </h3>
-
-                                    <div id="newBody" title=""
-                                         style="min-height: 175px; overflow: hidden">
-                                        <ul>
-                                            <li>
-                                                <input type="checkbox" id="select_all"  /> <span class="langchange" key="Select_All" data-i18n="gen-select-all"></span></li></ul>
-                                        <ul id="newtbl" class="tblStyle" cellpadding="0"
-                                            cellspacing="0">
-
+                                    <div id="newBody" title="" style="min-height: 175px; overflow: hidden">
+                                        <ul id="newtbl" class="tblStyle" cellpadding="0" cellspacing="0">
                                         </ul>
-
-
-
                                     </div>
-
 
                                     <h3>
-                                        <a href="#"><span id="existing" class="langchange"
-                                                          key="Existing" data-i18n="reg-tran-type"></span></a>
+                                        <a href="#"><span id="existing" data-i18n="gen-existing"></span></a>
                                     </h3>
 
-                                    <div id="newBody" title=""
-                                         style="min-height: 175px; overflow: hidden">
-                                        <ul>
-                                            <li>
-                                                <input type="checkbox" id="select_all_tt"  /> <span class="langchange" key="select_all_tt" data-i18n="gen-select-all"></span></li></ul>
-
-                                        <ul id="newtb2" class="tblStyle" cellpadding="0"
-                                            cellspacing="0">
-
+                                    <div id="newBody" title="" style="min-height: 175px; overflow: hidden">
+                                        <ul id="newtb2" class="tblStyle" cellpadding="0" cellspacing="0">
                                         </ul>
-
-
-
                                     </div>
-
-
-                                    <h3>
-                                        <a href="#"><span id="existing" class="langchange"
-                                                          key="Existing" data-i18n="reg-app-status"></span></a>
-                                    </h3>
-
-                                    <div id="newBody" title=""
-                                         style="min-height: 175px; overflow: hidden">
-                                        <ul>
-                                            <li>
-                                                <input type="checkbox" id="select_all_as"  /> <span class="langchange" key="select_all_as" data-i18n="gen-select-all"></span></li></ul>
-
-                                        <ul id="newtb3" class="tblStyle" cellpadding="0"
-                                            cellspacing="0">
-
-                                        </ul>
-
-
-                                    </div>
-
-
-
-
-
                                 </div>
-
-
-
-
-
 
                                 <button class="btn1 langchange" style="margin-top: 5px; margin-right: 5px; float:right " onclick="javascript:clearFilter();" key="Filter" data-i18n="gen-clear"></button>   
                                 <button class="btn1 langchange" style="margin-top: 5px; margin-right: 5px; float:right"  onclick="javascript:updatespatialwork();" key="Filter" data-i18n="gen-filter"></button>
 
                             </ul>
 
-
-
-
-
-
-
                             <div>
-
-
                                 <table class="tablesorter" id="landRecordsTable" cellpadding="0" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th class="no-sort" data-i18n="reg-tran-id"></th>
-                                            <th class="no-sort" data-i18n="reg-parcel-id">Parcel No</th>
+                                            <th class="no-sort" data-i18n="reg-parcel-id"></th>
                                             <th class="no-sort" data-i18n="reg-tran-type"></th>
+                                            <th class="no-sort" data-i18n="reg-app-number"></th>
+                                            <th class="no-sort" data-i18n="reg-pv-number"></th>
                                             <th class="no-sort" data-i18n="reg-land-occupant"></th>
-                                            <th class="no-sort" data-i18n="reg-workflow-stage"></th>
                                             <th class="no-sort" data-i18n="res-tenure-type"></th>
+                                            <th class="no-sort" data-i18n="reg-workflow-stage"></th>
+                                            <th class="no-sort" data-i18n="reg-app-status"></th>
+
                                             <th class="no-sort" data-i18n="gen-actions"></th>
                                         </tr>
                                     </thead>
@@ -223,53 +238,51 @@
                                             </td>
                                         </tr>
                                     </tfoot> 
-
-
-
                                 </table>
 
                             </div>
                         </div>
                     </form>
 
-
-
-
                     <script id="landRecordsAttrTemplate" type="text/x-jquery-tmpl">
-
-
                         <tr id='${landid}'>
-
-                        <td>
-                        ${transactionid}
-                        </td>
                         <td>
                         ${landnostrwithzero}
                         </td> 
                         <td>
                         ${claimtype_en}
-
                         </td>                     
 
                         <td>
-                        ${firstname} ${lastname}
+                        ${appNum}
+                        </td> 
+
+                        <td>
+                        ${pvNum}
+                        </td> 
+
+                        <td>
+                        ${firstname}
                         </td>     						
 
+                        <td>
+                        ${shareType}
+                        </td>
 
                         <td>
                         ${workflowstatus}
                         </td>      						
 
                         <td>
-                        ${shareType}
-                        </td>      						
-
-
+                        ${applicationstatus_en}
+                        </td>
 
                         <td>
 
                         <div class="single-drop-down"> 
-                        <div class="topnav"> <a href="#" onclick="Actionfill(${landid},${workflowstatusid},${transactionid}, '${landnostrwithzero}','${claimtypeid}');" class="signin"><span key="Action" class="langchange" data-i18n="gen-action"></span></a> 
+                        <div class="topnav"> <a href="#" onclick="Actionfill(${landid},${workflowstatusid},${transactionid}, '${landnostrwithzero}','${claimtypeid}', ${landsharetypeid});" class="signin"><span key="Action" class="langchange" data-i18n="gen-action"></span></a> 
+                        <input type="hidden" id="hSection${landid}" value="${section}" />
+                        <input type="hidden" id="hParcelInSection${landid}" value="${parcelNoInSection}" />
                         <div class="containerDiv" id='${landid}_land' > 
                         </div> 
                         </div>   
@@ -316,40 +329,16 @@
                                     <input class="selectlang" name="parcelId" type="text" id="parcelId" />
                                 </td>
                             </tr>
-
-
-
-
-
                         </table>
-
-
                     </fieldset>
                 </form>
             </div>
-
-            <div id="adjudication-dialog-form" title="Language Preference" style="display: none;">
-                <form class="cmxform" id="adjudicationformID" action="" onsubmit="return false;">
-                    <fieldset>
-                        <p>
-                            <label >Please select a language</label>
-                        </p>
-                        <div id="radioLang">
-                            <input class="selectlang" name="lang" type="radio" value="En" id="pre-english" />
-                            <label for="pre-english">English</label> 
-                            <input class="selectlang" name="lang" type="radio" value="Sw" id="pre-swahili" />
-                            <label for="pre-swahili">Swahili</label>
-                        </div>
-                    </fieldset>
-                </form>
-            </div>
-
 
             <div id="approveInfo-dialog-form" data-i18n="[title]reg-workflow" style="display: none;">
                 <form class="cmxform" id="aworkflowformID" action="" onsubmit="return false;">
                     <div id="approveInfoDiv"></div>
                     <fieldset>
-                        <label> <span class="langchange" style="color:black" key="Comments" data-i18n="gen-comments"></span> <span
+                        <label> <span style="color:black" data-i18n="gen-comments"></span> <span
                                 id="commentOption"></span></label>
                         <textarea name="commentsStatusWorkflow" id="commentsStatusWorkflow"
                                   style="width: 96%; height: 63px;"></textarea>
@@ -358,7 +347,9 @@
                 </form>
             </div>
 
-
+            <div id="printFormsInfo-dialog-form" data-i18n="[title]gen-info" style="display: none;">
+                <div id="printFormsInfoDiv"></div>
+            </div>
 
             <div id="editattribute-dialog-form" data-i18n="[title]viewer-edit-attr" style="display: none;">
 
@@ -367,10 +358,11 @@
 
                     <div id="tabs">
                         <ul>
-                            <li><a href="#tabGeneralInfo" data-i18n="gen-geninfo"></a></li>
-                            <li id="liPoi" onclick="issavedisabled();"><a class="linkliPoi" href="#tabs-2c" data-i18n="reg-person"></a></li>
-                            <li id="liDisputes" onclick="issavedisabled();"><a class="linkliDisputes" href="#tabDisputes" data-i18n="reg-disputes"></a></li>
-                            <li id="liMultimedia" onclick="issavedisabled();"><a class="linkliMultimedia" href="#tabs-4" data-i18n="reg-multimedia"></a></li>
+                            <li onclick="showSaveButton(true);"><a href="#tabGeneralInfo" data-i18n="gen-geninfo"></a></li>
+                            <li id="liPoi" onclick="showSaveButton(false);"><a class="linkliPoi" href="#tabs-2c" data-i18n="reg-person"></a></li>
+                            <li id="liDisputes" onclick="showSaveButton(false);"><a class="linkliDisputes" href="#tabDisputes" data-i18n="reg-disputes"></a></li>
+                            <li id="liMultimedia" onclick="showSaveButton(false);"><a class="linkliMultimedia" href="#tabs-4" data-i18n="reg-multimedia"></a></li>
+                            <li id="liMapCoords" onclick="showSaveButton(false);"><a href="#tabs-5" data-i18n="reg-map-coords"></a></li>
                         </ul>
 
                         <div id="tabGeneralInfo">
@@ -379,161 +371,145 @@
                                     <div class="project-details in">
                                         <div class="project-details-label">
                                             <div class="row-fluid">
-                                                <div class="span3 project-details-block">
+                                                <div class="project-details-block" style="width:19%;float: left;">
                                                     <span class="deatails-label" style="color: #0088cc" data-i18n="reg-parcel-id"></span>:
                                                     <span class="deatails-label-value" id="spatialid"></span>
                                                     <input type="hidden" name="primary" id="primary" value="">
                                                 </div>
-                                                <div class="span3 project-details-block">
-                                                    <span class="deatails-label" style="color: #0088cc" data-i18n="reg-tran-id"></span>: <span class="deatails-label-value" id="claimUka"></span>
-                                                </div>
-                                                <div class="span3 project-details-block">
+                                                <div class="project-details-block" style="width:19%;float: left; margin-left:10px;">
                                                     <span class="deatails-label" style="color: #0088cc" data-i18n="reg-claim-type"></span>: <span class="deatails-label-value" id="claimType"></span>
+                                                </div>
+                                                <div class="project-details-block" style="width:19%;float: left; margin-left:10px;">
+                                                    <span class="deatails-label" style="color: #0088cc" data-i18n="reg-app-number"></span>:
+                                                    <span class="deatails-label-value" id="lblAppNum">--</span>
+                                                </div>
+                                                <div class="project-details-block" style="width:19%;float: left; margin-left:10px;">
+                                                    <span class="deatails-label" style="color: #0088cc" data-i18n="reg-pv-number"></span>:
+                                                    <span class="deatails-label-value" id="lblPvNum">--</span>
+                                                </div>
+                                                <div class="project-details-block" style="width:19%;float: left; margin-left:10px;">
+                                                    <span class="deatails-label" style="color: #0088cc" data-i18n="reg-apfr-number"></span>:
+                                                    <span class="deatails-label-value" id="lblApfrNum">--</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     <table style="width: 100%" id="tableGeneralAttributes" class="landrecords22 ">
-
-
-
                                         <tr>
-                                            <td class="borderedBottom" colspan="4"> <h3><label class="no-margin-bottom" data-i18n="gen-general"></label></h3></td>
-                                        </tr>
-
-
-
-                                        <tr id="rowClaimNumber">
-
-                                            <td>
-                                                <label data-i18n="reg-claim-num"></label>
-                                                <input type="text" name="claimNumber" id="claimNumber" value="" class="text ui-widget-content ui-corner-all" readonly>
+                                            <td class="borderedBottom" colspan="4">
+                                                <h3><label data-i18n="gen-general"></label></h3>
                                             </td>
-                                            <td>
-                                                <label data-i18n="reg-claim-date"></label> 
-                                                <input type="text" name="survey_date" id="survey_date" value="" class="text ui-widget-content ui-corner-all" readonly>
-                                            </td>
-                                            <td>
-                                                <label data-i18n="reg-claim-type"></label> 
-                                                <select name="claimStatus" id="claimStatus" class="gendisable" readonly></select>
-                                            </td>
-
-                                        </tr>
-
-
-
-                                        <tr>
-                                            <td class="borderedBottom" colspan="4"> <h3><label class="no-margin-bottom" data-i18n="reg-tenure"></label></h3></td>
                                         </tr>
 
                                         <tr>
-
                                             <td>
-                                                <label data-i18n="reg-aquisition-type"></label>
-                                                <select name="aquisition_id" id="aquisition_id"></select>
-                                            </td>
-
-
-                                            <td>
-                                                <label data-i18n="reg-tenure-type"></label> 
-                                                <select name="tenure_type" id="tenure_type" class="read-tenure"></select> 
+                                                <label data-i18n="reg-app-issue-date"></label>
+                                                <input type="text" name="txtAppIssueDate" id="txtAppIssueDate" value="" class="text ui-widget-content ui-corner-all" readonly>
                                             </td>
                                             <td>
-                                                <label data-i18n="reg-length-of-occupancy"></label> 
-                                                <input type="text" name="tenureDuration" id="tenureDuration" class="text ui-widget-content ui-corner-all read-tenure">
+                                                <label data-i18n="reg-app-nature"></label> 
+                                                <select name="cbxAppNature" id="cbxAppNature"></select>
                                             </td>
-
                                             <td>
-                                                <label data-i18n="reg-right-type"></label>
-                                                <select name="tenureclass_id" id="tenureclass_id"></select>
+                                                <label data-i18n="reg-area-ha"></label> 
+                                                <input type="text" name="area" id="area" class="text ui-widget-content ui-corner-all justread" readonly>
                                             </td>
-
-
-
+                                            <td>
+                                                <label data-i18n="reg-reg-number"></label> 
+                                                <input type="text" name="txtRegNumber" id="txtRegNumber" class="text ui-widget-content ui-corner-all justread">
+                                            </td>
                                         </tr>
 
                                         <tr>
-                                            <td class="borderedBottom" colspan="4"> <h3><label class="no-margin-bottom" data-i18n="reg-prop"></label></h3></td>
+                                            <td class="borderedBottom" colspan="4">
+                                                <h3><label data-i18n="reg-tenure"></label></h3>
+                                            </td>
                                         </tr>
 
-
-
                                         <tr>
-
-                                            <td>
-                                                <label data-i18n="reg-area-acres"></label> 
-                                                <input type="text" name="area" id="area" class="text ui-widget-content ui-corner-all justread">
-
-                                            </td> 
-                                            <td>
-                                                <label data-i18n="reg-land-type"></label> 
-                                                <select name="land_type" id="land_type" class="gendisable"></select>
-                                            </td>
-
                                             <td>
                                                 <label data-i18n="reg-neighbor-north"></label>
                                                 <input type="text" name="neighbor_north" id="neighbor_north" class="text ui-widget-content ui-corner-all justread">
                                             </td>
-
-
-
-                                        </tr>
-                                        <tr>
                                             <td>
-                                            </td>
-                                            <td>
-                                                <label data-i18n="reg-existing-use"></label> 
-                                                <select name="existing_use" id="existing_use" class="gendisable"></select>
-                                            </td>
-
-                                            <td>
-                                                <label data-i18n="reg-neighbor-north"></label>
+                                                <label data-i18n="reg-neighbor-south"></label>
                                                 <input type="text" name="neighbor_south" id="neighbor_south" class="text ui-widget-content ui-corner-all justread">
-                                            </td>
-
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                            </td>
-                                            <td>
-                                                <label data-i18n="reg-proposed-use"></label> 
-                                                <select name="proposed_use" id="proposed_use" class="gendisable"></select>
-
                                             </td>
                                             <td>
                                                 <label data-i18n="reg-neighbor-east"></label>
                                                 <input type="text" name="neighbor_east" id="neighbor_east" class="text ui-widget-content ui-corner-all justread">
                                             </td>
-
+                                            <td>
+                                                <label data-i18n="reg-neighbor-west"></label>
+                                                <input type="text" name="neighbor_west" id="neighbor_west" class="text ui-widget-content ui-corner-all justread">
+                                            </td>
                                         </tr>
-
 
                                         <tr>
-                                            <td></td>
-
-                                            <td><label data-i18n="reg-other-use"></label> <input type="text"
-                                                                                name="other_use" id="other_use"
-                                                                                class="text ui-widget-content ui-corner-all justread">
+                                            <td>
+                                                <label data-i18n="reg-app-type"></label> 
+                                                <select name="tenure_type" id="tenure_type" class="read-tenure"></select> 
+                                            </td>
+                                            <td style="vertical-align: top;">
+                                                <label data-i18n="reg-existing-use"></label> 
+                                                <div class="attr_selected">
+                                                    <select name="existing_use" id="existing_use" class="gendisable " multiple="multiple">
+                                                    </select>
+                                                    <input type="hidden" name="existing_hidden" id="existing_hidden" />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <label data-i18n="reg-other-use"></label>
+                                                <input type="text" name="other_use" id="other_use" class="text ui-widget-content ui-corner-all justread">
+                                            </td>
+                                            <td>
 
                                             </td>
-
-                                            <td><label data-i18n="reg-neighbor-east"></label> <input type="text"
-                                                                                     name="neighbor_west" id="neighbor_west"
-                                                                                     class="text ui-widget-content ui-corner-all justread">
-                                            </td>
-
-
                                         </tr>
 
+                                        <tr>
+                                            <td>
+                                                <label data-i18n="reg-parcel-number"></label> 
+                                                <input type="text" name="txtParcelNumber" id="txtParcelNumber" class="text ui-widget-content ui-corner-all justread" readonly="readonly">
+                                            </td>
+                                            <td>
+                                                <label data-i18n="reg-recon-right-date"></label> 
+                                                <input type="text" name="txtReconRightDate" id="txtReconRightDate" class="datepicker text ui-widget-content ui-corner-all justread" readonly="readonly">
+                                            </td>
+                                            <td>
+                                                <label data-i18n="reg-contra-date"></label> 
+                                                <input type="text" name="txtContraDate" id="txtContraDate" class="datepicker text ui-widget-content ui-corner-all justread" readonly="readonly">
+                                            </td>
+                                            <td>
 
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="borderedBottom" colspan="4">
+                                                <h3><label data-i18n="reg-existing-title"></label></h3>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                <label data-i18n="reg-title-number"></label> 
+                                                <input type="text" name="txtTitleNumber" id="txtTitleNumber" class="text ui-widget-content ui-corner-all justread">
+                                            </td>
+                                            <td>
+                                                <label data-i18n="reg-reg-date"></label> 
+                                                <input type="text" name="txtTitleRegDate" id="txtTitleRegDate" class="datepicker text ui-widget-content ui-corner-all justread" readonly="readonly">
+                                            </td>
+                                            <td>
+                                                <label data-i18n="reg-title-type"></label> 
+                                                <select name="cbxTitleType" id="cbxTitleType" class="read-tenure"></select>
+                                            </td>
+                                            <td>
+
+                                            </td>
+                                        </tr>
                                     </table>
-
-                                    <div>
-                                        <!-- <button id="parcelsavebutton" class="btn hideNew" onclick="javascript:updateattributesGen();">
-                                          Save
-                                        </button> -->
-                                    </div>
                                 </div>
                                 <!-- Tenure info -->
                                 <div style="margin: 0 10px;">
@@ -543,47 +519,23 @@
                             </div>
                         </div>
 
-
                         <div id="tabs-2c">
-                            <div class="row-fluid" style="margin-top: 10px;">
+                            <div style="margin-top: 10px;">
                                 <div><label data-i18n="reg-person-owner"></label>
-                                    <button id="addPersonbutton" onclick="javascript:CheckSharetype();" data-i18n="reg-add-person">
-                                    </button>
                                 </div>
                                 <div class="hidenatTable">
-
                                     <div id="personsEditingGrid1"></div>
-
-
-                                    <div>
-                                        <!-- <button id="addPersonbutton" onclick="javascript:CheckSharetype();">
-                                              AddPerson
-                                            </button> -->
-                                    </div>
                                 </div>
                             </div>
 
-                            <div class="row-fluid">
-                                <div data-i18n="reg-nonnatural-owner"></div>
-                                <div id="personsEditingGrid2"></div>
-                            </div>
-
-                            <div><label data-i18n="reg-poi"></label>
+                            <div id="pnlPoi" style="display: none;">
+                                <label data-i18n="reg-poi"></label>
                                 <button id="addPoi" onclick="javascript:addPOI();" data-i18n="reg-add-poi">
                                 </button>
-                            </div>
-                            <div class="row-fluid ">
-                                <div id="personsEditingGrid"></div>
 
-                                <div>
-                                    <!--  <button id="addPoi" onclick="javascript:addPOI();">
-                                           AddPOI
-                                         </button> -->
+                                <div class="row-fluid ">
+                                    <div id="personsEditingGrid"></div>
                                 </div>
-
-                            </div>
-                            <div class="row-fluid ">
-
                             </div>
                         </div>
 
@@ -606,48 +558,9 @@
                             </div>
                         </div>
 
-
-
                         <div id="tabs-4">
-
-
                             <div class="row-fluid">
-
-                                <div >
-                                    <table style="width: 100%; margin-bottom: 23px;">
-                                        <tr>
-                                            <td class="borderedBottom" colspan="4">
-                                                <h3><label class="no-margin-bottom" data-i18n="reg-persons"></label></h3>
-                                            </td></tr>
-                                    </table></div>
-                                <div class="hidemulTable">
-
-                                    <table id="multimediaTable" class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th data-i18n="reg-firstname"></th>
-                                                <th data-i18n="reg-middlename"></th>
-                                                <th data-i18n="reg-lastname"></th>
-                                                <th data-i18n="gen-view"></th>
-                                                <th data-i18n="gen-browse"></th>
-                                                <th data-i18n="gen-delete"></th>
-
-                                            </tr>
-                                        </thead>
-                                        <tbody id="multimediaRowData">
-
-                                        </tbody>
-                                    </table>
-
-                                </div>
-
-                                <div >
-                                    <table style="width: 100%; margin-bottom: 23px;">
-                                        <tr>
-                                            <td class="borderedBottom" colspan="4"><h3><label class="no-margin-bottom" data-i18n="reg-gen-multimedia"></label></h3></td></tr>
-                                    </table></div>
-                                <div class="hidemulTable">
-
+                                <div class="hidemulTable" style="margin-top: 20px;">
                                     <table id="genmultimediaTable" class="table table-bordered">
                                         <thead>
                                             <tr>
@@ -655,8 +568,6 @@
                                                 <th data-i18n="gen-remarks"></th>
                                                 <th data-i18n="gen-view"></th>
                                                 <th data-i18n="gen-browse"></th>
-                                                <!-- <th>Delete</th> -->
-
                                             </tr>
                                         </thead>
                                         <tbody id="genmultimediaRowData">
@@ -668,6 +579,35 @@
                             </div>
                         </div>
 
+                        <div id="tabs-5" style="padding: 7px;">
+                            <div style="padding: 5px;"></div>
+                            <table>
+                                <tr>
+                                    <td style="width: 260px;vertical-align: top;">
+                                        <h3 class="mapHeading">
+                                            <span data-i18n="reg-map-image"></span>
+                                        </h3>
+                                        <div id="parcel_map" style="border: 1px solid #c5dbec;"></div> 
+                                    </td>
+                                    <td style="width: 260px;vertical-align: top;padding-left: 20px;">
+                                        <div class="vertexAlign vertexTableAlign" data-i18n="reg-vertex-list"></div>
+                                        <table class="amendbeforeAfterTable">
+                                            <tr>
+                                                <th>PT</th>
+                                                <th>X</th>
+                                                <th>Y</th>
+                                            </tr>
+
+                                            <tbody id="vertexTableBody">
+
+                                            </tbody>
+                                        </table>
+                                        <button class="btn1 padding0" onclick="javascript:exportData();" data-i18n="gen-export"></button>
+
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
 
                     </div>
                 </form>
@@ -767,7 +707,6 @@
                 </fieldset>
             </div>
 
-
             <div id="nxtTokin-dialog-form" data-i18n="[title]reg-poi" style="display: none;">
                 <fieldset>
                     <div id="tab-nxtTokin">
@@ -848,8 +787,6 @@
                     </fieldset>
                 </form>
             </div>
-
-
 
             <div id="deceased-dialog-form" data-i18n="[title]reg-deceased-person" style="display: none;">
                 <form class="cmxform landrecords22" id="editdeceasedformID" action="" onsubmit="return false;">
@@ -953,6 +890,22 @@
                     </table>
                 </fieldset>
             </div>
+
+            <script id="vertexRow" type="text/x-jquery-tmpl">
+                <tr> 
+                <td>
+                ${index}
+                </td>                                                                       
+                <td>
+                ${x}
+                </td>
+
+                <td>
+                ${y}
+                </td>
+                </tr>
+            </script>
+
             <script id="commentstemplate" type="text/x-jquery-tmpl">
                 <tr> 
                 <td>
@@ -1144,9 +1097,6 @@
                 <button value="Submit" onclick="uploadLandMediaFile('${documentid}');" data-i18n="gen-upload"></button>
 
                 </td >
-
-
-
                 </tr>
             </script>
 
@@ -1266,21 +1216,25 @@
                 </tr>
             </script>
 
-            <script id="workFlowTemplate" type="text/x-jquery-tmpl">
-                <li ><input type="checkbox" id="${workflowid}" name="workflow" value="${workflowid}" class="roleCheckbox"/>${workflowEn}</li>
+            <script id="workFlowTemplateNew" type="text/x-jquery-tmpl">
+                <li ><input type="checkbox" id="${workflowid}" name="workflow" value="${workflowid}" class="roleCheckbox"/>
+                {{if (Global.LANG==='en')}}
+                ${workflowEn}
+                {{else}}
+                ${workflow}
+                {{/if}}
+                </li>
             </script>
 
-            <script id="TransactionTemplate" type="text/x-jquery-tmpl">
-                <li ><input type="checkbox" id="${code}" name="claimType" value="${code}" class="roleCheckboxTrans"/>${name}</li>
+            <script id="workFlowTemplateExisting" type="text/x-jquery-tmpl">
+                <li ><input type="checkbox" id="${workflowid}" name="workflow" value="${workflowid}" class="roleCheckbox"/>
+                {{if (Global.LANG==='en')}}
+                ${workflowEn}
+                {{else}}
+                ${workflow}
+                {{/if}}
+                </li>
             </script>
-
-
-            <script id="AppstatusTemplate" type="text/x-jquery-tmpl">
-                <li ><input type="checkbox" id="${workflowStatusId}" name="statusType" value="${workflowStatusId}" class="roleCheckboxStatus"/>${workflowStatus}</li>
-            </script>
-
-
-
 
             <script type="text/javascript">
                 $(document).ready(function () {
@@ -1346,8 +1300,58 @@
         <p id="validationCheck" style="display: none">
             <span class="ui-icon ui-icon-alert"
                   style="float: left; margin: 0 7px 20px 0;"></span>
-                  <span data-i18n="res-update-attr-confirm"></span>
+            <span data-i18n="res-update-attr-confirm"></span>
         </p>
     </div>
+
+    <div id="generate-parcelno-form" class="langchange" data-i18n="[title]reg-view-parcelno" style="display: none;">
+        <form class="cmxform" id="parcelnoformID" action="" onsubmit="return false;">
+            <fieldset>
+                <table style="width: 100%" class="p-number">
+                    <tr>
+                        <td>
+                            <p class="langchange" data-i18n="reg-section" style="font-weight: bold;"></p> 
+                            <span style="display: inline-block" id="section_no"></span>
+                        </td>
+                        <td>
+                            <p class="langchange" data-i18n="reg-lot" style="font-weight: bold;"></p> 
+                            <span style="display: inline-block" id="lot_no"></span>
+                        </td>
+                        <td>
+                            <p class="langchange" data-i18n="gen-number" style="font-weight: bold;"></p> 
+                            <span style="display: inline-block" id="number_seq"></span>
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+        </form>
+    </div>
+
+    <div id="generatemap-dialog-form" data-i18n="[title]gen-print" style="display: none;">
+        <form class="cmxform" id="printformID" action="" onsubmit="return false;">
+            <fieldset>
+                <p>
+                    <label data-i18n="gen-select-choise" style="font-weight: bold;"></label>
+                </p>
+                <div >
+                    <input  name="map" type="radio" value="1" id="sel-1" />
+                    <label for="sel-1" data-i18n="reg-print-boundary-map" style="font-weight: normal;display: inline;"></label>
+                    <br />
+                    <input name="map" type="radio" value="2" id="sel-two" />
+                    <label for="sel-2" data-i18n="reg-print-area-map" style="font-weight: normal;display: inline;"></label>
+                    <br />
+                    <input name="map" type="radio" value="3" id="sel-three" />
+                    <label for="sel-3" data-i18n="reg-print-rec-ind" style="font-weight: normal;display: inline;"></label>
+                    <br />
+                    <input class="checkType" name="map" type="radio" value="4" id="sel-four" />
+                    <label for="sel-4" data-i18n="reg-print-rec-col" style="font-weight: normal;display: inline;"></label>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
+    <form action="landrecords/exportdata/" name="dataExportForm" id="dataExportForm" method="post" target="_blank">
+        <input type="hidden" name="hVertices" id="hVertices">
+    </form>
 </div>
 

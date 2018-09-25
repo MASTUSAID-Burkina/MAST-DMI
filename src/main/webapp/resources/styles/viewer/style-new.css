@@ -455,7 +455,7 @@ a.ts{
 }
 .project-details {
     margin-top: 0px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     background: url(../../images/project-details-bg.jpg) repeat-x;
     margin-left: -22px;
     margin-right: -22px;
@@ -466,7 +466,7 @@ a.ts{
 }
 .project-details.in {
     margin-top: 0px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     background: url(../../images/project-details-bg.jpg) repeat-x;
     margin-left: -12px;
     margin-right: -12px;

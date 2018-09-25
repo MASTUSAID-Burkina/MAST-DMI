@@ -494,13 +494,13 @@ $(document).ready(
                     return new Date(date2) - new Date(date1);
                 },
                 itemTemplate: function (value) {
-                    if (value !== null && value !== "") {
+                    if (!isEmpty(value)) {
                         return formatDate_R(value);
                     }
                     return "";
                 },
                 editTemplate: function (value) {
-                    if (value === null || value === "")
+                    if (isEmpty(value)) 
                         return this._editPicker = $("<input>").datepicker({
                             dateFormat: "yy-mm-dd"
                         });
@@ -528,12 +528,12 @@ $(document).ready(
 
         });
 
+function isEmpty(obj) {
+    return obj === null || typeof obj === 'undefined' || obj === '';
+}
+
 function leaseAttribute(landid) {
     edit = 0;
-
-
-
-
 
     $("#editflag").val(edit);
 //	 isVisible = $('#buyersavebutton').is(':visible');

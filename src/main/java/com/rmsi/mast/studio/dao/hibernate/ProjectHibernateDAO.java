@@ -19,7 +19,7 @@ import com.rmsi.mast.studio.domain.fetch.ProjectDetails;
 
 
 @Repository
-public class ProjectHibernateDAO extends GenericHibernateDAO<Project, Long>
+public class ProjectHibernateDAO extends GenericHibernateDAO<Project, Integer>
 		implements ProjectDAO {
 	private static final Logger logger = Logger.getLogger(ProjectHibernateDAO.class);
 

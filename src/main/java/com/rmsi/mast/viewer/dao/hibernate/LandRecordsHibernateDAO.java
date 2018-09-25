@@ -1,16 +1,10 @@
 package com.rmsi.mast.viewer.dao.hibernate;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.persistence.QueryHint;
-import javax.persistence.Entity;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.ParameterMode;
 import javax.persistence.Query;
 import javax.persistence.StoredProcedureQuery;
@@ -18,15 +12,12 @@ import javax.persistence.StoredProcedureQuery;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.ServletRequestUtils;
 
 import com.rmsi.mast.studio.dao.hibernate.GenericHibernateDAO;
 import com.rmsi.mast.studio.domain.LaSpatialunitLand;
 import com.rmsi.mast.studio.domain.NaturalPerson;
 import com.rmsi.mast.studio.domain.SpatialUnit;
 import com.rmsi.mast.studio.domain.Status;
-import com.rmsi.mast.studio.domain.fetch.AttributeValuesFetch;
 import com.rmsi.mast.studio.domain.fetch.CcroOccurrenceStat;
 import com.rmsi.mast.studio.domain.fetch.ClaimProfile;
 import com.rmsi.mast.studio.domain.fetch.ClaimSummary;
@@ -47,7 +38,6 @@ import com.rmsi.mast.studio.domain.fetch.ProjectDetails;
 import com.rmsi.mast.studio.domain.fetch.RegistryBook;
 import com.rmsi.mast.studio.domain.fetch.ReportCertificateFetch;
 import com.rmsi.mast.studio.domain.fetch.SpatialUnitBasic;
-import com.rmsi.mast.studio.domain.fetch.SpatialUnitGeom;
 import com.rmsi.mast.studio.domain.fetch.SpatialUnitTable;
 import com.rmsi.mast.studio.domain.fetch.TransactionHistoryForFetch;
 import com.rmsi.mast.studio.domain.fetch.UploadedDocumentDetailsForFetch;
@@ -60,8 +50,9 @@ import com.rmsi.mast.viewer.dao.LandRecordsDao;
 public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTable, Long>
         implements LandRecordsDao {
 
-	@Autowired LaPartyDao lapartydao;
-	
+    @Autowired
+    LaPartyDao lapartydao;
+
     private static final Logger logger = Logger.getLogger(LandRecordsHibernateDAO.class);
 
     @SuppressWarnings("unchecked")
@@ -112,7 +103,6 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
         SpatialUnitBasic su = getSpatialUnitBasic(pfe.getLandid());
         NaturalPersonBasic person = getNaturalPersonBasic(pfe.getPersonId());
 
-
 //      if (su == null) {
 //          throw new Exception("Claim was not found");
 //      }
@@ -122,21 +112,19 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
 //      if (su.getStatus() != Status.STATUS_NEW && su.getStatus() != Status.STATUS_VALIDATED && su.getStatus() != Status.STATUS_REFERRED) {
 //          throw new Exception("Record cannot be modified because of underlaying claim status");
 //      }
-
-      // Calculate age
-      if (pfe.getDob() != null) {
+        // Calculate age
+        if (pfe.getDob() != null) {
 //          pfe.setAge(DateUtils.getAge(pfe.getDob()));
-      } else {
+        } else {
 //          pfe.setAge(null);
-      }
+        }
 
-      // Update claim
+        // Update claim
 //      if (StringUtils.isNotEmpty(su.getPropertyno())) {
 //          pfe.setHamletId(su.getHamletId());
 //      } else {
 //          su.setHamletId(pfe.getHamletId());
 //      }
-
 //      su.setSurveyDate(pfe.get);
         su.setNeighborNorth(pfe.getNeighborNorth());
         su.setNeighborSouth(pfe.getNeighborSouth());
@@ -144,7 +132,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
         su.setNeighborWest(pfe.getNeighborWest());
 
         getEntityManager().merge(su);
-        
+
         // Update person
         person.setFirstname(pfe.getFirstName());
         person.setLastname(pfe.getLastName());
@@ -155,8 +143,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
 //        person.setAge(pfe.getAge());
         person.setGenderid(pfe.getGender());
 //        person.setMaritalStatus(pfe.getMaritalStatus());
-        
-        
+
         getEntityManager().merge(person);
 
         return pfe;
@@ -340,32 +327,32 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
             String neighbourE,
             String neighbourW) {
         try {
-        	 Query query = getEntityManager().createQuery("Select p from PersonForEditing p where p.projectName = :projectName and "
-                     + "(p.landid = :landid or :landid = 0L) and "
-                     + "(lower(trim(p.firstName)) like :firstName or p.firstName is null) and "
-                     + "(lower(trim(p.lastName)) like :lastName or p.lastName is null) and "
-                     + "(lower(trim(p.middleName)) like :middleName or p.middleName is null) and "
-                     + "(lower(trim(p.idNumber)) like :idNumber or p.idNumber is null) and "
-                     + "(p.claimNumber = :claimNumber or :claimNumber = 0) and "
-                     + "(lower(trim(p.neighborNorth)) like :neighbourN or p.neighborNorth is null) and "
-                     + "(lower(trim(p.neighborSouth)) like :neighbourS or p.neighborSouth is null) and "
-                     + "(lower(trim(p.neighborEast)) like :neighbourE or p.neighborEast is null) and "
-                     + "(lower(trim(p.neighborWest)) like :neighbourW or p.neighborWest is null)");
- //setParameter("projectName", CB_Proj)
-             String proj = "CB_Proj";
-             List<PersonForEditing> result = query
-             		.setParameter("projectName", proj)
-                     .setParameter("landid", landid)
-                     .setParameter("firstName", StringUtils.empty(firstName).toLowerCase() + "%")
-                     .setParameter("lastName", StringUtils.empty(lastName).toLowerCase() + "%")
-                     .setParameter("middleName", StringUtils.empty(middleName).toLowerCase() + "%")
-                     .setParameter("idNumber", StringUtils.empty(idNumber).toLowerCase() + "%")
-                     .setParameter("claimNumber", claimNumber)
-                     .setParameter("neighbourN", StringUtils.empty(neighbourN).toLowerCase() + "%")
-                     .setParameter("neighbourS", StringUtils.empty(neighbourS).toLowerCase() + "%")
-                     .setParameter("neighbourE", StringUtils.empty(neighbourE).toLowerCase() + "%")
-                     .setParameter("neighbourW", StringUtils.empty(neighbourW).toLowerCase() + "%")
-                     .getResultList();
+            Query query = getEntityManager().createQuery("Select p from PersonForEditing p where p.projectName = :projectName and "
+                    + "(p.landid = :landid or :landid = 0L) and "
+                    + "(lower(trim(p.firstName)) like :firstName or p.firstName is null) and "
+                    + "(lower(trim(p.lastName)) like :lastName or p.lastName is null) and "
+                    + "(lower(trim(p.middleName)) like :middleName or p.middleName is null) and "
+                    + "(lower(trim(p.idNumber)) like :idNumber or p.idNumber is null) and "
+                    + "(p.claimNumber = :claimNumber or :claimNumber = 0) and "
+                    + "(lower(trim(p.neighborNorth)) like :neighbourN or p.neighborNorth is null) and "
+                    + "(lower(trim(p.neighborSouth)) like :neighbourS or p.neighborSouth is null) and "
+                    + "(lower(trim(p.neighborEast)) like :neighbourE or p.neighborEast is null) and "
+                    + "(lower(trim(p.neighborWest)) like :neighbourW or p.neighborWest is null)");
+            //setParameter("projectName", CB_Proj)
+            String proj = "CB_Proj";
+            List<PersonForEditing> result = query
+                    .setParameter("projectName", proj)
+                    .setParameter("landid", landid)
+                    .setParameter("firstName", StringUtils.empty(firstName).toLowerCase() + "%")
+                    .setParameter("lastName", StringUtils.empty(lastName).toLowerCase() + "%")
+                    .setParameter("middleName", StringUtils.empty(middleName).toLowerCase() + "%")
+                    .setParameter("idNumber", StringUtils.empty(idNumber).toLowerCase() + "%")
+                    .setParameter("claimNumber", claimNumber)
+                    .setParameter("neighbourN", StringUtils.empty(neighbourN).toLowerCase() + "%")
+                    .setParameter("neighbourS", StringUtils.empty(neighbourS).toLowerCase() + "%")
+                    .setParameter("neighbourE", StringUtils.empty(neighbourE).toLowerCase() + "%")
+                    .setParameter("neighbourW", StringUtils.empty(neighbourW).toLowerCase() + "%")
+                    .getResultList();
             return result;
         } catch (Exception e) {
             logger.error(e);
@@ -383,7 +370,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
             return null;
         }
     }
-    
+
     @Override
     public ClaimProfile getClaimsProfile(String projectName) {
         try {
@@ -435,13 +422,13 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                     .registerStoredProcedureParameter("projectName", String.class, ParameterMode.IN)
                     .setParameter("projectName", projectName);
             profile.setCcroOccurrenceStatList(query.getResultList());
-            
+
             // Get claimants age stat
             query = getEntityManager().createStoredProcedureQuery("get_unique_claimants_with_age", ClaimantAgeStat.class)
                     .registerStoredProcedureParameter("projectName", String.class, ParameterMode.IN)
                     .setParameter("projectName", projectName);
             profile.setClaimantsAgeList(query.getResultList());
-            
+
             // Get disputes stat
             query = getEntityManager().createStoredProcedureQuery("get_disputes_stat", DisputeStat.class)
                     .registerStoredProcedureParameter("projectName", String.class, ParameterMode.IN)
@@ -467,20 +454,19 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public SpatialUnit getParcelGeometry(long landid) {
         try {
             //String hql = "SELECT  ST_AsText(geometry),landno FROM la_spatialunit_land where landid = " + landid;
-            
-            
+
             String hql = "Select ST_AsText(slu.geometry),slu.landno from la_ext_transactiondetails td, la_ext_personlandmapping plm,la_spatialunit_land slu"
-            		+ "   Where td.transactionID = "+landid+" and  td.transactionID=plm.transactionID And plm.landid=slu.landid";
-            
+                    + "   Where td.transactionID = " + landid + " and  td.transactionID=plm.transactionID And plm.landid=slu.landid";
+
             List<Object[]> lstObject = getEntityManager().createNativeQuery(hql).getResultList();
             SpatialUnit spatialUnit = new SpatialUnit();
-            for(Object[] arrObj : lstObject){
-            	spatialUnit.setGeomStr(arrObj[0].toString());
-            	spatialUnit.setLandno(arrObj[1].toString());
+            for (Object[] arrObj : lstObject) {
+                spatialUnit.setGeomStr(arrObj[0].toString());
+                spatialUnit.setLandno(arrObj[1].toString());
             }
             return spatialUnit;
         } catch (Exception e) {
@@ -488,7 +474,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
             return null;
         }
     }
-    
+
     /*@Override
     public SpatialUnit getParcelGeometry(long landid) {
         try {
@@ -499,7 +485,6 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
             return null;
         }
     }*/
-
     @Override
     public SpatialUnitBasic getSpatialUnitBasic(Long usin) {
         try {
@@ -554,7 +539,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
             //String uka = spatialUnitlst.get(0).getPropertyno();
 
             if (spatialUnitlst.size() > 0) {
-            	 //@@return uka;
+                //@@return uka;
                 return null;
             } else {
                 return "";
@@ -637,7 +622,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
         try {
             // and (str(su.surveyDate) BETWEEN :stDate AND :edDate) and su.project = :project_name ")
             StringBuffer queryStr = new StringBuffer("Select count(*) from SpatialUnitTable su where su.project = :project_name and su.active=true ");
-           /* if (ukaNumber != "") {
+            /* if (ukaNumber != "") {
                 queryStr.append("and su.propertyno like :propertyno ");
             }
             if (usinStr != "") {
@@ -656,9 +641,9 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
             }
 
             Query query = getEntityManager().createQuery(queryStr.toString());
-         // query.setParameter("project_name", projname);
+            // query.setParameter("project_name", projname);
 
-          /*  if (ukaNumber != "") {
+            /*  if (ukaNumber != "") {
                 query.setParameter("propertyno", "%" + ukaNumber + "%");
             }
             if (usinStr != "") {
@@ -670,9 +655,6 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
             if (!dateto.isEmpty() || !datefrom.isEmpty()) {
                 query.setParameter("stDate", datefrom).setParameter("edDate", dateto);
             }*/
-            
-            
-            
             if (status != 0) {
                 query.setParameter("workflowStatusId", status.intValue());
             }
@@ -766,2024 +748,1298 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
             return false;
         }
     }
-    
-    
-    @SuppressWarnings("unchecked")
-	@Override
-	public List<LaSpatialunitLand> findOrderedSpatialUnitRegistry(
-			String defaultProject, int startfrom) {
-		List<LaSpatialunitLand> lstLaSpatialunitLand = new ArrayList<LaSpatialunitLand>();
-		try {
-			
-			/*String hql1 = " Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,   "+ 
-				           " string_agg(LP.firstname||' '||LP.lastname,' / ' order by LP.firstname,LP.lastname) firstname,null as lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype from la_spatialunit_land LD  "+    
-				           " Inner join la_ext_personlandmapping PL on LD.landid = PL.landid   "+ 
-				           " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid   "+ 
-				           " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid  "+   
-				           " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid   "+ 
-				           " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid  "+   
-				           " inner Join  la_party_person LP on PL.partyid = LP.personid   "+  
-				           " inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid  "+   
-				           " where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true  and PL.persontypeid=1 and LD.projectnameid = " +defaultProject +"  "+ 
-				           " group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  "+ 
-				           " la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype Union  "+  
-				           " Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  "+ 
-				           " LP.firstname||' '||LP.lastname as firstname, null as lastname, LP.address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype from la_spatialunit_land LD  "+    
-				           " Inner join la_ext_disputelandmapping PL on LD.landid = PL.landid   "+ 
-				           " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid   "+ 
-				           " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid  "+   
-				           " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid   "+ 
-				           " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid  "+   
-				           " inner Join  la_party_person LP on PL.partyid = LP.personid   "+ 
-				           " inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid  "+   
-				           " where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true  and LD.projectnameid  =" +defaultProject + "union "+
-				           " Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,'' as firstname, '' as lastname, '' as address,  "+ 
-				           " la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en ,0  as transactionid ,ST.landsharetype from la_spatialunit_land LD  "+ 
-				           " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid  "+ 
-				           " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid  "+ 
-				           " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid "+ 
-				           " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid  "+ 
-				           " where LD.isactive=true AND LD.claimtypeid=4 and LD.workflowstatusid!=6 and LD.isactive=true  and LD.projectnameid  = " +defaultProject +"  union  "+
-				           " Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+
-				           " string_agg(LP.firstname||' '||LP.lastname,' / ' order by LP.firstname,LP.lastname) firstname,null as lastname, null as address ,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype from la_spatialunit_land LD  "+ 
-				           " Inner join la_ext_personlandmapping PL on LD.landid = PL.landid   "+
-				           " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid   "+
-				           " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid  "+
-				           " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid "+
-				           " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid  "+
-				           " inner Join  la_party_organization LP on PL.partyid = LP.organizationid  "+
-				          " inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid   "+
-			              " where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true  and LD.projectnameid  = " +defaultProject +" group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+ 
-                          " la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype order by landid DESC ";*/
 
-			String hql1 ="Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,"+     
-			            " LP.firstname||' '|| LP.lastname as firstname,null as lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype from la_spatialunit_land LD "+       
-			            "Inner join la_ext_personlandmapping PL on LD.landid = PL.landid "+ 
-			            "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid "+ 
-			            "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+      
-			            "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+   
-			            "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+      
-			            "inner Join  la_party_person LP on PL.partyid = LP.personid "+    
-			            "inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "+      
-			            "where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true  and PL.persontypeid=1 and LP.ownertype=1 and  LD.projectnameid = " +defaultProject +"  "+    
-			            "group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, LP.firstname,  LP.lastname, "+    
-			            "la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype Union "+      
-			            "Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+    
-			            "LP.firstname||' '||LP.lastname as firstname, null as lastname, LP.address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype from la_spatialunit_land LD "+      
-			            "Inner join la_ext_disputelandmapping PL on LD.landid = PL.landid "+     
-			            "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid "+     
-			            "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+     
-			            "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+    
-			            "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+     
-			            "inner Join  la_party_person LP on PL.partyid = LP.personid "+    
-			            "inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid  "+    
-			            "where Pl.isactive=true and LP.ownertype=1  and LD.workflowstatusid!=6 and LD.isactive=true  and LD.projectnameid = " +defaultProject +"  union  "+
-			            "Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,'' as firstname, '' as lastname, '' as address, "+  
-			            "la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en ,0  as transactionid ,ST.landsharetype from la_spatialunit_land LD  "+ 
-			            "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid "+
-			            "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+
-			            "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid "+ 
-			            "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+  
-			            "where LD.isactive=true AND LD.claimtypeid=4 and LD.workflowstatusid!=6 and LD.isactive=true  and LD.projectnameid = " +defaultProject +"  union  "+
-			            "Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  "+
-			            "LP.firstname||' '|| LP.lastname as firstname ,null as lastname, null as address ,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype from la_spatialunit_land LD "+  
-			            "Inner join la_ext_personlandmapping PL on LD.landid = PL.landid "+  
-			            "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid   "+
-			            "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid  "+
-			            "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid "+
-			            "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid  "+
-			            "inner Join  la_party_organization LP on PL.partyid = LP.organizationid  "+
-			            "inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid   "+
-		                "where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true  and LD.projectnameid = " +defaultProject +"   group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  LP.firstname, "+ 
-	                    "la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype ,LP.lastname  order by landid DESC ";
-			 
-			List<Object[]> arrObject = getEntityManager().createNativeQuery(hql1).setFirstResult(startfrom).setMaxResults(15).getResultList();
-            
-            for(Object [] object : arrObject){
-            	LaSpatialunitLand laSpatialunitLand = new LaSpatialunitLand();
-            	laSpatialunitLand.setLandid(Long.valueOf(object[0].toString()));
-            	laSpatialunitLand.setLandno((String)object[1]);
-            	laSpatialunitLand.setClaimtypeid(Integer.valueOf(object[2].toString()));
-            	laSpatialunitLand.setClaimtype_en(object[3].toString());
-            	laSpatialunitLand.setArea(4);
-            	laSpatialunitLand.setApplicationstatus_en(object[5].toString());
-            	//laSpatialunitLand.setTransactionid(Integer.valueOf(object[6].toString()));
-            	if(null!=object[6]){
-            	laSpatialunitLand.setFirstname(object[6].toString());
-            	}else{
-            		laSpatialunitLand.setFirstname(object[6].toString());
-            	}
-              //	laSpatialunitLand.setLastname(object[7].toString());
-            	
-            	if(null!=object[8]){
-            	laSpatialunitLand.setAddress(object[8].toString());
-            	}else
-            	{
-            	laSpatialunitLand.setAddress("");	
-            	}
-            	laSpatialunitLand.setApplicationstatusid(Integer.valueOf(object[9].toString()));
-            	laSpatialunitLand.setWorkflowstatusid(Integer.valueOf(object[10].toString()));
-            	laSpatialunitLand.setWorkflowstatus(object[11].toString());
-            	laSpatialunitLand.setTransactionid(Integer.valueOf(object[12].toString()));
-            	laSpatialunitLand.setLandnostrwithzero(addZeroinLandNo((String)object[0].toString()));
-            	if(object[13].toString().equals("Dummy")){
-            	laSpatialunitLand.setShareType("");
-            	}else{
-            		laSpatialunitLand.setShareType(object[13].toString());
-            	}
-            	lstLaSpatialunitLand.add(laSpatialunitLand);
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<LaSpatialunitLand> search(
+            String lang,
+            Integer claimType,
+            int project,
+            String parcelId,
+            String appNum,
+            String pvNum,
+            String apfrNum,
+            String firstName,
+            int appType,
+            int appStatus,
+            Integer startpos) {
+
+        String sql;
+        String strWhere = "";
+
+        if (claimType > 0) {
+            strWhere = strWhere + " and LC.claimtypeid = " + claimType;
+        }
+        
+        if (appStatus > 0) {
+            strWhere = strWhere + " and LD.applicationstatusid = " + appStatus;
+        }
+
+        if (!"".equals(parcelId)) {
+            String strPattern = "^0+";
+            parcelId = parcelId.replaceAll(strPattern, "");
+            strWhere = strWhere + " and LD.landid = " + parcelId;
+        }
+
+        if (!StringUtils.isEmpty(appNum)) {
+            strWhere = strWhere + " and coalesce(LD.application_no, '') like :appNum";
+        }
+
+        if (!StringUtils.isEmpty(pvNum)) {
+            strWhere = strWhere + " and coalesce(LD.pv_no, '') like :pvNum";
+        }
+
+        if (!StringUtils.isEmpty(apfrNum)) {
+            strWhere = strWhere + " and coalesce(LD.apfr_no, '') like :apfrNum";
+        }
+
+        if (!StringUtils.isEmpty(firstName)) {
+            strWhere = strWhere + " and coalesce(LP.firstname, '') like :firstName";
+        }
+
+        if (appType > 0) {
+            strWhere = strWhere + " and LD.landsharetypeid = " + appType;
+        }
+
+        sql = "select LD.landid, LD.landno, LC.claimtypeid, (case when :lang = 'en' then LC.claimtype_en else LC.claimtype end) as claimtype, LD.area, "
+                + "  (case when :lang = 'en' then la.applicationstatus_en else la.applicationstatus end) as applicationstatus,"
+                + "  LP.firstname||' '|| LP.lastname as fullname, LP.address,la.applicationstatusid ,LD.workflowstatusid,"
+                + "  (case when :lang = 'en' then lf.workflow_en else lf.workflow end) as workflow_status,"
+                + "  TR.transactionid, (case when :lang = 'en' then ST.landsharetype_en else ST.landsharetype end) as apptype, LD.landsharetypeid as apptypeid,"
+                + "  LD.application_no, LD.pv_no, LD.apfr_no, LD.section, LD.parcel_no_in_section "
+                + "from la_spatialunit_land LD"
+                + "  inner join la_ext_personlandmapping PL on LD.landid = PL.landid"
+                + "  inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid"
+                + "  inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid"
+                + "  inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid"
+                + "  inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid"
+                + "  inner Join  la_party_person LP on PL.partyid = LP.personid"
+                + "  inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "
+                + "where Pl.isactive=true and LD.applicationstatusid != 7 and LD.isactive=true and LD.projectnameid = :projectId"
+                + strWhere
+                + " order by LD.landid desc";
+
+        Query q = getEntityManager().createNativeQuery(sql);
+        q.setParameter("projectId", project);
+
+        if (!StringUtils.isEmpty(appNum)) {
+            q.setParameter("appNum", appNum + "%");
+        }
+
+        if (!StringUtils.isEmpty(pvNum)) {
+            q.setParameter("pvNum", pvNum + "%");
+        }
+
+        if (!StringUtils.isEmpty(apfrNum)) {
+            q.setParameter("apfrNum", apfrNum + "%");
+        }
+
+        if (!StringUtils.isEmpty(firstName)) {
+            q.setParameter("firstName", "%" + firstName + "%");
+        }
+
+        if (!StringUtils.isEmpty(lang)) {
+            q.setParameter("lang", lang);
+        } else {
+            q.setParameter("lang", "en");
+        }
+
+        try {
+            List<Object[]> arrObject = q.setFirstResult(startpos).setMaxResults(15).getResultList();
+            List<LaSpatialunitLand> lstLaSpatialunitLand = new ArrayList<>();
+
+            for (Object[] object : arrObject) {
+                LaSpatialunitLand laSpatialunitLand = new LaSpatialunitLand();
+                laSpatialunitLand.setLandid(Long.valueOf(object[0].toString()));
+                laSpatialunitLand.setLandno((String) object[1]);
+                laSpatialunitLand.setClaimtypeid(Integer.valueOf(object[2].toString()));
+                laSpatialunitLand.setClaimtype_en(object[3].toString());
+                laSpatialunitLand.setArea(4);
+                laSpatialunitLand.setApplicationstatus_en(object[5].toString());
+                //laSpatialunitLand.setTransactionid(Integer.valueOf(object[6].toString()));
+                if (null != object[6]) {
+                    laSpatialunitLand.setFirstname(object[6].toString());
+                } else {
+                    laSpatialunitLand.setFirstname("");
+                }
+
+                if (null != object[7]) {
+                    laSpatialunitLand.setAddress(object[7].toString());
+                } else {
+                    laSpatialunitLand.setAddress("");
+                }
+
+                laSpatialunitLand.setApplicationstatusid(Integer.valueOf(object[8].toString()));
+                laSpatialunitLand.setWorkflowstatusid(Integer.valueOf(object[9].toString()));
+                laSpatialunitLand.setWorkflowstatus(object[10].toString());
+                laSpatialunitLand.setTransactionid(Integer.valueOf(object[11].toString()));
+                laSpatialunitLand.setLandnostrwithzero(addZeroinLandNo((String) object[0].toString()));
+                laSpatialunitLand.setShareType(object[12].toString());
+                laSpatialunitLand.setLandsharetypeid(Integer.valueOf(object[13].toString()));
+                if (object[14] != null) {
+                    laSpatialunitLand.setAppNum(object[14].toString());
+                }
+                if (object[15] != null) {
+                    laSpatialunitLand.setPvNum(object[15].toString());
+                }
+                if (object[16] != null) {
+                    laSpatialunitLand.setApfrNum(object[16].toString());
+                }
+                if (object[17] != null) {
+                    laSpatialunitLand.setSection(Integer.valueOf(object[17].toString()));
+                }
+                if (object[18] != null) {
+                    laSpatialunitLand.setParcelNoInSection(Long.valueOf(object[18].toString()));
+                }
+                lstLaSpatialunitLand.add(laSpatialunitLand);
+
             }
             return lstLaSpatialunitLand;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
+    }
+
+    @Override
+    public List<ReportCertificateFetch> getCertificatedetailsbytransactionid(Long usin) {
+        String sql;
+
+        try {
+            sql = " select row_number() OVER () as rnum, td.transactionid as usin,plm.certificateno,ld.landno,CURRENT_DATE as Date,ld.area,lut.landusetype,ld.neighbor_east,ld.neighbor_west,ld.neighbor_north,"
+                    + " ld.neighbor_south,plm.sharepercentage,ps.firstname,ps.middlename,ps.lastname,ps.address, parea.landofficersignature, ps.personid as partyid,	ld.createddate as capture_date, "
+                    + " lst.landsharetype_en as landsharetype,g.gender,EXTRACT(YEAR from AGE(CURRENT_DATE, ps.dateofbirth)) as age,ms.maritalstatus,"
+                    + " id.identitytype,ps.identityno,CURRENT_DATE as dateofregistration, 0 as duration,ps.contactno,lt.landtype,hie1.name as country,"
+                    + " hie2.name as region,hie3.name as province,hie4.name as commune,hie5.name as place,ld.udparcelno"
+                    + " from la_ext_transactiondetails td"
+                    + " inner join la_ext_personlandmapping plm on plm.transactionid=td.transactionid"
+                    + " inner join la_spatialunit_land ld on ld.landid=plm.landid"
+                    + " inner join la_Party_person ps on ps.personid=plm.partyid"
+                    + " inner join la_ext_projectarea parea on parea.projectnameid= ld.projectnameid"
+                    + " left join la_baunit_landusetype lut on lut.landusetypeid=ld.landusetypeid"
+                    + " left join la_right_landsharetype lst on lst.landsharetypeid=ld.landsharetypeid"
+                    + " left join la_partygroup_gender g on g.genderid=ps.genderid"
+                    + " left join la_partygroup_maritalstatus ms on ms.maritalstatusid=ps.maritalstatusid"
+                    + " left join la_partygroup_identitytype id on id.identitytypeid=ps.identitytypeid"
+                    + " left join la_baunit_landtype lt on lt.landtypeid=ld.landtypeid"
+                    + " left join la_spatialunitgroup_hierarchy hie1 on hie1.hierarchyid=ld.hierarchyid1 and ld.spatialunitgroupid1=1"
+                    + " left join la_spatialunitgroup_hierarchy hie2 on hie2.hierarchyid=ld.hierarchyid2 and ld.spatialunitgroupid2=2"
+                    + " left join la_spatialunitgroup_hierarchy hie3 on hie3.hierarchyid=ld.hierarchyid3 and ld.spatialunitgroupid3=3"
+                    + " left join la_spatialunitgroup_hierarchy hie4 on hie4.hierarchyid=ld.hierarchyid4 and ld.spatialunitgroupid4=4"
+                    + " left join la_spatialunitgroup_hierarchy hie5 on hie5.hierarchyid=ld.hierarchyid5 and ld.spatialunitgroupid5=5"
+                    + " where td.transactionid=" + usin;
+
+            Query query = getEntityManager().createNativeQuery(sql, ReportCertificateFetch.class);
+            List<ReportCertificateFetch> attribValues = query.getResultList();
+
+            if (attribValues.size() > 0) {
+                return attribValues;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
+    }
+
+    @Override
+    public List<ReportCertificateFetch> getCertificatedetailsinbatch(Long startRecord, Long endRecord) {
+        String sql;
+
+        try {
+            sql = " select row_number() OVER () as rnum,td.transactionid as usin,plm.certificateno,ld.landno,CURRENT_DATE as Date,ld.area,lut.landusetype,ld.neighbor_east,ld.neighbor_west,ld.neighbor_north,"
+                    + " ld.neighbor_south,plm.sharepercentage,ps.firstname,ps.middlename,ps.lastname,ps.address, parea.landofficersignature, ps.personid as partyid,	ld.createddate as capture_date, "
+                    + " lst.landsharetype_en as landsharetype,g.gender,EXTRACT(YEAR from AGE(CURRENT_DATE, ps.dateofbirth)) as age,ms.maritalstatus,"
+                    + " id.identitytype,ps.identityno,CURRENT_DATE as dateofregistration, 0 as duration,ps.contactno,lt.landtype,hie1.name as country,"
+                    + " hie2.name as region,hie3.name as province,hie4.name as commune,hie5.name as place,ld.udparcelno"
+                    + " from la_ext_transactiondetails td"
+                    + " inner join la_ext_personlandmapping plm on plm.transactionid=td.transactionid"
+                    + " inner join la_spatialunit_land ld on ld.landid=plm.landid"
+                    + " inner join la_Party_person ps on ps.personid=plm.partyid"
+                    + " inner join la_ext_projectarea parea on parea.projectnameid= ld.projectnameid"
+                    + " left join la_baunit_landusetype lut on lut.landusetypeid=ld.landusetypeid"
+                    + " left join la_right_landsharetype lst on lst.landsharetypeid=ld.landsharetypeid"
+                    + " left join la_partygroup_gender g on g.genderid=ps.genderid"
+                    + " left join la_partygroup_maritalstatus ms on ms.maritalstatusid=ps.maritalstatusid"
+                    + " left join la_partygroup_identitytype id on id.identitytypeid=ps.identitytypeid"
+                    + " left join la_baunit_landtype lt on lt.landtypeid=ld.landtypeid"
+                    + " left join la_spatialunitgroup_hierarchy hie1 on hie1.hierarchyid=ld.hierarchyid1 and ld.spatialunitgroupid1=1"
+                    + " left join la_spatialunitgroup_hierarchy hie2 on hie2.hierarchyid=ld.hierarchyid2 and ld.spatialunitgroupid2=2"
+                    + " left join la_spatialunitgroup_hierarchy hie3 on hie3.hierarchyid=ld.hierarchyid3 and ld.spatialunitgroupid3=3"
+                    + " left join la_spatialunitgroup_hierarchy hie4 on hie4.hierarchyid=ld.hierarchyid4 and ld.spatialunitgroupid4=4"
+                    + " left join la_spatialunitgroup_hierarchy hie5 on hie5.hierarchyid=ld.hierarchyid5 and ld.spatialunitgroupid5=5"
+                    + " where td.transactionid between " + startRecord + " and " + endRecord;
+
+            Query query = getEntityManager().createNativeQuery(sql, ReportCertificateFetch.class);
+            List<ReportCertificateFetch> attribValues = query.getResultList();
+
+            if (attribValues.size() > 0) {
+                return attribValues;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
+    }
+
+    @Override
+    public List<Object> findsummaryreport(String projectnameid) {
+        try {
+            List<Object> spatialUnit;
+
+            String query = "select hr.name as Commune_Name,count(*) as parcels, "
+                    + " round(((count(*)*100)/(select count(*) from la_spatialunit_land where isactive='1' and projectnameid= :projectnameid)\\:\\:numeric),2) as total_percentage,"
+                    + " sum(ld.area) as Total_Area_Mapped, sum(ld.area)/count(*) as Parcel_Average_Size, "
+                    + " (select count(*) from la_spatialunit_land where applicationstatusid=2 and isactive='1') as APFR_Issued "
+                    + " from la_spatialunit_land ld inner join la_spatialunitgroup_hierarchy hr on hr.hierarchyid=ld.hierarchyid4"
+                    + " where ld.isactive='1' and hr.isactive='1' and ld.projectnameid= :projectnameid"
+                    + " group by hr.name";
+
+            //spatialUnit = getEntityManager().createQuery(query).getResultList();
+            Query executeQuery = getEntityManager().createNativeQuery(query);
+            executeQuery.setParameter("projectnameid", Integer.parseInt(projectnameid));
+            spatialUnit = executeQuery.getResultList();
+            if (spatialUnit.size() > 0) {
+
+                return spatialUnit;
+            } else {
+
+                return null;
+            }
         } catch (Exception e) {
             logger.error(e);
             return null;
         }
-	}
-    
-    
-    @SuppressWarnings("unchecked")
-	@Override
-	public  List<LaSpatialunitLand> search(Long status, Integer claimType, String project,String communeId,String transId,String parcelId,Integer startpos) {
-		
-		List<LaSpatialunitLand> lstLaSpatialunitLand = new ArrayList<LaSpatialunitLand>();
-		
-		String hql1 = ""; 
-		String strWhere = "";
-		String strWhere1 = "";
-		String strWhereClause = "";
-		String strWhereClause1 = "";
-		if(status != null && status != 0){
-			strWhere = strWhere + "and LD.applicationstatusid = " + status;
-		}
-		
-			if(claimType > 0){
-				strWhere = strWhere +" and LC.claimtypeid = " + claimType ;
-			}
-		
-				
-			  if (!"".equals(communeId) && !communeId.equals("0")) {
-				  if(strWhere.isEmpty()){
-					  strWhere = strWhere +" LD.hierarchyid4 = " + communeId ;
-					  strWhere1 = strWhere1 +" LD.hierarchyid4 = " + communeId ;
-				  }else{
-					  strWhere = strWhere +" and LD.hierarchyid4 = " + communeId ;
-					  strWhere1 = strWhere1 +" and LD.hierarchyid4 = " + communeId ;
-				 }
-			  }
-			 
-			 if (!"".equals(parcelId)) {
-				 
-				 String strPattern = "^0+";        
-				 parcelId=parcelId.replaceAll(strPattern, "") ;
-				 
-				 if(strWhere.isEmpty()){
-					 strWhere = strWhere +" LD.landid = '" + parcelId +"'" ;
-					 strWhere1 = strWhere1 +" LD.landid = '" + parcelId +"'" ;
-				 }else{
-					 strWhere = strWhere +" and LD.landid = '" + parcelId +"'" ;
-					 strWhere1 = strWhere1 +" and LD.landid = '" + parcelId +"'" ;
-				 }
-			 }
-			 if(!strWhere1.isEmpty())
-				 strWhere1 ="and"+strWhere1;
-				 
-			 strWhereClause1 =strWhere1;
+    }
 
-			 if (!"".equals(transId)) {
-				 if(strWhere.isEmpty()){
-					 strWhere = strWhere +" TR.transactionid = " + transId ;
-				 }else{
-					 strWhere = strWhere +" and TR.transactionid = " + transId ;
-				}
-			 }
-			 
-			 
-		 strWhereClause = strWhere;
-	
-		 
-/*    hql1 =" Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+ 
-		 " string_agg(LP.firstname||' '||LP.lastname,' / ' order by LP.firstname,LP.lastname) firstname,null as lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en  ,TR.transactionid ,ST.landsharetype from la_spatialunit_land LD "+    
-		 " Inner join la_ext_personlandmapping PL on LD.landid = PL.landid  "+ 
-		 " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid  "+ 
-		 " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+   
-		 " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+  
-		 " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+   
-		 " inner Join  la_party_person LP on PL.partyid = LP.personid   "+ 
-		 " inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "+   
-		 " where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true and  PL.persontypeid=1 and  LD.projectnameid =  " +project +"  and " + strWhereClause +
-		 " group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+ 
-		 " la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype Union "+  
-		 " Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+ 
-		 " '' as firstname, '' as lastname, '' as address,  la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en ,0  as transactionid , ST.landsharetype "+   
-		 " from la_spatialunit_land LD  "+ 
-		 " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid "+   
-		 " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+   
-		 " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+ 
-		 " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+   
-		 " where LD.isactive=true AND LD.claimtypeid=4 and LD.workflowstatusid!=6 and LD.isactive=true and   LD.projectnameid =  " +project +" " + strWhereClause1 +"Union " +
-		 " Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  "+ 
-		 " string_agg(LP.firstname||' '||LP.lastname,' / ' order by LP.firstname,LP.lastname) firstname,null as lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en  ,TR.transactionid , ST.landsharetype  from la_spatialunit_land LD "+    
-		 " Inner join la_ext_disputelandmapping PL on LD.landid = PL.landid  "+ 
-		 " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid   "+ 
-		 " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+   
-		 " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+ 
-		 " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+   
-		 " inner Join  la_party_person LP on PL.partyid = LP.personid  "+ 
-		 " inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "+   
-		 " where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true and   LD.projectnameid =  " +project +" " + strWhereClause1 +
-		 " group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+  
-		 " la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype  union "+  
-		 " Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  "+ 
-		 " string_agg(LP.firstname||' '||LP.lastname,' / ' order by LP.firstname,LP.lastname) firstname,null as lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype from la_spatialunit_land LD "+    
-		 " Inner join la_ext_personlandmapping PL on LD.landid = PL.landid   "+ 
-		 " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid    "+ 
-		 " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+   
-		 " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid "+ 
-		 " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+      
-		 " inner Join  la_party_organization LP on PL.partyid = LP.organizationid  "+ 
-		 " inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid   "+ 
-		 " where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true  and LD.projectnameid =  " +project +" " + strWhereClause1 +
-		 " group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+  
-		 " la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype "; 
-*/                               
-                               
-                               
-	hql1= "Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+ 
-		  "LP.firstname||' '|| LP.lastname as firstname,null as lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en  ,TR.transactionid ,ST.landsharetype from la_spatialunit_land LD  "+   
-		  "Inner join la_ext_personlandmapping PL on LD.landid = PL.landid  "+
-		  "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid  "+
-		  "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+
-		  "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+ 
-		  "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+  
-		  "inner Join  la_party_person LP on PL.partyid = LP.personid "+  
-		  "inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "+  
-		  "where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true and  PL.persontypeid=1 and LP.ownertype=1  and  LD.projectnameid  =  " +project +"  and " + strWhereClause + 
-		  "group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+ 
-		  "la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype , LP.firstname , LP.lastname Union "+  
-		  "Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, '' as firstname, '' as lastname, '' as address,  la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en ,0  as transactionid , ST.landsharetype "+   
-		  "from la_spatialunit_land LD "+ 
-		  "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid "+    
-		  "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid  "+
-		  "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid "+  
-		  "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid  "+
-		  "where LD.isactive=true AND LD.claimtypeid=4 and LD.workflowstatusid!=6 and LD.isactive=true and   LD.projectnameid =  " +project +" " + strWhereClause1 +"Union " + 
-		  "Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+  
-		  "LP.firstname||' '|| LP.lastname as firstname,null as lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en  ,TR.transactionid , ST.landsharetype  from la_spatialunit_land LD  "+   
-		  "Inner join la_ext_disputelandmapping PL on LD.landid = PL.landid  "+ 
-		  "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid  "+  
-		  "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid  "+  
-		  "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+
-		  "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid  "+
-		  "inner Join  la_party_person LP on PL.partyid = LP.personid  "+
-		  "inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid  "+
-		  "where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true  and LP.ownertype=1  and   LD.projectnameid =  " +project +" " + strWhereClause1 +
-		  "group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  "+ 
-		  "la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype ,LP.firstname,LP.lastname union  "+
-		  "Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+  
-		  "LP.firstname||' '|| LP.lastname as firstname,null as lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype from la_spatialunit_land LD  "+   
-		  "Inner join la_ext_personlandmapping PL on LD.landid = PL.landid   "+
-		  "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid  "+  
-		  "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid   "+ 
-		  "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+
-		  "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+      
-		  "inner Join  la_party_organization LP on PL.partyid = LP.organizationid  "+
-		  "inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid  "+  
-		  "where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true  and LD.projectnameid =  " +project +" " + strWhereClause1 +
-		  "group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+  
-		  "la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype ,LP.firstname, LP.lastname " ;
-		 
-		try {
-			List<Object[]> arrObject = getEntityManager().createNativeQuery(hql1).setFirstResult(startpos).setMaxResults(15).getResultList();
-			
-			for(Object [] object : arrObject){
-            	LaSpatialunitLand laSpatialunitLand = new LaSpatialunitLand();
-            	laSpatialunitLand.setLandid(Long.valueOf(object[0].toString()));
-            	laSpatialunitLand.setLandno((String)object[1]);
-            	laSpatialunitLand.setClaimtypeid(Integer.valueOf(object[2].toString()));
-            	laSpatialunitLand.setClaimtype_en(object[3].toString());
-            	laSpatialunitLand.setArea(4);
-            	laSpatialunitLand.setApplicationstatus_en(object[5].toString());
-            	//laSpatialunitLand.setTransactionid(Integer.valueOf(object[6].toString()));
-            	if(null!=object[6]){
-            	 laSpatialunitLand.setFirstname(object[6].toString());
-            	}else{
-            		laSpatialunitLand.setFirstname("");
-            	}
-            	//laSpatialunitLand.setLastname(object[7].toString());
-            	
-            	if(null!=object[8]){
-                	laSpatialunitLand.setAddress(object[8].toString());
-                	}else
-                	{
-                	laSpatialunitLand.setAddress("");	
-                	}
-            	
-            	laSpatialunitLand.setApplicationstatusid(Integer.valueOf(object[9].toString()));
-            	laSpatialunitLand.setWorkflowstatusid(Integer.valueOf(object[10].toString()));
-            	laSpatialunitLand.setWorkflowstatus(object[11].toString());
-            	laSpatialunitLand.setTransactionid(Integer.valueOf(object[12].toString()));
-            	laSpatialunitLand.setLandnostrwithzero(addZeroinLandNo((String)object[0].toString()));
-            	
-            	if(object[13].toString().equals("Dummy")){
-                	laSpatialunitLand.setShareType("");
-                	}else{
-                		laSpatialunitLand.setShareType(object[13].toString());
-                	}
-            	
-            	
-            	lstLaSpatialunitLand.add(laSpatialunitLand);
-            	
-            }
-			return lstLaSpatialunitLand;
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-			return null;
-		}
-	}
+    @Override
+    public List<Object> findprojectdetailedsummaryreport(String projectnameid) {
+        try {
+            List<Object> spatialUnit;
 
-	@Override
-	public List<ReportCertificateFetch> getCertificatedetailsbytransactionid(Long usin) 
-	{
-		String sql = null;
-	
-		try 
-		{
-			/*sql = "select td.transactionid as usin,plm.certificateno,ld.landno,CURRENT_DATE as Date,ld.area,lut.landusetype,ld.neighbor_east,ld.neighbor_west,ld.neighbor_north,"
-					+ "ld.neighbor_south,plm.sharepercentage,ps.firstname,ps.middlename,ps.lastname,ps.address, parea.landofficersignature, ps.personid as partyid from la_ext_transactiondetails td"
-					+ " inner join la_ext_personlandmapping plm on plm.transactionid=td.transactionid "
-					+ " inner join la_spatialunit_land ld on ld.landid=plm.landid "
-					+ " inner join la_Party_person ps on ps.personid=plm.partyid "
-					+ " inner join la_ext_projectarea parea on parea.projectnameid= ld.projectnameid"
-					+ " inner join la_baunit_landusetype lut on lut.landusetypeid=ld.landusetypeid"
-					+ " where td.transactionid=" + usin;*/					
-			
-			sql = " select row_number() OVER () as rnum, td.transactionid as usin,plm.certificateno,ld.landno,CURRENT_DATE as Date,ld.area,lut.landusetype,ld.neighbor_east,ld.neighbor_west,ld.neighbor_north,"
-					+ " ld.neighbor_south,plm.sharepercentage,ps.firstname,ps.middlename,ps.lastname,ps.address, parea.landofficersignature, ps.personid as partyid,	ld.createddate as capture_date, "
-					+ " lst.landsharetype_en as landsharetype,g.gender,EXTRACT(YEAR from AGE(CURRENT_DATE, ps.dateofbirth)) as age,ms.maritalstatus,"
-					+ " id.identitytype,ps.identityno,CURRENT_DATE as dateofregistration, 0 as duration,ps.contactno,lt.landtype,hie1.name as country,"
-					+ " hie2.name as region,hie3.name as province,hie4.name as commune,hie5.name as place,ld.udparcelno"
-					+ " from la_ext_transactiondetails td"
-					+ " inner join la_ext_personlandmapping plm on plm.transactionid=td.transactionid"
-					+ " inner join la_spatialunit_land ld on ld.landid=plm.landid"
-					+ " inner join la_Party_person ps on ps.personid=plm.partyid"
-					+ " inner join la_ext_projectarea parea on parea.projectnameid= ld.projectnameid"
-					+ " left join la_baunit_landusetype lut on lut.landusetypeid=ld.landusetypeid"
-					+ " left join la_right_landsharetype lst on lst.landsharetypeid=ld.landsharetypeid"
-					+ " left join la_partygroup_gender g on g.genderid=ps.genderid"
-					+ " left join la_partygroup_maritalstatus ms on ms.maritalstatusid=ps.maritalstatusid"
-					+ " left join la_partygroup_identitytype id on id.identitytypeid=ps.identitytypeid"
-					+ " left join la_baunit_landtype lt on lt.landtypeid=ld.landtypeid"
-					+ " left join la_spatialunitgroup_hierarchy hie1 on hie1.hierarchyid=ld.hierarchyid1 and ld.spatialunitgroupid1=1"
-					+ " left join la_spatialunitgroup_hierarchy hie2 on hie2.hierarchyid=ld.hierarchyid2 and ld.spatialunitgroupid2=2"
-					+ " left join la_spatialunitgroup_hierarchy hie3 on hie3.hierarchyid=ld.hierarchyid3 and ld.spatialunitgroupid3=3"
-					+ " left join la_spatialunitgroup_hierarchy hie4 on hie4.hierarchyid=ld.hierarchyid4 and ld.spatialunitgroupid4=4"
-					+ " left join la_spatialunitgroup_hierarchy hie5 on hie5.hierarchyid=ld.hierarchyid5 and ld.spatialunitgroupid5=5"
-					+ " where td.transactionid=" + usin;	
-			
-			
-			Query query = getEntityManager().createNativeQuery(sql, ReportCertificateFetch.class);
-			List<ReportCertificateFetch> attribValues = query.getResultList();
+            String query = "select lst.landsharetype_en Tenure_Type,gd.gender_en,count(*) parcels, "
+                    + " round(((count(*)*100)/(select count(*) from la_spatialunit_land where isactive='1' and projectnameid= :projectnameid)\\:\\:numeric),2) as total_percentage,"
+                    + " sum(ld.area) Total_Area_Mapped, sum(ld.area)/count(*) Parcel_Average_Size, (select count(*) from la_spatialunit_land where applicationstatusid=2 and isactive='1') APFR_Issued"
+                    + " from la_spatialunit_land ld inner join la_right_landsharetype lst on lst.landsharetypeid=ld.landsharetypeid inner join la_ext_personlandmapping plm on plm.landid=ld.landid"
+                    + " inner join la_party_person ps on ps.personid=plm.partyid inner join la_partygroup_gender gd on gd.genderid=ps.genderid "
+                    + " where plm.persontypeid=1 and plm.isactive='1' and ld.isactive='1' and lst.isactive='1' and ld.projectnameid= :projectnameid group by lst.landsharetype_en,gd.gender_en;";
 
-			if (attribValues.size() > 0) 
-			{
-				 return attribValues;
-			}
-			else
-			{
+            Query executeQuery = getEntityManager().createNativeQuery(query);
+            executeQuery.setParameter("projectnameid", Integer.parseInt(projectnameid));
+            spatialUnit = executeQuery.getResultList();
+            if (spatialUnit.size() > 0) {
+
+                return spatialUnit;
+            } else {
+
                 return null;
             }
-		}
-		catch (Exception e) 
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			logger.error(e);
-			return null;
-		}
-	}
-	
-	@Override
-	public List<ReportCertificateFetch> getCertificatedetailsinbatch(Long startRecord,Long endRecord)
-	{
-		String sql = null;
-	
-		try 
-		{
-			/*sql = "select td.transactionid as usin,plm.certificateno,ld.landno,CURRENT_DATE as Date,ld.area,lut.landusetype,ld.neighbor_east,ld.neighbor_west,ld.neighbor_north,"
-					+ "ld.neighbor_south,plm.sharepercentage,ps.firstname,ps.middlename,ps.lastname,ps.address, parea.landofficersignature, ps.personid as partyid from la_ext_transactiondetails td"
-					+ " inner join la_ext_personlandmapping plm on plm.transactionid=td.transactionid "
-					+ " inner join la_spatialunit_land ld on ld.landid=plm.landid "
-					+ " inner join la_Party_person ps on ps.personid=plm.partyid "
-					+ " inner join la_ext_projectarea parea on parea.projectnameid= ld.projectnameid"
-					+ " inner join la_baunit_landusetype lut on lut.landusetypeid=ld.landusetypeid"
-					+ " where td.transactionid between " + startRecord +" and "+ endRecord;	*/	
-			
-			
-			sql = " select row_number() OVER () as rnum,td.transactionid as usin,plm.certificateno,ld.landno,CURRENT_DATE as Date,ld.area,lut.landusetype,ld.neighbor_east,ld.neighbor_west,ld.neighbor_north,"
-					+ " ld.neighbor_south,plm.sharepercentage,ps.firstname,ps.middlename,ps.lastname,ps.address, parea.landofficersignature, ps.personid as partyid,	ld.createddate as capture_date, "
-					+ " lst.landsharetype_en as landsharetype,g.gender,EXTRACT(YEAR from AGE(CURRENT_DATE, ps.dateofbirth)) as age,ms.maritalstatus,"
-					+ " id.identitytype,ps.identityno,CURRENT_DATE as dateofregistration, 0 as duration,ps.contactno,lt.landtype,hie1.name as country,"
-					+ " hie2.name as region,hie3.name as province,hie4.name as commune,hie5.name as place,ld.udparcelno"
-					+ " from la_ext_transactiondetails td"
-					+ " inner join la_ext_personlandmapping plm on plm.transactionid=td.transactionid"
-					+ " inner join la_spatialunit_land ld on ld.landid=plm.landid"
-					+ " inner join la_Party_person ps on ps.personid=plm.partyid"
-					+ " inner join la_ext_projectarea parea on parea.projectnameid= ld.projectnameid"
-					+ " left join la_baunit_landusetype lut on lut.landusetypeid=ld.landusetypeid"
-					+ " left join la_right_landsharetype lst on lst.landsharetypeid=ld.landsharetypeid"
-					+ " left join la_partygroup_gender g on g.genderid=ps.genderid"
-					+ " left join la_partygroup_maritalstatus ms on ms.maritalstatusid=ps.maritalstatusid"
-					+ " left join la_partygroup_identitytype id on id.identitytypeid=ps.identitytypeid"
-					+ " left join la_baunit_landtype lt on lt.landtypeid=ld.landtypeid"
-					+ " left join la_spatialunitgroup_hierarchy hie1 on hie1.hierarchyid=ld.hierarchyid1 and ld.spatialunitgroupid1=1"
-					+ " left join la_spatialunitgroup_hierarchy hie2 on hie2.hierarchyid=ld.hierarchyid2 and ld.spatialunitgroupid2=2"
-					+ " left join la_spatialunitgroup_hierarchy hie3 on hie3.hierarchyid=ld.hierarchyid3 and ld.spatialunitgroupid3=3"
-					+ " left join la_spatialunitgroup_hierarchy hie4 on hie4.hierarchyid=ld.hierarchyid4 and ld.spatialunitgroupid4=4"
-					+ " left join la_spatialunitgroup_hierarchy hie5 on hie5.hierarchyid=ld.hierarchyid5 and ld.spatialunitgroupid5=5"
-					+ " where td.transactionid between " + startRecord +" and "+ endRecord;
-			
-			
-			Query query = getEntityManager().createNativeQuery(sql, ReportCertificateFetch.class);
-			List<ReportCertificateFetch> attribValues = query.getResultList();
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
 
-			if (attribValues.size() > 0) 
-			{
-				 return attribValues;
-			}
-			else
-			{
+    @Override
+    public List<Object> findprojectapplicationstatussummaryreport(String projectnameid) {
+        try {
+            List<Object> spatialUnit;
+
+            String query = "select distinct (select count(applicationstatusid) from la_spatialunit_land where applicationstatusid=1) New_application,(select count(applicationstatusid) from la_spatialunit_land where applicationstatusid=2) Approved_application,"
+                    + " (select count(applicationstatusid) from la_spatialunit_land where applicationstatusid=3) reject_application,(select count(applicationstatusid) from la_spatialunit_land where applicationstatusid=4) Pending_application,"
+                    + " (select count(applicationstatusid) from la_spatialunit_land where applicationstatusid=5) registred_application from la_spatialunit_land ld"
+                    + " where ld.isactive='1' and ld.projectnameid=" + projectnameid;
+
+            Query executeQuery = getEntityManager().createNativeQuery(query);
+            //executeQuery.setParameter("projectnameid", Integer.parseInt(projectnameid));
+            spatialUnit = executeQuery.getResultList();
+            if (spatialUnit.size() > 0) {
+
+                return spatialUnit;
+            } else {
+
                 return null;
             }
-		}
-		catch (Exception e) 
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			logger.error(e);
-			return null;
-		}
-	}
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
 
-	@Override
-	public List<Object> findsummaryreport(String projectnameid) 
-	{
-		try 
-		{
-			List<Object> spatialUnit;
-			
-			String query="select hr.name as Commune_Name,count(*) as parcels, "
-					+ " round(((count(*)*100)/(select count(*) from la_spatialunit_land where isactive='1' and projectnameid= :projectnameid)\\:\\:numeric),2) as total_percentage,"
-					+ " sum(ld.area) as Total_Area_Mapped, sum(ld.area)/count(*) as Parcel_Average_Size, "
-					+ " (select count(*) from la_spatialunit_land where applicationstatusid=2 and isactive='1') as APFR_Issued "
-					+ " from la_spatialunit_land ld inner join la_spatialunitgroup_hierarchy hr on hr.hierarchyid=ld.hierarchyid4"
-					+ " where ld.isactive='1' and hr.isactive='1' and ld.projectnameid= :projectnameid"					
-					+ " group by hr.name";
+    @Override
+    public List<Object> findprojectapplicationtypesummaryreport(String projectnameid) {
+        try {
+            List<Object> spatialUnit;
 
-			//spatialUnit = getEntityManager().createQuery(query).getResultList();
-			
-			Query executeQuery = getEntityManager().createNativeQuery(query);
-			executeQuery.setParameter("projectnameid", Integer.parseInt(projectnameid));
-			spatialUnit = executeQuery.getResultList();
-			if(spatialUnit.size() > 0){
+            String query = "select distinct (select count(claimtypeid) from la_spatialunit_land where claimtypeid=1) Disputedclaim,(select count(claimtypeid) from la_spatialunit_land where claimtypeid=2) Existingright,"
+                    + " (select count(claimtypeid) from la_spatialunit_land where claimtypeid=3) Newclaim,(select count(claimtypeid) from la_spatialunit_land where claimtypeid=4) Unclaimed,"
+                    + " (select count(claimtypeid) from la_spatialunit_land where claimtypeid=5) NoClaim from la_spatialunit_land ld where ld.isactive='1' and ld.projectnameid=" + projectnameid;
 
-				return spatialUnit;
-			}
+            Query executeQuery = getEntityManager().createNativeQuery(query);
+            //executeQuery.setParameter("projectnameid", Integer.parseInt(projectnameid));
+            spatialUnit = executeQuery.getResultList();
+            if (spatialUnit.size() > 0) {
 
-			else{
+                return spatialUnit;
+            } else {
 
-				return null;
-			}
-		} catch (Exception e) {
-			logger.error(e);
-			return null;
-		}
-	}
-    
-	@Override
-	public List<Object> findprojectdetailedsummaryreport(String projectnameid) 
-	{
-		try 
-		{
-			List<Object> spatialUnit;
-			
-			String query="select lst.landsharetype_en Tenure_Type,gd.gender_en,count(*) parcels, "					
-					+ " round(((count(*)*100)/(select count(*) from la_spatialunit_land where isactive='1' and projectnameid= :projectnameid)\\:\\:numeric),2) as total_percentage,"
-					+ " sum(ld.area) Total_Area_Mapped, sum(ld.area)/count(*) Parcel_Average_Size, (select count(*) from la_spatialunit_land where applicationstatusid=2 and isactive='1') APFR_Issued"
-					+ " from la_spatialunit_land ld inner join la_right_landsharetype lst on lst.landsharetypeid=ld.landsharetypeid inner join la_ext_personlandmapping plm on plm.landid=ld.landid"
-					+ " inner join la_party_person ps on ps.personid=plm.partyid inner join la_partygroup_gender gd on gd.genderid=ps.genderid "
-					+ " where plm.persontypeid=1 and plm.isactive='1' and ld.isactive='1' and lst.isactive='1' and ld.projectnameid= :projectnameid group by lst.landsharetype_en,gd.gender_en;";
+                return null;
+            }
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
 
-			Query executeQuery = getEntityManager().createNativeQuery(query);
-			executeQuery.setParameter("projectnameid", Integer.parseInt(projectnameid));
-			spatialUnit = executeQuery.getResultList();	
-			if(spatialUnit.size() > 0){
+    @Override
+    public List<Object> findprojectworkflowsummaryreport(String projectnameid) {
+        try {
+            List<Object> spatialUnit;
 
-				return spatialUnit;
-			}
+            String query = "select ld.landno,ld.createddate Capture_Data, lw1.statuschangedate Processing_Date, lw2.statuschangedate Approval_Date, plm.certificateissuedate certificate_date  from la_spatialunit_land ld"
+                    + " inner join la_ext_personlandmapping plm on plm.landid=ld.landid and plm.isactive='1' inner join la_ext_landworkflowhistory lw1 on lw1.landid=ld.landid and lw1.workflowid=2"
+                    + " inner join la_ext_landworkflowhistory lw2 on lw2.landid=ld.landid and lw2.applicationstatusid=2 where ld.isactive='1' and ld.projectnameid=" + projectnameid;
 
-			else{
+            Query executeQuery = getEntityManager().createNativeQuery(query);
+            //executeQuery.setParameter("projectnameid", Integer.parseInt(projectnameid));
+            spatialUnit = executeQuery.getResultList();
+            if (spatialUnit.size() > 0) {
 
-				return null;
-			}
-		} catch (Exception e) {
-			logger.error(e);
-			return null;
-		}
-	}
-	
-	@Override
-	public List<Object> findprojectapplicationstatussummaryreport(String projectnameid) 
-	{
-		try 
-		{
-			List<Object> spatialUnit;
-			
-			String query="select distinct (select count(applicationstatusid) from la_spatialunit_land where applicationstatusid=1) New_application,(select count(applicationstatusid) from la_spatialunit_land where applicationstatusid=2) Approved_application,"
-					+ " (select count(applicationstatusid) from la_spatialunit_land where applicationstatusid=3) reject_application,(select count(applicationstatusid) from la_spatialunit_land where applicationstatusid=4) Pending_application,"
-					+ " (select count(applicationstatusid) from la_spatialunit_land where applicationstatusid=5) registred_application from la_spatialunit_land ld"
-					+ " where ld.isactive='1' and ld.projectnameid=" + projectnameid;
+                return spatialUnit;
+            } else {
 
+                return null;
+            }
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
 
-			Query executeQuery = getEntityManager().createNativeQuery(query);
-			//executeQuery.setParameter("projectnameid", Integer.parseInt(projectnameid));
-			spatialUnit = executeQuery.getResultList();	
-			if(spatialUnit.size() > 0){
+    @Override
+    public List<Object> findprojectTenureTypesLandUnitsummaryreport(String projectnameid) {
+        try {
+            List<Object> spatialUnit;
 
-				return spatialUnit;
-			}
+            String query = "select ld.landno,Concat(ps.firstname,' ',ps.middlename,' ',ps.lastname) AS name,g.gender,lst.landsharetype_en as landsharetype,EXTRACT(YEAR from AGE(CURRENT_DATE, ps.dateofbirth)) as age"
+                    + " from la_spatialunit_land ld inner join la_ext_personlandmapping plm on plm.landid=ld.landid inner join la_Party_person ps on ps.personid=plm.partyid"
+                    + " left join la_right_landsharetype lst on lst.landsharetypeid=ld.landsharetypeid left join la_partygroup_gender g on g.genderid=ps.genderid"
+                    + " where ld.projectnameid=" + projectnameid;
 
-			else{
+            Query executeQuery = getEntityManager().createNativeQuery(query);
+            spatialUnit = executeQuery.getResultList();
+            if (spatialUnit.size() > 0) {
 
-				return null;
-			}
-		} catch (Exception e) {
-			logger.error(e);
-			return null;
-		}
-	}
-	
-	@Override
-	public List<Object> findprojectapplicationtypesummaryreport(String projectnameid) 
-	{
-		try 
-		{
-			List<Object> spatialUnit;
-			
-			String query="select distinct (select count(claimtypeid) from la_spatialunit_land where claimtypeid=1) Disputedclaim,(select count(claimtypeid) from la_spatialunit_land where claimtypeid=2) Existingright,"
-					+ " (select count(claimtypeid) from la_spatialunit_land where claimtypeid=3) Newclaim,(select count(claimtypeid) from la_spatialunit_land where claimtypeid=4) Unclaimed,"
-					+ " (select count(claimtypeid) from la_spatialunit_land where claimtypeid=5) NoClaim from la_spatialunit_land ld where ld.isactive='1' and ld.projectnameid=" + projectnameid;
+                return spatialUnit;
+            } else {
 
+                return null;
+            }
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
 
-			Query executeQuery = getEntityManager().createNativeQuery(query);
-			//executeQuery.setParameter("projectnameid", Integer.parseInt(projectnameid));
-			spatialUnit = executeQuery.getResultList();	
-			if(spatialUnit.size() > 0){
+    @Override
+    public List<Object> findLiberiaFarmummaryreport(String projectnameid) {
+        try {
+            List<Object> spatialUnit;
 
-				return spatialUnit;
-			}
+            String query = "Select Distinct RA.landID,cast(srl.createddate as date),u.username, (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (100,121,130,139,148,157)) as EnterpriseFarmName,"
+                    + " h1.name as county,h2.name as District,h3.name as Clanname,h4.name as community,h5.name as town,rc.classificationname,rsc.subclassificationname,area,ac.categoryname,"
+                    + " case when ac.attributecategoryid in (10,17) then 'Natural' when ac.attributecategoryid in (14,18) then 'Non-Natural' end as persontype,"
+                    + " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1063,1017,1035,1079,1088,1097,1108) and groupid=RA.groupid) ||' '||"
+                    + " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1065,1018,1036,1080,1089,1109,1098) and groupid=RA.groupid) ||' '||"
+                    + " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1066,1019,1037,1081,1090,1099,1110) and groupid=RA.groupid) as OwnerName,"
+                    + " (Select case when count(*)=0 then 'No' else 'Yes' end as ispoi from la_ext_resourcepoiattributevalue where landID=RA.LandID ) as IsPOI,"
+                    + " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1022,1064,1116,22) and groupid=RA.groupid) as MaritalStatus, "
+                    + " (Select count(distinct groupid) from la_ext_resourcepoiattributevalue where landID=RA.LandID ) as POICount,"
+                    + " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (4,1020,1067,1119) and groupid=RA.groupid) as Gender,"
+                    + " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1024,1059,1070,1122) and groupid=RA.groupid) as Etnicity,"
+                    + " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (43,1025,1071,1123) and groupid=RA.groupid) as Resisdent,"
+                    + " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1021,1068,1120,1129) and groupid=RA.groupid) as DOB,"
+                    + " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (5,8,1030,1042,1051,1073,1086,1095,1105,1125) and groupid=RA.groupid) as Mobile,"
+                    + " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (103,122,131,140,149,158)) as primarycrop,"
+                    + " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (104,123,132,141,150,159)) as primarycropdate,"
+                    + " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (105,124,133,142,151,160)) as primarycropduration,"
+                    + " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (116,125,134,143,152,161)) as seccrop,"
+                    + " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (117,126,135,144,153,162)) as seccropdate,"
+                    + " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (118,127,136,145,154,163)) as seccropduration, "
+                    + " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (119,128,137,146,155,164)) as TotalExpenditure,"
+                    + " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (120,129,138,147,156,165)) as TotalSale"
+                    + " from la_spatialunit_resource_land srl,la_ext_resourceattributevalue RA,la_ext_attributemaster AM,la_ext_attributecategory ac"
+                    + " ,la_ext_user u,la_spatialunitgroup_hierarchy h1 ,la_spatialunitgroup_hierarchy h2,la_spatialunitgroup_hierarchy h3,la_spatialunitgroup_hierarchy h4,la_spatialunitgroup_hierarchy h5 ,la_ext_resourcelandclassificationmapping rlcm"
+                    + " ,la_ext_resourceclassification rc ,la_ext_resourcesubclassification rsc "
+                    + " Where srl.LandID=RA.landID and rlcm.landid=srl.landid and rc.classificationid=rlcm.classificationid and rsc.subclassificationid=rlcm.subclassificationid"
+                    + " And u.userid=srl.createdby And h1.hierarchyid=srl.hierarchyid1 and h1.spatialunitgroupid=1 And h2.hierarchyid=srl.hierarchyid2 and h2.spatialunitgroupid=2"
+                    + " And h3.hierarchyid=srl.hierarchyid3 and h3.spatialunitgroupid=3 And h4.hierarchyid=srl.hierarchyid4 and h4.spatialunitgroupid=4 And h5.hierarchyid=srl.hierarchyid5 and h5.spatialunitgroupid=5"
+                    + " AND RA.AttributeMasterID=AM.AttributeMasterID AND AM.AttributeCategoryID=ac.AttributeCategoryID AND srl.isactive = true and RA.projectid = " + projectnameid + ""
+                    + " Order by Ra.Landid";
 
-			else{
+            Query executeQuery = getEntityManager().createNativeQuery(query);
+            spatialUnit = executeQuery.getResultList();
+            if (spatialUnit.size() > 0) {
 
-				return null;
-			}
-		} catch (Exception e) {
-			logger.error(e);
-			return null;
-		}
-	}
-	
-	@Override
-	public List<Object> findprojectworkflowsummaryreport(String projectnameid) 
-	{
-		try 
-		{
-			List<Object> spatialUnit;
-			
-			String query="select ld.landno,ld.createddate Capture_Data, lw1.statuschangedate Processing_Date, lw2.statuschangedate Approval_Date, plm.certificateissuedate certificate_date  from la_spatialunit_land ld"
-					+ " inner join la_ext_personlandmapping plm on plm.landid=ld.landid and plm.isactive='1' inner join la_ext_landworkflowhistory lw1 on lw1.landid=ld.landid and lw1.workflowid=2"
-					+ " inner join la_ext_landworkflowhistory lw2 on lw2.landid=ld.landid and lw2.applicationstatusid=2 where ld.isactive='1' and ld.projectnameid=" + projectnameid;
+                return spatialUnit;
+            } else {
 
+                return null;
+            }
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
 
-			Query executeQuery = getEntityManager().createNativeQuery(query);
-			//executeQuery.setParameter("projectnameid", Integer.parseInt(projectnameid));
-			spatialUnit = executeQuery.getResultList();	
-			if(spatialUnit.size() > 0){
+    @Override
+    public List<Object> findprojectdetailedsummaryreportForCommune(String hierarchyid) {
+        try {
+            List<Object> spatialUnit;
 
-				return spatialUnit;
-			}
+            String query = "select lst.landsharetype_en Tenure_Type,gd.gender_en,hr.name Commune_Name,count(*) parcels,"
+                    + " round(((count(*)*100)/(select count(*) from la_spatialunit_land where isactive='1' and hierarchyid= :hierarchyid)\\:\\:numeric),2) as total_percentage,"
+                    + " sum(ld.area) Total_Area_Mapped, sum(ld.area)/count(*) Parcel_Average_Size, (select count(*) from la_spatialunit_land where applicationstatusid=2 and isactive='1') APFR_Issued from la_spatialunit_land ld"
+                    + " inner join la_right_landsharetype lst on lst.landsharetypeid=ld.landsharetypeid inner join la_ext_personlandmapping plm on plm.landid=ld.landid"
+                    + " inner join la_party_person ps on ps.personid=plm.partyid inner join la_partygroup_gender gd on gd.genderid=ps.genderid "
+                    + " inner join la_spatialunitgroup_hierarchy hr on hr.hierarchyid=ld.hierarchyid4 "
+                    + " where plm.persontypeid=1 and plm.isactive='1' and ld.isactive='1' and lst.isactive='1' and hr.isactive='1' and hr.hierarchyid= :hierarchyid"
+                    + " group by lst.landsharetype_en,gd.gender_en,hr.name,hr.hierarchyid;";
 
-			else{
+            Query executeQuery = getEntityManager().createNativeQuery(query);
+            executeQuery.setParameter("hierarchyid", Integer.parseInt(hierarchyid));
+            spatialUnit = executeQuery.getResultList();
+            if (spatialUnit.size() > 0) {
 
-				return null;
-			}
-		} catch (Exception e) {
-			logger.error(e);
-			return null;
-		}
-	}
-	
-	@Override
-	public List<Object> findprojectTenureTypesLandUnitsummaryreport(String projectnameid) 
-	{
-		try 
-		{
-			List<Object> spatialUnit;
-			
-			String query="select ld.landno,Concat(ps.firstname,' ',ps.middlename,' ',ps.lastname) AS name,g.gender,lst.landsharetype_en as landsharetype,EXTRACT(YEAR from AGE(CURRENT_DATE, ps.dateofbirth)) as age"
-					+ " from la_spatialunit_land ld inner join la_ext_personlandmapping plm on plm.landid=ld.landid inner join la_Party_person ps on ps.personid=plm.partyid"
-					+ " left join la_right_landsharetype lst on lst.landsharetypeid=ld.landsharetypeid left join la_partygroup_gender g on g.genderid=ps.genderid"
-					+ " where ld.projectnameid=" + projectnameid;
+                return spatialUnit;
+            } else {
 
+                return null;
+            }
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
 
-			Query executeQuery = getEntityManager().createNativeQuery(query);
-			spatialUnit = executeQuery.getResultList();	
-			if(spatialUnit.size() > 0){
+    @Override
+    public Integer getTotalrecordByProject(int project) {
 
-				return spatialUnit;
-			}
+        try {
+            String sql = "select count(*) from "
+                    + "("
+                    + "  select LD.landid"
+                    + "  from la_spatialunit_land LD"
+                    + "    inner join la_ext_personlandmapping PL on LD.landid = PL.landid"
+                    + "    inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid"
+                    + "    inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid"
+                    + "    inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid"
+                    + "    inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid"
+                    + "    inner Join  la_party_person LP on PL.partyid = LP.personid"
+                    + "    inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid"
+                    + "  where Pl.isactive=true and LD.applicationstatusid != 7 and LD.isactive=true and LD.projectnameid = "
+                    + project + ") as t1";
 
-			else{
+            List<BigInteger> arrObject = getEntityManager().createNativeQuery(sql).getResultList();
 
-				return null;
-			}
-		} catch (Exception e) {
-			logger.error(e);
-			return null;
-		}
-	}
-	
-	@Override
-	public List<Object> findLiberiaFarmummaryreport(String projectnameid) 
-	{
-		try 
-		{
-			List<Object> spatialUnit;
-			
-			/*String query="select ld.landno,Concat(ps.firstname,' ',ps.middlename,' ',ps.lastname) AS name,g.gender,lst.landsharetype_en as landsharetype,EXTRACT(YEAR from AGE(CURRENT_DATE, ps.dateofbirth)) as age"
-					+ " from la_spatialunit_land ld inner join la_ext_personlandmapping plm on plm.landid=ld.landid inner join la_Party_person ps on ps.personid=plm.partyid"
-					+ " left join la_right_landsharetype lst on lst.landsharetypeid=ld.landsharetypeid left join la_partygroup_gender g on g.genderid=ps.genderid"
-					+ " where ld.projectnameid=" + projectnameid;*/
+            if (arrObject.size() > 0) {
+                return arrObject.get(0).intValue();
+            }
 
-			
-			/*String query="Select distinct srl.landid,cast(srl.createddate as date),u.username,cav1.attributevalue as EnterpriseGroupname,h1.name as county,h2.name as District,h3.name as Clanname,h4.name as community,h5.name as town,"
-					+ " rc.classificationname,rsc.subclassificationname,area, ac.categoryname,case when ac.attributecategoryid in (10,17) then 'Natural' when ac.attributecategoryid in (14,18) then 'Non-Natural' end as persontype,"
-					+ " rav7.attributevalue||' '||rav8.attributevalue||' '||rav2.attributevalue as Name,case when rpav.attributevalue is null then 'N' else 'Y' end as ispoi,rav4.attributevalue as MaritalStatus,rpav.attributevalue as relationship,"
-					+ " rav3.attributevalue as Gender,rav1.attributevalue as Ethnicity,rav5.attributevalue as Resident,rav6.attributevalue as DOB,rav9.attributevalue as MobileNo, "
-					+ " cav2.attributevalue as primarycrop, cav3.attributevalue as primarycropdate,cav4.attributevalue as primarycropduration,"
-					+ " cav5.attributevalue as seccrop, cav6.attributevalue as seccropdate,cav7.attributevalue as seccropduration"
-					+ " from la_spatialunit_resource_land srl"
-					+ " inner join la_ext_user u on u.userid=srl.createdby"
-					+ " inner join la_spatialunitgroup_hierarchy h1 on h1.hierarchyid=srl.hierarchyid1 and h1.spatialunitgroupid=1"
-					+ " inner join la_spatialunitgroup_hierarchy h2 on h2.hierarchyid=srl.hierarchyid2 and h2.spatialunitgroupid=2"
-					+ " inner join la_spatialunitgroup_hierarchy h3 on h3.hierarchyid=srl.hierarchyid3 and h3.spatialunitgroupid=3"
-					+ " inner join la_spatialunitgroup_hierarchy h4 on h4.hierarchyid=srl.hierarchyid4 and h4.spatialunitgroupid=4"
-					+ " inner join la_spatialunitgroup_hierarchy h5 on h5.hierarchyid=srl.hierarchyid5 and h5.spatialunitgroupid=5"
-					+ " inner join la_ext_resource_custom_attributevalue cav1 on cav1.landid=srl.landid and cav1.attributeoptionsid=100"
-					+ " inner join la_ext_resource_custom_attributevalue cav2 on cav2.landid=srl.landid and cav2.attributeoptionsid=103"
-					+ " inner join la_ext_resource_custom_attributevalue cav3 on cav3.landid=srl.landid and cav3.attributeoptionsid=104"
-					+ " inner join la_ext_resource_custom_attributevalue cav4 on cav4.landid=srl.landid and cav4.attributeoptionsid=105"
-					+ " inner join la_ext_resource_custom_attributevalue cav5 on cav5.landid=srl.landid and cav5.attributeoptionsid=116"
-					+ " inner join la_ext_resource_custom_attributevalue cav6 on cav6.landid=srl.landid and cav6.attributeoptionsid=117"
-					+ " inner join la_ext_resource_custom_attributevalue cav7 on cav7.landid=srl.landid and cav7.attributeoptionsid=118"
-					+ " inner join la_ext_resourceattributevalue rav1 on rav1.landid=srl.landid and rav1.attributemasterid=1024"
-					+ " inner join la_ext_resourceattributevalue rav7 on rav7.landid=srl.landid and rav7.attributemasterid=1017"
-					+ " inner join la_ext_resourceattributevalue rav8 on rav8.landid=srl.landid and rav8.attributemasterid=1018"
-					+ " inner join la_ext_resourceattributevalue rav2 on rav2.landid=srl.landid and rav2.attributemasterid=1019"
-					+ " inner join la_ext_resourceattributevalue rav3 on rav3.landid=srl.landid and rav3.attributemasterid=1020"
-					+ " inner join la_ext_resourceattributevalue rav4 on rav4.landid=srl.landid and rav4.attributemasterid=1022"
-					+ " inner join la_ext_resourceattributevalue rav5 on rav5.landid=srl.landid and rav5.attributemasterid=1025"
-					+ " inner join la_ext_resourceattributevalue rav6 on rav6.landid=srl.landid and rav6.attributemasterid=1021"
-					+ " inner join la_ext_resourceattributevalue rav9 on rav9.landid=srl.landid and rav9.attributemasterid=1030"
-					+ " inner join la_ext_resourcelandclassificationmapping rlcm on rlcm.landid=srl.landid"
-					+ " inner join la_ext_resourceclassification rc on rc.classificationid=rlcm.classificationid"
-					+ " inner join la_ext_resourcesubclassification rsc on rsc.subclassificationid=rlcm.subclassificationid"
-					+ " left join la_ext_resourcepoiattributevalue rpav on rpav.landid=srl.landid and rpav.attributemasterid=5"
-					+ " left join la_ext_resourceattributevalue rav on rav.landid=srl.landid"
-					+ " inner join la_ext_attributemaster am on am.attributemasterid=rav.attributemasterid"
-					+ " inner join la_ext_attributecategory ac on ac.attributecategoryid=am.attributecategoryid"
-					+ " where srl.projectnameid=" + projectnameid;*/
-			
-			String query = "Select Distinct RA.landID,cast(srl.createddate as date),u.username, (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (100,121,130,139,148,157)) as EnterpriseFarmName,"
-					+ " h1.name as county,h2.name as District,h3.name as Clanname,h4.name as community,h5.name as town,rc.classificationname,rsc.subclassificationname,area,ac.categoryname,"
-					+ " case when ac.attributecategoryid in (10,17) then 'Natural' when ac.attributecategoryid in (14,18) then 'Non-Natural' end as persontype,"
-					+ " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1063,1017,1035,1079,1088,1097,1108) and groupid=RA.groupid) ||' '||"
-					+ " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1065,1018,1036,1080,1089,1109,1098) and groupid=RA.groupid) ||' '||"
-					+ " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1066,1019,1037,1081,1090,1099,1110) and groupid=RA.groupid) as OwnerName,"
-					+ " (Select case when count(*)=0 then 'No' else 'Yes' end as ispoi from la_ext_resourcepoiattributevalue where landID=RA.LandID ) as IsPOI,"
-					+ " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1022,1064,1116,22) and groupid=RA.groupid) as MaritalStatus, "
-					+ " (Select count(distinct groupid) from la_ext_resourcepoiattributevalue where landID=RA.LandID ) as POICount,"
-					+ " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (4,1020,1067,1119) and groupid=RA.groupid) as Gender,"
-					+ " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1024,1059,1070,1122) and groupid=RA.groupid) as Etnicity,"
-					+ " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (43,1025,1071,1123) and groupid=RA.groupid) as Resisdent,"
-					+ " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1021,1068,1120,1129) and groupid=RA.groupid) as DOB,"
-					+ " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (5,8,1030,1042,1051,1073,1086,1095,1105,1125) and groupid=RA.groupid) as Mobile,"
-					+ " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (103,122,131,140,149,158)) as primarycrop,"
-					+ " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (104,123,132,141,150,159)) as primarycropdate,"
-					+ " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (105,124,133,142,151,160)) as primarycropduration,"
-					+ " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (116,125,134,143,152,161)) as seccrop,"
-					+ " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (117,126,135,144,153,162)) as seccropdate,"
-					+ " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (118,127,136,145,154,163)) as seccropduration, "
-					+ " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (119,128,137,146,155,164)) as TotalExpenditure,"
-					+ " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (120,129,138,147,156,165)) as TotalSale"
-					+ " from la_spatialunit_resource_land srl,la_ext_resourceattributevalue RA,la_ext_attributemaster AM,la_ext_attributecategory ac"
-					+ " ,la_ext_user u,la_spatialunitgroup_hierarchy h1 ,la_spatialunitgroup_hierarchy h2,la_spatialunitgroup_hierarchy h3,la_spatialunitgroup_hierarchy h4,la_spatialunitgroup_hierarchy h5 ,la_ext_resourcelandclassificationmapping rlcm"
-					+ " ,la_ext_resourceclassification rc ,la_ext_resourcesubclassification rsc "
-					+ " Where srl.LandID=RA.landID and rlcm.landid=srl.landid and rc.classificationid=rlcm.classificationid and rsc.subclassificationid=rlcm.subclassificationid"
-					+ " And u.userid=srl.createdby And h1.hierarchyid=srl.hierarchyid1 and h1.spatialunitgroupid=1 And h2.hierarchyid=srl.hierarchyid2 and h2.spatialunitgroupid=2"
-					+ " And h3.hierarchyid=srl.hierarchyid3 and h3.spatialunitgroupid=3 And h4.hierarchyid=srl.hierarchyid4 and h4.spatialunitgroupid=4 And h5.hierarchyid=srl.hierarchyid5 and h5.spatialunitgroupid=5"
-					+ " AND RA.AttributeMasterID=AM.AttributeMasterID AND AM.AttributeCategoryID=ac.AttributeCategoryID AND srl.isactive = true and RA.projectid = "+ projectnameid+""
-					+ " Order by Ra.Landid";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return null;
 
-			
-			
+    }
 
-			Query executeQuery = getEntityManager().createNativeQuery(query);
-			spatialUnit = executeQuery.getResultList();	
-			if(spatialUnit.size() > 0){
+    @Override
+    public Integer searchCount(
+            Integer claimType,
+            int project,
+            String parcelId,
+            String appNum,
+            String pvNum,
+            String apfrNum,
+            String firstName,
+            int appType,
+            int appStatus) {
 
-				return spatialUnit;
-			}
+        String sql;
+        String strWhere = "";
 
-			else{
+        if (claimType > 0) {
+            strWhere = strWhere + " and LC.claimtypeid = " + claimType;
+        }
+        
+        if (appStatus > 0) {
+            strWhere = strWhere + " and LD.applicationstatusid = " + appStatus;
+        }
 
-				return null;
-			}
-		} catch (Exception e) {
-			logger.error(e);
-			return null;
-		}
-	}
-	
-    
-	@Override
-	public List<Object> findprojectdetailedsummaryreportForCommune(String hierarchyid) 
-	{
-		try 
-		{
-			List<Object> spatialUnit;
-			
-			String query="select lst.landsharetype_en Tenure_Type,gd.gender_en,hr.name Commune_Name,count(*) parcels,"
-					+ " round(((count(*)*100)/(select count(*) from la_spatialunit_land where isactive='1' and hierarchyid= :hierarchyid)\\:\\:numeric),2) as total_percentage,"
-					+ " sum(ld.area) Total_Area_Mapped, sum(ld.area)/count(*) Parcel_Average_Size, (select count(*) from la_spatialunit_land where applicationstatusid=2 and isactive='1') APFR_Issued from la_spatialunit_land ld"
-					+ " inner join la_right_landsharetype lst on lst.landsharetypeid=ld.landsharetypeid inner join la_ext_personlandmapping plm on plm.landid=ld.landid"
-					+ " inner join la_party_person ps on ps.personid=plm.partyid inner join la_partygroup_gender gd on gd.genderid=ps.genderid "
-					+ " inner join la_spatialunitgroup_hierarchy hr on hr.hierarchyid=ld.hierarchyid4 "
-					+ " where plm.persontypeid=1 and plm.isactive='1' and ld.isactive='1' and lst.isactive='1' and hr.isactive='1' and hr.hierarchyid= :hierarchyid"
-					+ " group by lst.landsharetype_en,gd.gender_en,hr.name,hr.hierarchyid;";
+        if (!"".equals(parcelId)) {
+            String strPattern = "^0+";
+            parcelId = parcelId.replaceAll(strPattern, "");
+            strWhere = strWhere + " and LD.landid = " + parcelId;
+        }
 
-			Query executeQuery = getEntityManager().createNativeQuery(query);
-			executeQuery.setParameter("hierarchyid", Integer.parseInt(hierarchyid));
-			spatialUnit = executeQuery.getResultList();	
-			if(spatialUnit.size() > 0){
+        if (!StringUtils.isEmpty(appNum)) {
+            strWhere = strWhere + " and coalesce(LD.application_no, '') like :appNum";
+        }
 
-				return spatialUnit;
-			}
+        if (!StringUtils.isEmpty(pvNum)) {
+            strWhere = strWhere + " and coalesce(LD.pv_no, '') like :pvNum";
+        }
 
-			else{
+        if (!StringUtils.isEmpty(apfrNum)) {
+            strWhere = strWhere + " and coalesce(LD.apfr_no, '') like :apfrNum";
+        }
 
-				return null;
-			}
-		} catch (Exception e) {
-			logger.error(e);
-			return null;
-		}
-	}
+        if (!StringUtils.isEmpty(firstName)) {
+            strWhere = strWhere + " and coalesce(LP.firstname, '') like :firstName";
+        }
 
-	@Override
-	public Integer getTotalrecordByProject(String project) {
-	
-		try{
-			
-			
-/*			String hql1 = "select count(*) from (  Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,   "+ 
-			           " string_agg(LP.firstname||' '||LP.lastname,' / ' order by LP.firstname,LP.lastname) firstname,null as lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype from la_spatialunit_land LD  "+    
-			           " Inner join la_ext_personlandmapping PL on LD.landid = PL.landid   "+ 
-			           " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid   "+ 
-			           " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid  "+   
-			           " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid   "+ 
-			           " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid  "+   
-			           " inner Join  la_party_person LP on PL.partyid = LP.personid   "+  
-			           " inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid  "+   
-			           " where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true  and PL.persontypeid=1  and LD.projectnameid = " +project +
-			           " group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  "+ 
-			           " la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype Union  "+  
-			           " Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  "+ 
-			           " LP.firstname||' '||LP.lastname as firstname, null as lastname, LP.address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype from la_spatialunit_land LD  "+    
-			           " Inner join la_ext_disputelandmapping PL on LD.landid = PL.landid   "+ 
-			           " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid   "+ 
-			           " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid  "+   
-			           " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid   "+ 
-			           " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid  "+   
-			           " inner Join  la_party_person LP on PL.partyid = LP.personid   "+ 
-			           " inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid  "+   
-			           " where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true  and LD.projectnameid  =" +project + "union "+
-			           " Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,'' as firstname, '' as lastname, '' as address,  "+ 
-			           " la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en ,0  as transactionid ,ST.landsharetype from la_spatialunit_land LD  "+ 
-			           " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid  "+ 
-			           " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid  "+ 
-			           " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid "+ 
-			           " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid  "+ 
-			           " where LD.isactive=true AND LD.claimtypeid=4 and LD.workflowstatusid!=6 and LD.isactive=true  and LD.projectnameid  = " +project +"  union  "+
-			           " Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+
-			           " string_agg(LP.firstname||' '||LP.lastname,' / ' order by LP.firstname,LP.lastname) firstname,null as lastname, null as address ,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype from la_spatialunit_land LD  "+ 
-			           " Inner join la_ext_personlandmapping PL on LD.landid = PL.landid   "+
-			           " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid   "+
-			           " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid  "+
-			           " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid "+
-			           " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid  "+
-			           " inner Join  la_party_organization LP on PL.partyid = LP.organizationid  "+
-			          " inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid   "+
-		              " where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true  and LD.projectnameid  = " +project +" group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+ 
-                   " la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype order by landid DESC) as t1";
-*/
-			
-			String hql1 ="select count(*) from ( Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,"+     
-		            " LP.firstname||' '|| LP.lastname as firstname,null as lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype from la_spatialunit_land LD "+       
-		            "Inner join la_ext_personlandmapping PL on LD.landid = PL.landid "+ 
-		            "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid "+ 
-		            "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+      
-		            "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+   
-		            "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+      
-		            "inner Join  la_party_person LP on PL.partyid = LP.personid "+    
-		            "inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "+      
-		            "where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true  and PL.persontypeid=1 and LP.ownertype=1 and  LD.projectnameid = " +project +"  "+    
-		            "group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, LP.firstname,  LP.lastname, "+    
-		            "la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype Union "+      
-		            "Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+    
-		            "LP.firstname||' '||LP.lastname as firstname, null as lastname, LP.address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype from la_spatialunit_land LD "+      
-		            "Inner join la_ext_disputelandmapping PL on LD.landid = PL.landid "+     
-		            "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid "+     
-		            "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+     
-		            "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+    
-		            "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+     
-		            "inner Join  la_party_person LP on PL.partyid = LP.personid "+    
-		            "inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid  "+    
-		            "where Pl.isactive=true and LP.ownertype=1  and LD.workflowstatusid!=6 and LD.isactive=true  and LD.projectnameid = " +project +"  union  "+
-		            "Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,'' as firstname, '' as lastname, '' as address, "+  
-		            "la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en ,0  as transactionid ,ST.landsharetype from la_spatialunit_land LD  "+ 
-		            "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid "+
-		            "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+
-		            "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid "+ 
-		            "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+  
-		            "where LD.isactive=true AND LD.claimtypeid=4 and LD.workflowstatusid!=6 and LD.isactive=true  and LD.projectnameid = " +project +"  union  "+
-		            "Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  "+
-		            "LP.firstname||' '|| LP.lastname as firstname ,null as lastname, null as address ,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype from la_spatialunit_land LD "+  
-		            "Inner join la_ext_personlandmapping PL on LD.landid = PL.landid "+  
-		            "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid   "+
-		            "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid  "+
-		            "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid "+
-		            "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid  "+
-		            "inner Join  la_party_organization LP on PL.partyid = LP.organizationid  "+
-		            "inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid   "+
-	                "where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true  and LD.projectnameid = " +project +"   group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  LP.firstname, "+ 
-                    "la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype ,LP.lastname  order by landid DESC) as t1 ";
-			
-			List<BigInteger> arrObject = getEntityManager().createNativeQuery(hql1).getResultList();
-			
-			if(arrObject.size()>0)
-			{
-			 	return  arrObject.get(0).intValue()  ;
-				
-			}
-			
-		}catch(Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
-		return null;
-		
-	}
+        if (appType > 0) {
+            strWhere = strWhere + " and LD.landsharetypeid = " + appType;
+        }
 
-	@Override
-	public Integer searchCount(Long status, Integer claimType, String project,String communeId,String transId,String parcelId) {
-		
-		String hql1 = ""; 
-		String strWhere = "";
-		String strWhere1 = "";
-		String strWhereClause = "";
-		String strWhereClause1 = "";
-		if(status != null && status != 0){
-			strWhere = strWhere + "and LD.applicationstatusid = " + status;
-		}
-		
-				if(claimType > 0){
-					strWhere = strWhere +" and LC.claimtypeid = " + claimType ;
-				}	
-			
-			
-				if (!"".equals(communeId) && !communeId.equals("0")) {
-					  if(strWhere.isEmpty()){
-						  strWhere = strWhere +" LD.hierarchyid4 = " + communeId ;
-						  strWhere1 = strWhere1 +" LD.hierarchyid4 = " + communeId ;
-					  }else{
-						  strWhere = strWhere +" and LD.hierarchyid4 = " + communeId ;
-						  strWhere1 = strWhere1 +" and LD.hierarchyid4 = " + communeId ;
-					  }
-					 }
-				
-				if (!"".equals(parcelId)) {
-					 
-					 String strPattern = "^0+";        
-					 parcelId=parcelId.replaceAll(strPattern, "") ;
-					 
-					 if(strWhere.isEmpty()){
-						 strWhere = strWhere +" LD.landid = '" + parcelId +"'" ;
-						 strWhere1 = strWhere1 +" LD.landid = '" + parcelId +"'" ;
-					 }else{
-						 strWhere = strWhere +" and LD.landid = '" + parcelId +"'" ;
-						 strWhere1 = strWhere1 +" and LD.landid = '" + parcelId +"'" ;
-					 }
-				 }
-				
-				if(!strWhere1.isEmpty())
-					strWhere1="and" +strWhere1;
-					
-					
-				strWhereClause1=strWhere1;
-				  
-				 if (!"".equals(transId)) {
-					 if(strWhere.isEmpty()){
-						 strWhere = strWhere +" TR.transactionid = " + transId ;
-					 }else{
-						 strWhere = strWhere +" and TR.transactionid = " + transId ;  
-				    }
-				 }
-				 
-		 
-			strWhereClause = strWhere;
-		
-		/*	 hql1 =" select count(*) from (  Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+ 
-					 " string_agg(LP.firstname||' '||LP.lastname,' / ' order by LP.firstname,LP.lastname) firstname,null as lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en  ,TR.transactionid ,ST.landsharetype from la_spatialunit_land LD "+    
-					 " Inner join la_ext_personlandmapping PL on LD.landid = PL.landid  "+ 
-					 " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid  "+ 
-					 " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+   
-					 " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+  
-					 " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+   
-					 " inner Join  la_party_person LP on PL.partyid = LP.personid   "+ 
-					 " inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "+   
-					 " where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true and  PL.persontypeid=1 and  LD.projectnameid =  " +project +"  and " + strWhereClause +
-					 " group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+ 
-					 " la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype Union "+  
-					 " Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+ 
-					 " '' as firstname, '' as lastname, '' as address,  la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en ,0  as transactionid , ST.landsharetype "+   
-					 " from la_spatialunit_land LD  "+ 
-					 " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid "+   
-					 " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+   
-					 " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+ 
-					 " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+   
-					 " where LD.isactive=true AND LD.claimtypeid=4 and LD.workflowstatusid!=6 and LD.isactive=true and   LD.projectnameid =  " +project +" " + strWhereClause1 +"Union " +
-					 " Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  "+ 
-					 " string_agg(LP.firstname||' '||LP.lastname,' / ' order by LP.firstname,LP.lastname) firstname,null as lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en  ,TR.transactionid , ST.landsharetype  from la_spatialunit_land LD "+    
-					 " Inner join la_ext_disputelandmapping PL on LD.landid = PL.landid  "+ 
-					 " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid   "+ 
-					 " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+   
-					 " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+ 
-					 " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+   
-					 " inner Join  la_party_person LP on PL.partyid = LP.personid  "+ 
-					 " inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "+   
-					 " where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true and   LD.projectnameid =  " +project +" " + strWhereClause1 +
-					 " group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+  
-					 " la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype  union "+  
-					 " Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  "+ 
-					 " string_agg(LP.firstname||' '||LP.lastname,' / ' order by LP.firstname,LP.lastname) firstname,null as lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype from la_spatialunit_land LD "+    
-					 " Inner join la_ext_personlandmapping PL on LD.landid = PL.landid   "+ 
-					 " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid    "+ 
-					 " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+   
-					 " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid "+ 
-					 " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+      
-					 " inner Join  la_party_organization LP on PL.partyid = LP.organizationid  "+ 
-					 " inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid   "+ 
-					 " where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true  and LD.projectnameid =  " +project +" " + strWhereClause1 +
-					 " group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+  
-					 " la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype  ) as t1 "; 
-*/
-			
-			
-			hql1=     "select count(*) from ( Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+ 
-					  "LP.firstname||' '|| LP.lastname as firstname,null as lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en  ,TR.transactionid ,ST.landsharetype from la_spatialunit_land LD  "+   
-					  "Inner join la_ext_personlandmapping PL on LD.landid = PL.landid  "+
-					  "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid  "+
-					  "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+
-					  "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+ 
-					  "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+  
-					  "inner Join  la_party_person LP on PL.partyid = LP.personid "+  
-					  "inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "+  
-					  "where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true and  PL.persontypeid=1 and LP.ownertype=1  and  LD.projectnameid  =  " +project +"  and " + strWhereClause + 
-					  "group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+ 
-					  "la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype , LP.firstname , LP.lastname Union "+  
-					  "Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, '' as firstname, '' as lastname, '' as address,  la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en ,0  as transactionid , ST.landsharetype "+   
-					  "from la_spatialunit_land LD "+ 
-					  "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid "+    
-					  "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid  "+
-					  "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid "+  
-					  "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid  "+
-					  "where LD.isactive=true AND LD.claimtypeid=4 and LD.workflowstatusid!=6 and LD.isactive=true and   LD.projectnameid =  " +project +" " + strWhereClause1 +"Union " + 
-					  "Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+  
-					  "LP.firstname||' '|| LP.lastname as firstname,null as lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en  ,TR.transactionid , ST.landsharetype  from la_spatialunit_land LD  "+   
-					  "Inner join la_ext_disputelandmapping PL on LD.landid = PL.landid  "+ 
-					  "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid  "+  
-					  "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid  "+  
-					  "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+
-					  "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid  "+
-					  "inner Join  la_party_person LP on PL.partyid = LP.personid  "+
-					  "inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid  "+
-					  "where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true  and LP.ownertype=1  and   LD.projectnameid =  " +project +" " + strWhereClause1 +
-					  "group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  "+ 
-					  "la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype ,LP.firstname,LP.lastname union  "+
-					  "Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+  
-					  "LP.firstname||' '|| LP.lastname as firstname,null as lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype from la_spatialunit_land LD  "+   
-					  "Inner join la_ext_personlandmapping PL on LD.landid = PL.landid   "+
-					  "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid  "+  
-					  "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid   "+ 
-					  "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+
-					  "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+      
-					  "inner Join  la_party_organization LP on PL.partyid = LP.organizationid  "+
-					  "inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid  "+  
-					  "where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true  and LD.projectnameid =  " +project +" " + strWhereClause1 +
-					  "group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+  
-					  "la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype ,LP.firstname, LP.lastname  ) as t1 ";
-			
-			
-			
-		
-		try {
-			List<BigInteger> arrObject = getEntityManager().createNativeQuery(hql1).getResultList();
-			
-			if(arrObject.size()>0)
-			{
-				return   arrObject.get(0).intValue()  ;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-		return null;
-		
-		
-	}
+        sql = "select count(*) from "
+                + "("
+                + "  select LD.landid"
+                + "  from la_spatialunit_land LD"
+                + "    inner join la_ext_personlandmapping PL on LD.landid = PL.landid"
+                + "    inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid"
+                + "    inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid"
+                + "    inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid"
+                + "    inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid"
+                + "    inner Join  la_party_person LP on PL.partyid = LP.personid"
+                + "    inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid"
+                + "  where Pl.isactive=true and LD.applicationstatusid != 7 and LD.isactive=true and LD.projectnameid = :projectId"
+                + strWhere + ") as t1";
 
-	@Override
-	public Integer spatialUnitWorkflowCount(int[] workflow_ids,int[] claim_ids,int[] status_ids, String project) {
-		
-		String resultwrk = "";
-		String resultClm = "";
-		String resultsts = "";
-		String hql1="";
+        try {
+            Query q = getEntityManager().createNativeQuery(sql);
+            q.setParameter("projectId", project);
+
+            if (!StringUtils.isEmpty(appNum)) {
+                q.setParameter("appNum", appNum + "%");
+            }
+
+            if (!StringUtils.isEmpty(pvNum)) {
+                q.setParameter("pvNum", pvNum + "%");
+            }
+
+            if (!StringUtils.isEmpty(apfrNum)) {
+                q.setParameter("apfrNum", apfrNum + "%");
+            }
+
+            if (!StringUtils.isEmpty(firstName)) {
+                q.setParameter("firstName", "%" + firstName + "%");
+            }
+
+            List<BigInteger> arrObject = q.getResultList();
+
+            if (arrObject.size() > 0) {
+                return arrObject.get(0).intValue();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return null;
+
+    }
+
+    @Override
+    public Integer spatialUnitWorkflowCount(int[] workflow_ids, int project) {
+        String resultwrk = "";
+        if (workflow_ids != null && workflow_ids.length > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (Integer s : workflow_ids) {
+                sb.append(s).append(",");
+            }
+            resultwrk = sb.deleteCharAt(sb.length() - 1).toString();
+        }
+
+        String strWhereCls = "";
+
+        if (!resultwrk.isEmpty()) {
+            strWhereCls = " and LD.workflowstatusid in (" + resultwrk + ")";
+        }
+        
+        String sql = "select count(1) "
+                + "from la_spatialunit_land LD"
+                + "  inner join la_ext_personlandmapping PL on LD.landid = PL.landid"
+                + "  inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid"
+                + "  inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid"
+                + "  inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid"
+                + "  inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid"
+                + "  inner Join  la_party_person LP on PL.partyid = LP.personid"
+                + "  inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "
+                + "where Pl.isactive=true and LD.applicationstatusid != 7 and LD.isactive=true and LD.projectnameid = :projectId "
+                + strWhereCls;
+
+        try {
+            Query q = getEntityManager().createNativeQuery(sql);
+            q.setParameter("projectId", project);
+            List<BigInteger> arrObject = q.getResultList();
+
+            if (arrObject.size() > 0) {
+                return arrObject.get(0).intValue();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return null;
+    }
+
+    @Override
+    public List<LaSpatialunitLand> getspatialUnitWorkFlowResult(String lang, int[] workflow_ids, Integer startfrom, int project) {
+
+        String resultwrk = "";
         if (workflow_ids != null && workflow_ids.length > 0) {
             StringBuilder sb = new StringBuilder();
 
             for (Integer s : workflow_ids) {
                 sb.append(s).append(",");
             }
-
             resultwrk = sb.deleteCharAt(sb.length() - 1).toString();
         }
 
-        if (claim_ids != null && claim_ids.length > 0) {
-            StringBuilder sb = new StringBuilder();
-
-            for (Integer s : claim_ids) {
-                sb.append(s).append(",");
-            }
-
-            resultClm = sb.deleteCharAt(sb.length() - 1).toString();
-        }
-        if (status_ids != null && status_ids.length > 0) {
-            StringBuilder sb = new StringBuilder();
-
-            for (Integer s : status_ids) {
-                sb.append(s).append(",");
-            }
-
-            resultsts = sb.deleteCharAt(sb.length() - 1).toString();
-        }
-        
         String strWhereCls = "";
-        if(!resultwrk.isEmpty()){
-        	strWhereCls  = strWhereCls + " LD.workflowstatusid in (" + resultwrk +")"; 
-        }
-		 if(!resultClm.isEmpty()){
-		        if(strWhereCls .isEmpty())
-		        	strWhereCls  = strWhereCls + " LD.claimtypeid in (" + resultClm +")"; 
-		        else 					
-		        	strWhereCls  = strWhereCls + " and LD.claimtypeid in (" + resultClm +")"; 
-		 }
-		 if(!resultsts.isEmpty()){
-			 if(strWhereCls .isEmpty())
-		        	strWhereCls  = strWhereCls + " LD.applicationstatusid in (" + resultsts +")"; 
-		        else 					
-		        	strWhereCls  = strWhereCls + " and LD.applicationstatusid in (" + resultsts +")"; 
-		 }
 
-
-		
-
-		   /* hql1 = "select count(*) from (  Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  "+ 
-				   " string_agg(LP.firstname||' '||LP.lastname,' / ' order by LP.firstname,LP.lastname) firstname,null as lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid, ST.landsharetype from la_spatialunit_land LD "+    
-				   " Inner join la_ext_personlandmapping PL on LD.landid = PL.landid  "+ 
-				   " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid  "+ 
-				   " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+   
-				   " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+ 
-				   " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+   
-				   " inner Join  la_party_person LP on PL.partyid = LP.personid  "+ 
-				   " inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "+   
-				   " where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true and PL.persontypeid=1 and LD.projectnameid = " +project +" and " + strWhereCls +" "+ 
-				   " group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+ 
-				   " la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype Union  "+ 
-				   " Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,'' as firstname, '' as lastname, '' as address,  "+ 
-				   " la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en ,0  as transactionid ,ST.landsharetype  from la_spatialunit_land LD "+   
-				   " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid   "+ 
-				   " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid  "+ 
-				   " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+ 
-				   " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid  "+ 
-				   " where LD.isactive=true AND LD.claimtypeid=4  and LD.workflowstatusid!=6 and LD.isactive=true and LD.projectnameid = " +project +" and " + strWhereCls +" Union "+
-				   " Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  "+ 
-				   " string_agg(LP.firstname||' '||LP.lastname,' / ' order by LP.firstname,LP.lastname) firstname,null as lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid, ST.landsharetype from la_spatialunit_land LD "+    
-				   " Inner join la_ext_disputelandmapping PL on LD.landid = PL.landid  "+ 
-				   " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid  "+ 
-				   " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+   
-				   " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+ 
-				   " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+   
-				   " inner Join  la_party_person LP on PL.partyid = LP.personid  "+ 
-				   " inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "+   
-				   " where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true and LD.projectnameid =  " +project +" and " + strWhereCls +" "+ 
-				   " group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+ 
-				   " la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype "+ 
-				   " order by landid DESC ) as t1 ";*/
-				                                   
-		 hql1 =     "select count(*) from ( Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  "+  
-				    "LP.firstname||' '|| LP.lastname as firstname ,  LP.lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid, ST.landsharetype from la_spatialunit_land LD "+     
-				    "Inner join la_ext_personlandmapping PL on LD.landid = PL.landid "+   
-				    "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid   "+ 
-				    "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+    
-				    "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid "+   
-				    "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+    
-				    "inner Join  la_party_person LP on PL.partyid = LP.personid   "+ 
-				    "inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid  "+   
-				    "where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true and PL.persontypeid=1 and LP.ownertype=1  and LD.projectnameid = " +project +" and " + strWhereCls +" "+    
-				    "group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  LP.firstname,  LP.lastname, "+ 
-				    "la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype Union "+   
-				    "Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,'' as firstname, '' as lastname, '' as address, "+   
-				    "la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en ,0  as transactionid ,ST.landsharetype  from la_spatialunit_land LD "+    
-				    "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid  "+   
-				    "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+   
-				    "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+  
-				    "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid  "+  
-				    "where LD.isactive=true AND LD.claimtypeid=4  and LD.workflowstatusid!=6 and LD.isactive=true and LD.projectnameid = " +project +" and " + strWhereCls +" Union " +    
-				    "Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+   
-				    "LP.firstname||' '|| LP.lastname as firstname,LP.lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid, ST.landsharetype from la_spatialunit_land LD "+    
-				    "Inner join la_ext_disputelandmapping PL on LD.landid = PL.landid   "+
-				    "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid  "+ 
-				    "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+   
-				    "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+ 
-				    "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+   
-				    "inner Join  la_party_person LP on PL.partyid = LP.personid  "+ 
-				    "inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "+   
-				    "where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true and  LP.ownertype=1 and  LD.projectnameid =  " +project +" and " + strWhereCls +" "+    
-				    "group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+ 
-				    "la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype  , LP.firstname,LP.lastname "+
-				    "order by landid DESC  ) as t1 " ;
-		 
-	
-		
-		try {
-			List<BigInteger> arrObject = getEntityManager().createNativeQuery(hql1).getResultList();
-			
-			if(arrObject.size()>0)
-			{
-			  return   arrObject.get(0).intValue()  ;
-			}
-		}catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return null;
-			}
-			return null;
-		
-		
-		
-	}
-
-	@Override
-	public List<LaSpatialunitLand> getspatialUnitWorkFlowResult(int[] workflow_ids,int[] claim_ids,int[] status_ids, Integer startfrom, String project) {
-	
-		List<LaSpatialunitLand> lstLaSpatialunitLand = new ArrayList<LaSpatialunitLand>();
-		String resultwrk = "";
-		String resultClm = "";
-		String resultsts = "";
-		String hql1="";
-        if (workflow_ids != null && workflow_ids.length > 0) {
-            StringBuilder sb = new StringBuilder();
-
-            for (Integer s : workflow_ids) {
-                sb.append(s).append(",");
-            }
-
-            resultwrk = sb.deleteCharAt(sb.length() - 1).toString();
-        }
-
-        if (claim_ids != null && claim_ids.length > 0) {
-            StringBuilder sb = new StringBuilder();
-
-            for (Integer s : claim_ids) {
-                sb.append(s).append(",");
-            }
-
-            resultClm = sb.deleteCharAt(sb.length() - 1).toString();
-        }
-        if (status_ids != null && status_ids.length > 0) {
-            StringBuilder sb = new StringBuilder();
-
-            for (Integer s : status_ids) {
-                sb.append(s).append(",");
-            }
-
-            resultsts = sb.deleteCharAt(sb.length() - 1).toString();
+        if (!resultwrk.isEmpty()) {
+            strWhereCls = " and LD.workflowstatusid in (" + resultwrk + ")";
         }
         
-        String strWhereCls = "";
-        if(!resultwrk.isEmpty()){
-        	strWhereCls  = strWhereCls + " LD.workflowstatusid in (" + resultwrk +")"; 
-        }
-		 if(!resultClm.isEmpty()){
-		        if(strWhereCls .isEmpty())
-		        	strWhereCls  = strWhereCls + " LD.claimtypeid in (" + resultClm +")"; 
-		        else 					
-		        	strWhereCls  = strWhereCls + " and LD.claimtypeid in (" + resultClm +")"; 
-		 }
-		 if(!resultsts.isEmpty()){
-			 if(strWhereCls .isEmpty())
-		        	strWhereCls  = strWhereCls + " LD.applicationstatusid in (" + resultsts +")"; 
-		        else 					
-		        	strWhereCls  = strWhereCls + " and LD.applicationstatusid in (" + resultsts +")"; 
-		 }
-        
-		try {
-			
+        try {
 
-		/*	    hql1 = " Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  "+ 
-					   " string_agg(LP.firstname||' '||LP.lastname,' / ' order by LP.firstname,LP.lastname) firstname,null as lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid, ST.landsharetype from la_spatialunit_land LD "+    
-					   " Inner join la_ext_personlandmapping PL on LD.landid = PL.landid  "+ 
-					   " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid  "+ 
-					   " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+   
-					   " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+ 
-					   " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+   
-					   " inner Join  la_party_person LP on PL.partyid = LP.personid  "+ 
-					   " inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "+   
-					   " where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true and PL.persontypeid=1 and LD.projectnameid = " +project +" and " + strWhereCls +" "+ 
-					   " group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+ 
-					   " la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype Union  "+ 
-					   " Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,'' as firstname, '' as lastname, '' as address,  "+ 
-					   " la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en ,0  as transactionid ,ST.landsharetype  from la_spatialunit_land LD "+   
-					   " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid   "+ 
-					   " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid  "+ 
-					   " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+ 
-					   " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid  "+ 
-					   " where LD.isactive=true AND LD.claimtypeid=4  and LD.workflowstatusid!=6 and LD.isactive=true and LD.projectnameid = " +project +" and " + strWhereCls +" Union "+
-					   " Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  "+ 
-					   " string_agg(LP.firstname||' '||LP.lastname,' / ' order by LP.firstname,LP.lastname) firstname,null as lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid, ST.landsharetype from la_spatialunit_land LD "+    
-					   " Inner join la_ext_disputelandmapping PL on LD.landid = PL.landid  "+ 
-					   " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid  "+ 
-					   " inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+   
-					   " inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+ 
-					   " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+   
-					   " inner Join  la_party_person LP on PL.partyid = LP.personid  "+ 
-					   " inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "+   
-					   " where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true and LD.projectnameid =  " +project +" and " + strWhereCls +" "+ 
-					   " group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+ 
-					   " la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype "+ 
-					   " order by landid DESC ";*/
-					     
-			        hql1 =  "Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  "+  
-						    "LP.firstname||' '|| LP.lastname as firstname ,  LP.lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid, ST.landsharetype from la_spatialunit_land LD "+     
-						    "Inner join la_ext_personlandmapping PL on LD.landid = PL.landid "+   
-						    "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid   "+ 
-						    "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+    
-						    "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid "+   
-						    "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+    
-						    "inner Join  la_party_person LP on PL.partyid = LP.personid   "+ 
-						    "inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid  "+   
-						    "where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true and PL.persontypeid=1 and LP.ownertype=1  and LD.projectnameid = " +project +" and " + strWhereCls +" "+    
-						    "group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,  LP.firstname,  LP.lastname, "+ 
-						    "la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype Union "+   
-						    "Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en,'' as firstname, '' as lastname, '' as address, "+   
-						    "la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en ,0  as transactionid ,ST.landsharetype  from la_spatialunit_land LD "+    
-						    "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid  "+   
-						    "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+   
-						    "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+  
-						    "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid  "+  
-						    "where LD.isactive=true AND LD.claimtypeid=4  and LD.workflowstatusid!=6 and LD.isactive=true and LD.projectnameid = " +project +" and " + strWhereCls +" Union " +    
-						    "Select LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+   
-						    "LP.firstname||' '|| LP.lastname as firstname,LP.lastname, null as address,la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid, ST.landsharetype from la_spatialunit_land LD "+    
-						    "Inner join la_ext_disputelandmapping PL on LD.landid = PL.landid   "+
-						    "inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid  "+ 
-						    "inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid "+   
-						    "inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid  "+ 
-						    "inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "+   
-						    "inner Join  la_party_person LP on PL.partyid = LP.personid  "+ 
-						    "inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "+   
-						    "where Pl.isactive=true and LD.workflowstatusid!=6 and LD.isactive=true and  LP.ownertype=1 and  LD.projectnameid =  " +project +" and " + strWhereCls +" "+    
-						    "group by LD.landid, LD.landno, LC.claimtypeid, LC.claimtype_en, LD.area, la.applicationstatus_en, "+ 
-						    "la.applicationstatusid ,LD.workflowstatusid ,lf.workflow_en   ,TR.transactionid ,ST.landsharetype  , LP.firstname,LP.lastname "+
-						    "order by landid DESC " ;
-				         		
-			 
-		List<Object[]> arrObject = getEntityManager().createNativeQuery(hql1).setFirstResult(startfrom).setMaxResults(15).getResultList();
-            
-            for(Object [] object : arrObject){
-            	LaSpatialunitLand laSpatialunitLand = new LaSpatialunitLand();
-            	laSpatialunitLand.setLandid(Long.valueOf(object[0].toString()));
-            	laSpatialunitLand.setLandno((String)object[1]);
-            	laSpatialunitLand.setClaimtypeid(Integer.valueOf(object[2].toString()));
-            	laSpatialunitLand.setClaimtype_en(object[3].toString());
-            	laSpatialunitLand.setArea(4);
-            	laSpatialunitLand.setApplicationstatus_en(object[5].toString());
-            	//laSpatialunitLand.setTransactionid(Integer.valueOf(object[6].toString()));
-            	if(null!=object[6]){
-            	laSpatialunitLand.setFirstname(object[6].toString());
-            	}else{
-            		laSpatialunitLand.setFirstname("");
-            	}
-            	//laSpatialunitLand.setLastname(object[7].toString());
-            	
-            	if(null!=object[8]){
-            	laSpatialunitLand.setAddress(object[8].toString());
-            	}else
-            	{
-            	laSpatialunitLand.setAddress("");	
-            	}
-            	laSpatialunitLand.setApplicationstatusid(Integer.valueOf(object[9].toString()));
-            	laSpatialunitLand.setWorkflowstatusid(Integer.valueOf(object[10].toString()));
-            	laSpatialunitLand.setWorkflowstatus(object[11].toString());
-            	laSpatialunitLand.setTransactionid(Integer.valueOf(object[12].toString()));
-            	laSpatialunitLand.setLandnostrwithzero(addZeroinLandNo(object[0].toString()));
-            	
-            	if(object[13].toString().equals("Dummy")){
-                	laSpatialunitLand.setShareType("");
-                	}else{
-                		laSpatialunitLand.setShareType(object[13].toString());
-                	}
-            	
-            	
-            	lstLaSpatialunitLand.add(laSpatialunitLand);
+            String sql = "select LD.landid, LD.landno, LC.claimtypeid, (case when :lang = 'en' then LC.claimtype_en else LC.claimtype end) as claimtype, LD.area, "
+                    + "  (case when :lang = 'en' then la.applicationstatus_en else la.applicationstatus end) as applicationstatus,"
+                    + "  LP.firstname||' '|| LP.lastname as fullname, LP.address,la.applicationstatusid ,LD.workflowstatusid,"
+                    + "  (case when :lang = 'en' then lf.workflow_en else lf.workflow end) as workflow_status,"
+                    + "  TR.transactionid, (case when :lang = 'en' then ST.landsharetype_en else ST.landsharetype end) as apptype, LD.landsharetypeid as apptypeid,"
+                    + "  LD.application_no, LD.pv_no, LD.apfr_no, LD.section, LD.parcel_no_in_section "
+                    + "from la_spatialunit_land LD"
+                    + "  inner join la_ext_personlandmapping PL on LD.landid = PL.landid"
+                    + "  inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid"
+                    + "  inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid"
+                    + "  inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid"
+                    + "  inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid"
+                    + "  inner Join  la_party_person LP on PL.partyid = LP.personid"
+                    + "  inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "
+                    + "where Pl.isactive=true and LD.applicationstatusid != 7 and LD.isactive=true and LD.projectnameid = :projectId "
+                    + strWhereCls
+                    + " order by LD.landid desc";
+
+            Query q = getEntityManager().createNativeQuery(sql);
+            q.setParameter("projectId", project);
+
+            if (!StringUtils.isEmpty(lang)) {
+                q.setParameter("lang", lang);
+            } else {
+                q.setParameter("lang", "en");
+            }
+
+            List<Object[]> arrObject = q.setFirstResult(startfrom).setMaxResults(15).getResultList();
+            List<LaSpatialunitLand> lstLaSpatialunitLand = new ArrayList<>();
+
+            for (Object[] object : arrObject) {
+                LaSpatialunitLand laSpatialunitLand = new LaSpatialunitLand();
+                laSpatialunitLand.setLandid(Long.valueOf(object[0].toString()));
+                laSpatialunitLand.setLandno((String) object[1]);
+                laSpatialunitLand.setClaimtypeid(Integer.valueOf(object[2].toString()));
+                laSpatialunitLand.setClaimtype_en(object[3].toString());
+                laSpatialunitLand.setArea(4);
+                laSpatialunitLand.setApplicationstatus_en(object[5].toString());
+
+                if (null != object[6]) {
+                    laSpatialunitLand.setFirstname(object[6].toString());
+                } else {
+                    laSpatialunitLand.setFirstname("");
+                }
+
+                if (null != object[7]) {
+                    laSpatialunitLand.setAddress(object[7].toString());
+                } else {
+                    laSpatialunitLand.setAddress("");
+                }
+
+                laSpatialunitLand.setApplicationstatusid(Integer.valueOf(object[8].toString()));
+                laSpatialunitLand.setWorkflowstatusid(Integer.valueOf(object[9].toString()));
+                laSpatialunitLand.setWorkflowstatus(object[10].toString());
+                laSpatialunitLand.setTransactionid(Integer.valueOf(object[11].toString()));
+                laSpatialunitLand.setLandnostrwithzero(addZeroinLandNo((String) object[0].toString()));
+                laSpatialunitLand.setShareType(object[12].toString());
+                laSpatialunitLand.setLandsharetypeid(Integer.valueOf(object[13].toString()));
+
+                if (object[14] != null) {
+                    laSpatialunitLand.setAppNum(object[14].toString());
+                }
+                if (object[15] != null) {
+                    laSpatialunitLand.setPvNum(object[15].toString());
+                }
+                if (object[16] != null) {
+                    laSpatialunitLand.setApfrNum(object[16].toString());
+                }
+                if (object[17] != null) {
+                    laSpatialunitLand.setSection(Integer.valueOf(object[17].toString()));
+                }
+                if (object[18] != null) {
+                    laSpatialunitLand.setParcelNoInSection(Long.valueOf(object[18].toString()));
+                }
+
+                lstLaSpatialunitLand.add(laSpatialunitLand);
+
             }
             return lstLaSpatialunitLand;
+
         } catch (Exception e) {
             logger.error(e);
             return null;
         }
-		
-		
-		
-		
-	}
+    }
 
-	@Override
-	public List<OwnerHistoryForFetch> getownerhistorydetails(Long landid) 
-	{
+    @Override
+    public List<OwnerHistoryForFetch> getownerhistorydetails(Long landid) {
 
-		String sql = null;
-	
-		try 
-		{
-			sql = " select row_number() OVER () as rnum,ld.landid,ps.firstname,ps.middlename,ps.lastname,ps.address,ps.identityno,plm.createddate,plm.transactionid "
-					+ " from la_spatialunit_land ld inner join la_ext_personlandmapping plm on plm.landid=ld.landid"
-					+ " inner join la_Party_person ps on ps.personid=plm.partyid "
-					+ " where plm.persontypeid=1 and plm.isactive=true and ld.landid="+ landid + "order by ps.ownertype asc";
-			
-			
-			Query query = getEntityManager().createNativeQuery(sql, OwnerHistoryForFetch.class);
-			List<OwnerHistoryForFetch> attribValues = query.getResultList();
+        String sql = null;
 
-			if (attribValues.size() > 0) 
-			{
-				 return attribValues;
-			}
-			else
-			{
+        try {
+            sql = " select row_number() OVER () as rnum,ld.landid,ps.firstname,ps.middlename,ps.lastname,ps.address,ps.identityno,plm.createddate,plm.transactionid "
+                    + " from la_spatialunit_land ld inner join la_ext_personlandmapping plm on plm.landid=ld.landid"
+                    + " inner join la_Party_person ps on ps.personid=plm.partyid "
+                    + " where plm.persontypeid=1 and plm.isactive=true and ld.landid=" + landid + "order by ps.ownertype asc";
+
+            Query query = getEntityManager().createNativeQuery(sql, OwnerHistoryForFetch.class);
+            List<OwnerHistoryForFetch> attribValues = query.getResultList();
+
+            if (attribValues.size() > 0) {
+                return attribValues;
+            } else {
                 return null;
             }
-		}
-		catch (Exception e) 
-		{	
-			e.printStackTrace();
-			logger.error(e);
-			return null;
-		}
-	
-	}
-	
-	@Override
-	public List<LeaseHistoryForFetch> getleasehistorydetails(Long landid) 
-	{
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
 
-		String sql = null;
-	
-		try 
-		{
-			sql = " select row_number() OVER () as rnum,ld.landid,ps.firstname,ps.middlename,ps.lastname,ps.address,ps.identityno,lea.leaseyear, (lea.leaseyear *12 + lea.monthid) as monthid,lea.leaseamount,lea.createddate,lea.leasestartdate, lea.leaseenddate"
-					+ " from la_lease lea inner join la_spatialunit_land ld on ld.landid=lea.landid "
-					+ " inner join la_Party_person ps on ps.personid=lea.personid "
-					+ " where ld.landid="+ landid + "order by lea.createddate desc;";
-			
-			
-			Query query = getEntityManager().createNativeQuery(sql, LeaseHistoryForFetch.class);
-			List<LeaseHistoryForFetch> attribValues = query.getResultList();
+    }
 
-			if (attribValues.size() > 0) 
-			{
-				 return attribValues;
-			}
-			else
-			{
+    @Override
+    public List<LeaseHistoryForFetch> getleasehistorydetails(Long landid) {
+
+        String sql = null;
+
+        try {
+            sql = " select row_number() OVER () as rnum,ld.landid,ps.firstname,ps.middlename,ps.lastname,ps.address,ps.identityno,lea.leaseyear, (lea.leaseyear *12 + lea.monthid) as monthid,lea.leaseamount,lea.createddate,lea.leasestartdate, lea.leaseenddate"
+                    + " from la_lease lea inner join la_spatialunit_land ld on ld.landid=lea.landid "
+                    + " inner join la_Party_person ps on ps.personid=lea.personid "
+                    + " where ld.landid=" + landid + "order by lea.createddate desc;";
+
+            Query query = getEntityManager().createNativeQuery(sql, LeaseHistoryForFetch.class);
+            List<LeaseHistoryForFetch> attribValues = query.getResultList();
+
+            if (attribValues.size() > 0) {
+                return attribValues;
+            } else {
                 return null;
             }
-		}
-		catch (Exception e) 
-		{	
-			e.printStackTrace();
-			logger.error(e);
-			return null;
-		}
-	
-	}
-	
-	@Override
-	public List<LeaseHistoryForFetch> findleasedetailbylandid(Long transactionid,Long landid) 
-	{
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
 
-		String sql = null;
-	
-		try 
-		{
-			sql = " select row_number() OVER () as rnum,ld.landid,ps.firstname,ps.middlename,ps.lastname,ps.address,ps.identityno,lea.leaseyear, (lea.leaseyear *12 + lea.monthid) as monthid,lea.leaseamount,lea.createddate,lea.leasestartdate, lea.leaseenddate"
-					+ " from la_lease lea inner join la_spatialunit_land ld on ld.landid=lea.landid "
-					+ " inner join la_Party_person ps on ps.personid=lea.personid "
-					+ " left join la_ext_transactiondetails td on td.moduletransid=lea.leaseid"
-					+ " where ld.landid="+ landid + "and td.transactionid="+ transactionid ;
-			
-			
-			Query query = getEntityManager().createNativeQuery(sql, LeaseHistoryForFetch.class);
-			List<LeaseHistoryForFetch> attribValues = query.getResultList();
+    }
 
-			if (attribValues.size() > 0) 
-			{
-				 return attribValues;
-			}
-			else
-			{
+    @Override
+    public List<LeaseHistoryForFetch> findleasedetailbylandid(Long transactionid, Long landid) {
+
+        String sql = null;
+
+        try {
+            sql = " select row_number() OVER () as rnum,ld.landid,ps.firstname,ps.middlename,ps.lastname,ps.address,ps.identityno,lea.leaseyear, (lea.leaseyear *12 + lea.monthid) as monthid,lea.leaseamount,lea.createddate,lea.leasestartdate, lea.leaseenddate"
+                    + " from la_lease lea inner join la_spatialunit_land ld on ld.landid=lea.landid "
+                    + " inner join la_Party_person ps on ps.personid=lea.personid "
+                    + " left join la_ext_transactiondetails td on td.moduletransid=lea.leaseid"
+                    + " where ld.landid=" + landid + "and td.transactionid=" + transactionid;
+
+            Query query = getEntityManager().createNativeQuery(sql, LeaseHistoryForFetch.class);
+            List<LeaseHistoryForFetch> attribValues = query.getResultList();
+
+            if (attribValues.size() > 0) {
+                return attribValues;
+            } else {
                 return null;
             }
-		}
-		catch (Exception e) 
-		{	
-			e.printStackTrace();
-			logger.error(e);
-			return null;
-		}
-	
-	}
-	
-	@Override
-	public List<LeaseHistoryForFetch> findsurrenderleasedetailbylandid(Long transactionid,Long landid) 
-	{
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
 
-		String sql = null;
-	
-		try 
-		{
-			sql = " select row_number() OVER () as rnum,ld.landid,ps.firstname,ps.middlename,ps.lastname,ps.address,ps.identityno,lea.leaseyear, (lea.leaseyear *12 + lea.monthid) as monthid,lea.leaseamount,lea.createddate,lea.leasestartdate, lea.leaseenddate"
-					+ " from la_surrenderlease lea inner join la_spatialunit_land ld on ld.landid=lea.landid "
-					+ " inner join la_Party_person ps on ps.personid=lea.personid "
-					+ " left join la_ext_transactiondetails td on td.moduletransid=lea.leaseid"
-					+ " where ld.landid="+ landid + "and td.transactionid="+ transactionid ;
-			
-			
-			Query query = getEntityManager().createNativeQuery(sql, LeaseHistoryForFetch.class);
-			List<LeaseHistoryForFetch> attribValues = query.getResultList();
+    }
 
-			if (attribValues.size() > 0) 
-			{
-				 return attribValues;
-			}
-			else
-			{
+    @Override
+    public List<LeaseHistoryForFetch> findsurrenderleasedetailbylandid(Long transactionid, Long landid) {
+
+        String sql = null;
+
+        try {
+            sql = " select row_number() OVER () as rnum,ld.landid,ps.firstname,ps.middlename,ps.lastname,ps.address,ps.identityno,lea.leaseyear, (lea.leaseyear *12 + lea.monthid) as monthid,lea.leaseamount,lea.createddate,lea.leasestartdate, lea.leaseenddate"
+                    + " from la_surrenderlease lea inner join la_spatialunit_land ld on ld.landid=lea.landid "
+                    + " inner join la_Party_person ps on ps.personid=lea.personid "
+                    + " left join la_ext_transactiondetails td on td.moduletransid=lea.leaseid"
+                    + " where ld.landid=" + landid + "and td.transactionid=" + transactionid;
+
+            Query query = getEntityManager().createNativeQuery(sql, LeaseHistoryForFetch.class);
+            List<LeaseHistoryForFetch> attribValues = query.getResultList();
+
+            if (attribValues.size() > 0) {
+                return attribValues;
+            } else {
                 return null;
             }
-		}
-		catch (Exception e) 
-		{	
-			e.printStackTrace();
-			logger.error(e);
-			return null;
-		}
-	
-	}
-	
-	@Override
-	public List<MortageHistoryForFetch> findmortagagedetailbylandid(Long transactionid,Long landid) 
-	{
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
 
-		String sql = null;
-	
-		try 
-		{
-			sql = " select row_number() OVER () as rnum,ld.landid,fin.financialagency,mor.mortgagefrom,mor.mortgageto,mor.mortgageamount"
-					+ " from la_mortgage mor inner join la_spatialunit_land ld on ld.landid=mor.landid "
-					+ " inner join la_ext_financialagency fin on fin.financialagencyid=mor.financialagencyid "
-					+ " left join la_ext_transactiondetails td on td.moduletransid=mor.mortgageid"					 
-					+ " where ld.landid="+ landid + "and td.transactionid="+ transactionid ;
-			
-			
-			Query query = getEntityManager().createNativeQuery(sql, MortageHistoryForFetch.class);
-			List<MortageHistoryForFetch> attribValues = query.getResultList();
+    }
 
-			if (attribValues.size() > 0) 
-			{
-				 return attribValues;
-			}
-			else
-			{
+    @Override
+    public List<MortageHistoryForFetch> findmortagagedetailbylandid(Long transactionid, Long landid) {
+
+        String sql = null;
+
+        try {
+            sql = " select row_number() OVER () as rnum,ld.landid,fin.financialagency,mor.mortgagefrom,mor.mortgageto,mor.mortgageamount"
+                    + " from la_mortgage mor inner join la_spatialunit_land ld on ld.landid=mor.landid "
+                    + " inner join la_ext_financialagency fin on fin.financialagencyid=mor.financialagencyid "
+                    + " left join la_ext_transactiondetails td on td.moduletransid=mor.mortgageid"
+                    + " where ld.landid=" + landid + "and td.transactionid=" + transactionid;
+
+            Query query = getEntityManager().createNativeQuery(sql, MortageHistoryForFetch.class);
+            List<MortageHistoryForFetch> attribValues = query.getResultList();
+
+            if (attribValues.size() > 0) {
+                return attribValues;
+            } else {
                 return null;
             }
-		}
-		catch (Exception e) 
-		{	
-			e.printStackTrace();
-			logger.error(e);
-			return null;
-		}
-	
-	}
-	
-	@Override
-	public List<MortageHistoryForFetch> findSurrendermortagagedetailbylandid(
-			Long transactionid, Long landid) {
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
 
+    }
 
-		String sql = null;
-	
-		try 
-		{
-			sql = " select row_number() OVER () as rnum,ld.landid,fin.financialagency,mor.mortgagefrom,mor.mortgageto,mor.mortgageamount"
-					+ " from la_surrendermortgage mor inner join la_spatialunit_land ld on ld.landid=mor.landid "
-					+ " inner join la_ext_financialagency fin on fin.financialagencyid=mor.financialagencyid "
-					+ " left join la_ext_transactiondetails td on td.moduletransid=mor.mortgageid"					 
-					+ " where ld.landid="+ landid + "and td.transactionid="+ transactionid ;
-			
-			
-			Query query = getEntityManager().createNativeQuery(sql, MortageHistoryForFetch.class);
-			List<MortageHistoryForFetch> attribValues = query.getResultList();
+    @Override
+    public List<MortageHistoryForFetch> findSurrendermortagagedetailbylandid(
+            Long transactionid, Long landid) {
 
-			if (attribValues.size() > 0) 
-			{
-				 return attribValues;
-			}
-			else
-			{
+        String sql = null;
+
+        try {
+            sql = " select row_number() OVER () as rnum,ld.landid,fin.financialagency,mor.mortgagefrom,mor.mortgageto,mor.mortgageamount"
+                    + " from la_surrendermortgage mor inner join la_spatialunit_land ld on ld.landid=mor.landid "
+                    + " inner join la_ext_financialagency fin on fin.financialagencyid=mor.financialagencyid "
+                    + " left join la_ext_transactiondetails td on td.moduletransid=mor.mortgageid"
+                    + " where ld.landid=" + landid + "and td.transactionid=" + transactionid;
+
+            Query query = getEntityManager().createNativeQuery(sql, MortageHistoryForFetch.class);
+            List<MortageHistoryForFetch> attribValues = query.getResultList();
+
+            if (attribValues.size() > 0) {
+                return attribValues;
+            } else {
                 return null;
             }
-		}
-		catch (Exception e) 
-		{	
-			e.printStackTrace();
-			logger.error(e);
-			return null;
-		}
-	
-	
-	}
-	
-	
-	@Override
-	public List<MortageHistoryForFetch> getmortagagedetails(Long landid) 
-	{
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
 
-		String sql = null;
-	
-		try 
-		{
-			sql = " select row_number() OVER () as rnum,ld.landid,fin.financialagency,mor.mortgagefrom,mor.mortgageto,mor.mortgageamount"
-					+ " from la_mortgage mor inner join la_spatialunit_land ld on ld.landid=mor.landid "
-					+ " inner join la_ext_financialagency fin on fin.financialagencyid=mor.financialagencyid "
-					+ " where ld.landid="+ landid + " order by mor.createddate desc;";
-			
-			
-			Query query = getEntityManager().createNativeQuery(sql, MortageHistoryForFetch.class);
-			List<MortageHistoryForFetch> attribValues = query.getResultList();
+    }
 
-			if (attribValues.size() > 0) 
-			{
-				 return attribValues;
-			}
-			else
-			{
+    @Override
+    public List<MortageHistoryForFetch> getmortagagedetails(Long landid) {
+
+        String sql = null;
+
+        try {
+            sql = " select row_number() OVER () as rnum,ld.landid,fin.financialagency,mor.mortgagefrom,mor.mortgageto,mor.mortgageamount"
+                    + " from la_mortgage mor inner join la_spatialunit_land ld on ld.landid=mor.landid "
+                    + " inner join la_ext_financialagency fin on fin.financialagencyid=mor.financialagencyid "
+                    + " where ld.landid=" + landid + " order by mor.createddate desc;";
+
+            Query query = getEntityManager().createNativeQuery(sql, MortageHistoryForFetch.class);
+            List<MortageHistoryForFetch> attribValues = query.getResultList();
+
+            if (attribValues.size() > 0) {
+                return attribValues;
+            } else {
                 return null;
             }
-		}
-		catch (Exception e) 
-		{	
-			e.printStackTrace();
-			logger.error(e);
-			return null;
-		}
-	
-	}
-	
-	@Override
-	public List<UploadedDocumentDetailsForFetch> viewdocumentdetailbytransactioid(Long transactionid) 
-	{
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
 
-		String sql = null;
-	
-		try 
-		{
-			sql = " select row_number() OVER () as rnum,doc.documentname, doc.recordationdate as docdate,doc.remarks as description,doctype.documenttype,doc.transactionid,doc.partyid,doc.documentid "
-					+ " from la_ext_documentdetails doc "
-					+ " left join la_ext_documenttype doctype on doctype.documenttypeid=doc.documenttypeid"
-					+ " where doc.transactionid="+ transactionid ;
-			
-			
-			Query query = getEntityManager().createNativeQuery(sql, UploadedDocumentDetailsForFetch.class);
-			List<UploadedDocumentDetailsForFetch> attribValues = query.getResultList();
+    }
 
-			if (attribValues.size() > 0) 
-			{
-				 return attribValues;
-			}
-			else
-			{
+    @Override
+    public List<UploadedDocumentDetailsForFetch> viewdocumentdetailbytransactioid(Long transactionid) {
+
+        String sql = null;
+
+        try {
+            sql = " select row_number() OVER () as rnum,doc.documentname, doc.recordationdate as docdate,doc.remarks as description,doctype.documenttype,doc.transactionid,doc.partyid,doc.documentid "
+                    + " from la_ext_documentdetails doc "
+                    + " left join la_ext_documenttype doctype on doctype.documenttypeid=doc.documenttypeid"
+                    + " where doc.transactionid=" + transactionid;
+
+            Query query = getEntityManager().createNativeQuery(sql, UploadedDocumentDetailsForFetch.class);
+            List<UploadedDocumentDetailsForFetch> attribValues = query.getResultList();
+
+            if (attribValues.size() > 0) {
+                return attribValues;
+            } else {
                 return null;
             }
-		}
-		catch (Exception e) 
-		{	
-			e.printStackTrace();
-			logger.error(e);
-			return null;
-		}
-	
-	}
-	
-	@Override
-	public List<TransactionHistoryForFetch> gettransactiondetails(Long landid) 
-	{
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
 
-		String sql = null;
-	
-		try 
-		{			
-			sql = " select row_number() OVER () as rnum,transactiontype,landid,applicantname,ownername,createddate,transactionid,personid from "
-					+ "( select distinct on (lea.personid) 'Lease' as transactiontype, ld.landid,ps1.firstname||' '||ps1.middlename||' '||ps1.lastname as applicantname,ps2.firstname||' '||ps2.middlename||' '||ps2.lastname as ownername,"
-					+ " lea.createddate,td.transactionid,lea.personid"
-					+ " from la_lease lea inner join la_spatialunit_land ld on ld.landid=lea.landid"
-					+ " left join la_Party_person ps1 on ps1.personid=lea.personid "
-					+ " left join la_ext_personlandmapping plm on plm.landid=ld.landid"
-					+ " left join la_ext_transactiondetails td on td.moduletransid=lea.leaseid "
-					+ " left join la_Party_person ps2 on ps2.personid=lea.ownerid"
-					+ " where ld.landid="+ landid + " and td.processid=1 and td.isactive=true "
-					+ "	Union"
-					+ "	select distinct on (personid) 'Mortgage' as transactiontype,ld.landid,fin.financialagency as applicantname,ps2.firstname||' '||ps2.middlename||' '||ps2.lastname as ownername,mor.createddate,td.transactionid,"
-					+ " mor.financialagencyid as personid"
-					+ "	from la_mortgage mor left join la_spatialunit_land ld on ld.landid=mor.landid"
-					+ " left join la_ext_financialagency fin on fin.financialagencyid=mor.financialagencyid"
-					+ " left join la_ext_personlandmapping plm on plm.landid=ld.landid"
-					+ " left join la_ext_transactiondetails td on td.moduletransid=mor.mortgageid"
-					+ " left join la_Party_person ps2 on ps2.personid=mor.ownerid "
-					+ "	where ld.landid="+ landid + " and td.processid=3"
-					+ " Union"	
-					+ "	select distinct on (personid) 'Surrender Mortgage' as transactiontype,ld.landid,fin.financialagency as applicantname,ps2.firstname||' '||ps2.middlename||' '||ps2.lastname as ownername,mor.createddate,td.transactionid,"
-					+ " mor.financialagencyid as personid"
-					+ "	from la_surrendermortgage mor left join la_spatialunit_land ld on ld.landid=mor.landid"
-					+ " left join la_ext_financialagency fin on fin.financialagencyid=mor.financialagencyid"
-					+ " left join la_ext_personlandmapping plm on plm.landid=ld.landid"
-					+ " left join la_ext_transactiondetails td on td.moduletransid=mor.mortgageid"
-					+ " left join la_Party_person ps2 on ps2.personid=mor.ownerid "
-					+ "	where ld.landid="+ landid + " and td.processid=9"
-					+ " Union"
-					+ " (select transactiontype,landid,string_agg(applicantname,' ' order by applicantname)as applicantname,string_agg(ownename,' ' order by ownename)as ownename,"
-					+ " createddate,transactionid,null as personid from("
-					+ " select distinct 'Sale' as transactiontype, th.landid,null as applicantname,"
-					+ " string_agg(ps.firstname||' '||ps.lastname,' / ' order by ps.ownertype)as ownename,"
-					+ " th.createddate,th.transactionid,null as personid"
-					+ " from la_ext_transactionhistory th"                                                                           
-					+ " inner join la_Party_person ps on cast(ps.personid as character varying) in (SELECT  regexp_split_to_table(th.oldownerid, E','))"
-					+ " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
-					+ " where th.landid="+ landid + "  and td.processid=2 group by th.landid,th.createddate,th.transactionid"
-					+ " union"
-					+ " select distinct 'Sale' as transactiontype, th.landid,"
-					+ " string_agg(ps2.firstname||' '||ps2.lastname,' / ' order by ps2.ownertype)as applicantname, null as ownename,"
-					+ " th.createddate,th.transactionid,null as personid"
-					+ " from la_ext_transactionhistory th"                                                                           
-					+ " inner join la_Party_person ps2 on cast(ps2.personid as character varying) in (SELECT  regexp_split_to_table(th.newownerid, E','))"
-					+ " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
-					+ " where th.landid="+ landid + "  and td.processid=2 group by th.landid,th.createddate,th.transactionid) as temp"
-					+ " group by transactiontype,landid,createddate,transactionid,personid)"					
-					+ " Union "					
-					+ " (select transactiontype,landid,string_agg(applicantname,' ' order by applicantname)as applicantname,string_agg(ownename,' ' order by ownename)as ownename,"
-					+ " createddate,transactionid,null as personid from("
-					+ " select distinct 'Change of Owner' as transactiontype, th.landid,null as applicantname,"
-					+ " string_agg(ps.firstname||' '||ps.lastname,' / ' order by ps.ownertype)as ownename,"
-					+ " th.createddate,th.transactionid,null as personid"
-					+ " from la_ext_transactionhistory th"                                                                           
-					+ " inner join la_Party_person ps on cast(ps.personid as character varying) in (SELECT  regexp_split_to_table(th.oldownerid, E','))"
-					+ " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
-					+ " where th.landid="+ landid + "  and td.processid=4 group by th.landid,th.createddate,th.transactionid"
-					+ " union"
-					+ " select distinct 'Change of Owner' as transactiontype, th.landid,"
-					+ " string_agg(ps2.firstname||' '||ps2.lastname,' / ' order by ps2.ownertype)as applicantname, null as ownename,"
-					+ " th.createddate,th.transactionid,null as personid"
-					+ " from la_ext_transactionhistory th"                                                                           
-					+ " inner join la_Party_person ps2 on cast(ps2.personid as character varying) in (SELECT  regexp_split_to_table(th.newownerid, E','))"
-					+ " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
-					+ " where th.landid="+ landid + "  and td.processid=4 group by th.landid,th.createddate,th.transactionid) as temp"
-					+ " group by transactiontype,landid,createddate,transactionid,personid)"					
-					+ " Union "					
-					+ " (select transactiontype,landid,string_agg(applicantname,' ' order by applicantname)as applicantname,string_agg(ownename,' ' order by ownename)as ownename,"
-					+ " createddate,transactionid,null as personid from("
-					+ " select distinct 'Change of Joint Owner' as transactiontype, th.landid,null as applicantname,"
-					+ " string_agg(ps.firstname||' '||ps.lastname,' / ' order by ps.ownertype)as ownename,"
-					+ " th.createddate,th.transactionid,null as personid"
-					+ " from la_ext_transactionhistory th"                                                                           
-					+ " inner join la_Party_person ps on cast(ps.personid as character varying) in (SELECT  regexp_split_to_table(th.oldownerid, E','))"
-					+ " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
-					+ " where th.landid="+ landid + "  and td.processid=7 group by th.landid,th.createddate,th.transactionid"
-					+ " union"
-					+ " select distinct 'Change of Joint Owner' as transactiontype, th.landid,"
-					+ " string_agg(ps2.firstname||' '||ps2.lastname,' / ' order by ps2.ownertype)as applicantname, null as ownename,"
-					+ " th.createddate,th.transactionid,null as personid"
-					+ " from la_ext_transactionhistory th"                                                                           
-					+ " inner join la_Party_person ps2 on cast(ps2.personid as character varying) in (SELECT  regexp_split_to_table(th.newownerid, E','))"
-					+ " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
-					+ " where th.landid="+ landid + "  and td.processid=7 group by th.landid,th.createddate,th.transactionid) as temp"
-					+ " group by transactiontype,landid,createddate,transactionid,personid)"					
-					+ " Union "
-					+ " (select transactiontype,landid,string_agg(applicantname,' ' order by applicantname)as applicantname,string_agg(ownename,' ' order by ownename)as ownename,"
-					+ " createddate,transactionid,null as personid from("
-					+ " select distinct 'Gift/Inheritance' as transactiontype, th.landid,null as applicantname,"
-					+ " string_agg(ps.firstname||' '||ps.lastname,' / ' order by ps.firstname,ps.lastname)as ownename,"
-					+ " th.createddate,th.transactionid,null as personid"
-					+ " from la_ext_transactionhistory th"                                                                           
-					+ " inner join la_Party_person ps on cast(ps.personid as character varying) in (SELECT  regexp_split_to_table(th.oldownerid, E','))"
-					+ " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
-					+ " where th.landid="+ landid + "  and td.processid=6 group by th.landid,th.createddate,th.transactionid"
-					+ " union"
-					+ " select distinct 'Gift/Inheritance' as transactiontype, th.landid,"
-					+ " string_agg(ps2.firstname||' '||ps2.lastname,' / ' order by ps2.ownertype)as applicantname, null as ownename,"
-					+ " th.createddate,th.transactionid,null as personid"
-					+ " from la_ext_transactionhistory th"                                                                           
-					+ " inner join la_Party_person ps2 on cast(ps2.personid as character varying) in (SELECT  regexp_split_to_table(th.newownerid, E','))"
-					+ " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
-					+ " where th.landid="+ landid + "  and td.processid=6 group by th.landid,th.createddate,th.transactionid) as temp"
-					+ " group by transactiontype,landid,createddate,transactionid,personid)"					
-					+ " Union "
-					+ " Select distinct on (lea.personid) 'Surrender Lease' as transactiontype, ld.landid,ps1.firstname||' '||ps1.middlename||' '||ps1.lastname as applicantname,ps2.firstname||' '||ps2.middlename||' '||ps2.lastname as ownername,"
-					+ " lea.createddate,td.transactionid,lea.personid 	from la_surrenderlease lea inner join la_spatialunit_land ld on ld.landid=lea.landid"
-					+ " left join la_Party_person ps1 on ps1.personid=lea.personid "
-					+ " left join la_ext_personlandmapping plm on plm.landid=ld.landid "
-					+ " left join la_ext_transactiondetails td on td.moduletransid=lea.leaseid"
-					+ " left join la_Party_person ps2 on ps2.personid=lea.ownerid"
-					+ " where ld.landid="+ landid + " and td.processid=5)t order by transactionid desc;";
-			
-			
-			Query query = getEntityManager().createNativeQuery(sql, TransactionHistoryForFetch.class);
-			List<TransactionHistoryForFetch> attribValues = query.getResultList();
+    }
 
-			if (attribValues.size() > 0) 
-			{
-				 return attribValues;
-			}
-			else
-			{
+    @Override
+    public List<TransactionHistoryForFetch> gettransactiondetails(Long landid) {
+
+        String sql = null;
+
+        try {
+            sql = " select row_number() OVER () as rnum,transactiontype,landid,applicantname,ownername,createddate,transactionid,personid from "
+                    + "( select distinct on (lea.personid) 'Lease' as transactiontype, ld.landid,ps1.firstname||' '||ps1.middlename||' '||ps1.lastname as applicantname,ps2.firstname||' '||ps2.middlename||' '||ps2.lastname as ownername,"
+                    + " lea.createddate,td.transactionid,lea.personid"
+                    + " from la_lease lea inner join la_spatialunit_land ld on ld.landid=lea.landid"
+                    + " left join la_Party_person ps1 on ps1.personid=lea.personid "
+                    + " left join la_ext_personlandmapping plm on plm.landid=ld.landid"
+                    + " left join la_ext_transactiondetails td on td.moduletransid=lea.leaseid "
+                    + " left join la_Party_person ps2 on ps2.personid=lea.ownerid"
+                    + " where ld.landid=" + landid + " and td.processid=1 and td.isactive=true "
+                    + "	Union"
+                    + "	select distinct on (personid) 'Mortgage' as transactiontype,ld.landid,fin.financialagency as applicantname,ps2.firstname||' '||ps2.middlename||' '||ps2.lastname as ownername,mor.createddate,td.transactionid,"
+                    + " mor.financialagencyid as personid"
+                    + "	from la_mortgage mor left join la_spatialunit_land ld on ld.landid=mor.landid"
+                    + " left join la_ext_financialagency fin on fin.financialagencyid=mor.financialagencyid"
+                    + " left join la_ext_personlandmapping plm on plm.landid=ld.landid"
+                    + " left join la_ext_transactiondetails td on td.moduletransid=mor.mortgageid"
+                    + " left join la_Party_person ps2 on ps2.personid=mor.ownerid "
+                    + "	where ld.landid=" + landid + " and td.processid=3"
+                    + " Union"
+                    + "	select distinct on (personid) 'Surrender Mortgage' as transactiontype,ld.landid,fin.financialagency as applicantname,ps2.firstname||' '||ps2.middlename||' '||ps2.lastname as ownername,mor.createddate,td.transactionid,"
+                    + " mor.financialagencyid as personid"
+                    + "	from la_surrendermortgage mor left join la_spatialunit_land ld on ld.landid=mor.landid"
+                    + " left join la_ext_financialagency fin on fin.financialagencyid=mor.financialagencyid"
+                    + " left join la_ext_personlandmapping plm on plm.landid=ld.landid"
+                    + " left join la_ext_transactiondetails td on td.moduletransid=mor.mortgageid"
+                    + " left join la_Party_person ps2 on ps2.personid=mor.ownerid "
+                    + "	where ld.landid=" + landid + " and td.processid=9"
+                    + " Union"
+                    + " (select transactiontype,landid,string_agg(applicantname,' ' order by applicantname)as applicantname,string_agg(ownename,' ' order by ownename)as ownename,"
+                    + " createddate,transactionid,null as personid from("
+                    + " select distinct 'Sale' as transactiontype, th.landid,null as applicantname,"
+                    + " string_agg(ps.firstname||' '||ps.lastname,' / ' order by ps.ownertype)as ownename,"
+                    + " th.createddate,th.transactionid,null as personid"
+                    + " from la_ext_transactionhistory th"
+                    + " inner join la_Party_person ps on cast(ps.personid as character varying) in (SELECT  regexp_split_to_table(th.oldownerid, E','))"
+                    + " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
+                    + " where th.landid=" + landid + "  and td.processid=2 group by th.landid,th.createddate,th.transactionid"
+                    + " union"
+                    + " select distinct 'Sale' as transactiontype, th.landid,"
+                    + " string_agg(ps2.firstname||' '||ps2.lastname,' / ' order by ps2.ownertype)as applicantname, null as ownename,"
+                    + " th.createddate,th.transactionid,null as personid"
+                    + " from la_ext_transactionhistory th"
+                    + " inner join la_Party_person ps2 on cast(ps2.personid as character varying) in (SELECT  regexp_split_to_table(th.newownerid, E','))"
+                    + " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
+                    + " where th.landid=" + landid + "  and td.processid=2 group by th.landid,th.createddate,th.transactionid) as temp"
+                    + " group by transactiontype,landid,createddate,transactionid,personid)"
+                    + " Union "
+                    + " (select transactiontype,landid,string_agg(applicantname,' ' order by applicantname)as applicantname,string_agg(ownename,' ' order by ownename)as ownename,"
+                    + " createddate,transactionid,null as personid from("
+                    + " select distinct 'Change of Owner' as transactiontype, th.landid,null as applicantname,"
+                    + " string_agg(ps.firstname||' '||ps.lastname,' / ' order by ps.ownertype)as ownename,"
+                    + " th.createddate,th.transactionid,null as personid"
+                    + " from la_ext_transactionhistory th"
+                    + " inner join la_Party_person ps on cast(ps.personid as character varying) in (SELECT  regexp_split_to_table(th.oldownerid, E','))"
+                    + " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
+                    + " where th.landid=" + landid + "  and td.processid=4 group by th.landid,th.createddate,th.transactionid"
+                    + " union"
+                    + " select distinct 'Change of Owner' as transactiontype, th.landid,"
+                    + " string_agg(ps2.firstname||' '||ps2.lastname,' / ' order by ps2.ownertype)as applicantname, null as ownename,"
+                    + " th.createddate,th.transactionid,null as personid"
+                    + " from la_ext_transactionhistory th"
+                    + " inner join la_Party_person ps2 on cast(ps2.personid as character varying) in (SELECT  regexp_split_to_table(th.newownerid, E','))"
+                    + " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
+                    + " where th.landid=" + landid + "  and td.processid=4 group by th.landid,th.createddate,th.transactionid) as temp"
+                    + " group by transactiontype,landid,createddate,transactionid,personid)"
+                    + " Union "
+                    + " (select transactiontype,landid,string_agg(applicantname,' ' order by applicantname)as applicantname,string_agg(ownename,' ' order by ownename)as ownename,"
+                    + " createddate,transactionid,null as personid from("
+                    + " select distinct 'Change of Joint Owner' as transactiontype, th.landid,null as applicantname,"
+                    + " string_agg(ps.firstname||' '||ps.lastname,' / ' order by ps.ownertype)as ownename,"
+                    + " th.createddate,th.transactionid,null as personid"
+                    + " from la_ext_transactionhistory th"
+                    + " inner join la_Party_person ps on cast(ps.personid as character varying) in (SELECT  regexp_split_to_table(th.oldownerid, E','))"
+                    + " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
+                    + " where th.landid=" + landid + "  and td.processid=7 group by th.landid,th.createddate,th.transactionid"
+                    + " union"
+                    + " select distinct 'Change of Joint Owner' as transactiontype, th.landid,"
+                    + " string_agg(ps2.firstname||' '||ps2.lastname,' / ' order by ps2.ownertype)as applicantname, null as ownename,"
+                    + " th.createddate,th.transactionid,null as personid"
+                    + " from la_ext_transactionhistory th"
+                    + " inner join la_Party_person ps2 on cast(ps2.personid as character varying) in (SELECT  regexp_split_to_table(th.newownerid, E','))"
+                    + " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
+                    + " where th.landid=" + landid + "  and td.processid=7 group by th.landid,th.createddate,th.transactionid) as temp"
+                    + " group by transactiontype,landid,createddate,transactionid,personid)"
+                    + " Union "
+                    + " (select transactiontype,landid,string_agg(applicantname,' ' order by applicantname)as applicantname,string_agg(ownename,' ' order by ownename)as ownename,"
+                    + " createddate,transactionid,null as personid from("
+                    + " select distinct 'Gift/Inheritance' as transactiontype, th.landid,null as applicantname,"
+                    + " string_agg(ps.firstname||' '||ps.lastname,' / ' order by ps.firstname,ps.lastname)as ownename,"
+                    + " th.createddate,th.transactionid,null as personid"
+                    + " from la_ext_transactionhistory th"
+                    + " inner join la_Party_person ps on cast(ps.personid as character varying) in (SELECT  regexp_split_to_table(th.oldownerid, E','))"
+                    + " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
+                    + " where th.landid=" + landid + "  and td.processid=6 group by th.landid,th.createddate,th.transactionid"
+                    + " union"
+                    + " select distinct 'Gift/Inheritance' as transactiontype, th.landid,"
+                    + " string_agg(ps2.firstname||' '||ps2.lastname,' / ' order by ps2.ownertype)as applicantname, null as ownename,"
+                    + " th.createddate,th.transactionid,null as personid"
+                    + " from la_ext_transactionhistory th"
+                    + " inner join la_Party_person ps2 on cast(ps2.personid as character varying) in (SELECT  regexp_split_to_table(th.newownerid, E','))"
+                    + " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
+                    + " where th.landid=" + landid + "  and td.processid=6 group by th.landid,th.createddate,th.transactionid) as temp"
+                    + " group by transactiontype,landid,createddate,transactionid,personid)"
+                    + " Union "
+                    + " Select distinct on (lea.personid) 'Surrender Lease' as transactiontype, ld.landid,ps1.firstname||' '||ps1.middlename||' '||ps1.lastname as applicantname,ps2.firstname||' '||ps2.middlename||' '||ps2.lastname as ownername,"
+                    + " lea.createddate,td.transactionid,lea.personid 	from la_surrenderlease lea inner join la_spatialunit_land ld on ld.landid=lea.landid"
+                    + " left join la_Party_person ps1 on ps1.personid=lea.personid "
+                    + " left join la_ext_personlandmapping plm on plm.landid=ld.landid "
+                    + " left join la_ext_transactiondetails td on td.moduletransid=lea.leaseid"
+                    + " left join la_Party_person ps2 on ps2.personid=lea.ownerid"
+                    + " where ld.landid=" + landid + " and td.processid=5)t order by transactionid desc;";
+
+            Query query = getEntityManager().createNativeQuery(sql, TransactionHistoryForFetch.class);
+            List<TransactionHistoryForFetch> attribValues = query.getResultList();
+
+            if (attribValues.size() > 0) {
+                return attribValues;
+            } else {
                 return null;
             }
-		}
-		catch (Exception e) 
-		{	
-			e.printStackTrace();
-			logger.error(e);
-			return null;
-		}
-	
-	}
-   
-	   @Override
-	    public String checkruntopologychecks(String projectName) {
-	        try 
-	        {
-	            /*Query query = getEntityManager().createQuery("select ins_toplology_error");
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
+
+    }
+
+    @Override
+    public String checkruntopologychecks(String projectName) {
+        try {
+            /*Query query = getEntityManager().createQuery("select ins_toplology_error");
 	            return (ProjectDetails) query.getSingleResult();*/
-	            
-	          /* Query query = getEntityManager().createQuery("select ins_toplology_error()");
+
+ /* Query query = getEntityManager().createQuery("select ins_toplology_error()");
 	            query.getResultList();*/
-	            
-	            /*StoredProcedureQuery query = getEntityManager().createStoredProcedureQuery("ins_toplology_error")
+ /*StoredProcedureQuery query = getEntityManager().createStoredProcedureQuery("ins_toplology_error")
 	                    .registerStoredProcedureParameter("projectName", String.class, ParameterMode.IN)
 	                    .setParameter("projectName", projectName);
 	            query.getResultList();*/
-	        
-	            // List<Object[]> o = getEntityManager().createQuery("SELECT ins_toplology_error() ").getResultList();  
+            // List<Object[]> o = getEntityManager().createQuery("SELECT ins_toplology_error() ").getResultList();  
+            //String queryStrgetparcel = "select ins_toplology_error()";
+            String qq = "INSERT INTO public.topology_checks_error_log(geometry, error_message, layer_name, landid)"
+                    + " select  a.geometry,'invalid geometry','la_spatialunit_land',a.landid from la_spatialunit_land a where st_isvalid(a.geometry)=false union all"
+                    + " select a.geometry,'intersect','la_spatialunit_land',a.landid FROM la_spatialunit_land a INNER JOIN la_spatialunit_land b ON ST_Intersects(a.geometry,b.geometry) where a.geometry<b.geometry union all"
+                    + " select a.geometry, 'small area','la_spatialunit_land',a.landid from la_spatialunit_land a WHERE  ST_Area(a.geometry) < 0.00001 union all"
+                    + " SELECT a.geometry,'invalid geometry','la_spatialunit_land',a.landid from la_spatialunit_land a where  ST_IsEmpty(ST_GeomFromText('GEOMETRYCOLLECTION EMPTY'))=false";
 
-				//String queryStrgetparcel = "select ins_toplology_error()";
-				String qq = "INSERT INTO public.topology_checks_error_log(geometry, error_message, layer_name, landid)"
-						+ " select  a.geometry,'invalid geometry','la_spatialunit_land',a.landid from la_spatialunit_land a where st_isvalid(a.geometry)=false union all"
-						+ " select a.geometry,'intersect','la_spatialunit_land',a.landid FROM la_spatialunit_land a INNER JOIN la_spatialunit_land b ON ST_Intersects(a.geometry,b.geometry) where a.geometry<b.geometry union all"
-						+ " select a.geometry, 'small area','la_spatialunit_land',a.landid from la_spatialunit_land a WHERE  ST_Area(a.geometry) < 0.00001 union all"
-						+ " SELECT a.geometry,'invalid geometry','la_spatialunit_land',a.landid from la_spatialunit_land a where  ST_IsEmpty(ST_GeomFromText('GEOMETRYCOLLECTION EMPTY'))=false";
-				
-				int temp = getEntityManager().createNativeQuery(qq).executeUpdate();
-				
-				/*if(temp.get(0) != null && temp.size()>0)
+            int temp = getEntityManager().createNativeQuery(qq).executeUpdate();
+
+            /*if(temp.get(0) != null && temp.size()>0)
 				{
 					int i =0;
 				}*/
-	            //StoredProcedureQuery query = getEntityManager().createStoredProcedureQuery("calltopologychecks", Review.class);
-	                   
-	            // List<Object> lstobj = query.getResultList();
-	            
-	            return "Success";
-	        }
-	        catch (Exception e) 
-	        {
-	            logger.error(e);
-	            return null;
-	        }
-	    }
-	   
-	   @Override
-	    public NaturalPerson updateNaturalPersonDataForEdit(NaturalPerson editednaturalperosn) throws Exception {
-		    getEntityManager().merge(editednaturalperosn);
-	        return editednaturalperosn;
-	    }
+            //StoredProcedureQuery query = getEntityManager().createStoredProcedureQuery("calltopologychecks", Review.class);
+            // List<Object> lstobj = query.getResultList();
+            return "Success";
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
 
-	   
-	   private String addZeroinLandNo(String landNo){
-			
-				int length = 9;
-				String str = "";
-				for(int i=0;i<length-landNo.length(); i++){
-					str = str+"0";
-				}
-				return str+""+landNo;
-				
-			}
-		private String addRegistrationNo(String communityID, String landNo){
-				
-				int length = 6;
-				String str = "";
-				for(int i=0;i<length-landNo.length(); i++){
-					str = str+"0";
-				}
-				return communityID+"- "+str+""+landNo;
-				
-			}
+    @Override
+    public NaturalPerson updateNaturalPersonDataForEdit(NaturalPerson editednaturalperosn) throws Exception {
+        getEntityManager().merge(editednaturalperosn);
+        return editednaturalperosn;
+    }
 
-		public 	List<DataCorrectionReport> getDataCorrectionReport(Long transactionid,Long landId) {
-		
-			String sql = null;
-			
-			try 
-			{
-				sql = " Select Distinct on(LD.landid) LD.landid, LD.landno, TR.transactionid ,ST.landsharetype as landsharetype , LC.claimtype_en as claimtype, LT.landusetype_en as landusetype ,PU.landusetype_en as proposedused, LU.landtype_en as landtype, "
-						+ "TC.tenureclass_en as tenureclasstype ,LD.area,LD.neighbor_east,LD.neighbor_west,LD.neighbor_north,LD.neighbor_south,LD.occupancylength, LD.claimno, PR.projectname,LD.createddate as claimdate,"
-						+ " hie1.name as  county , hie2.name as region,hie3.name as province,hie4.name as commune,hie5.name as place, PL.partyid, case when LD.other_use  is null then ' ' else LD.other_use  end as other_use from la_spatialunit_land LD"
-						+ " Inner join la_ext_personlandmapping PL on LD.landid = PL.landid"
-						+ " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid "
-						+ " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "
-						+ " inner join la_baunit_landusetype LT on LD.landusetypeid=LT.landusetypeid"
-						+ " inner join la_baunit_landusetype PU on LD.proposedused=PU.landusetypeid"
-						+ " inner join la_baunit_landtype LU on LD.landtypeid=LU.landtypeid"
-						+ " inner join la_right_tenureclass TC on LD.tenureclassid=TC.tenureclassid"
-						+ " inner join la_spatialsource_projectname PR on  LD.projectnameid= PR.projectnameid"
-						+ " left join la_spatialunitgroup_hierarchy hie1 on hie1.hierarchyid=ld.hierarchyid1 and LD.spatialunitgroupid1=1"
-						+ " left join la_spatialunitgroup_hierarchy hie2 on hie2.hierarchyid=ld.hierarchyid2 and LD.spatialunitgroupid2=2 "
-						+ " left join la_spatialunitgroup_hierarchy hie3 on hie3.hierarchyid=ld.hierarchyid3 and LD.spatialunitgroupid3=3"
-						+ " left join la_spatialunitgroup_hierarchy hie4 on hie4.hierarchyid=ld.hierarchyid4 and LD.spatialunitgroupid4=4"
-						+ " left join la_spatialunitgroup_hierarchy hie5 on hie5.hierarchyid=ld.hierarchyid5 and LD.spatialunitgroupid5=5"
-						+ " inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid  where TR.transactionid="+ transactionid + "  order by landid";
+    private String addZeroinLandNo(String landNo) {
 
-				
-				
-				Query query = getEntityManager().createNativeQuery(sql, DataCorrectionReport.class);
-				List<DataCorrectionReport> datacorrectionlst = query.getResultList();
+        int length = 9;
+        String str = "";
+        for (int i = 0; i < length - landNo.length(); i++) {
+            str = str + "0";
+        }
+        return str + "" + landNo;
 
-				if (datacorrectionlst.size() > 0) 
-				{
-					for( DataCorrectionReport objDataCorrectionReport:datacorrectionlst)
-					{
-						long landID=objDataCorrectionReport.getLandId();
-						 String landnumber =addZeroinLandNo(landID+"");
-						 objDataCorrectionReport.setLandno(landnumber);
-					}
-					 return datacorrectionlst;
-				}
-				else
-				{
-	                return null;
-	            }
-			}
-			catch (Exception e) 
-			{	
-				e.printStackTrace();
-				logger.error(e);
-				return null;
-			}
-		
-		
-         }
+    }
 
-		@Override
-		public List<PoiReport> getDataCorrectionReportPOI(Long transactionid,Long landId) {
-		
-			String sql = null;
-			try 
-			{
-				
+    private String addRegistrationNo(String communityID, String landNo) {
 
-				sql = " select SP.id as Id,SP.first_name as firstName , SP.middle_name as middleName ,SP.last_name as lastName , GN.gender_en as gender ,RL.relationshiptype_en as relationship, SP.dob from la_ext_spatialunit_personwithinterest SP "   
-						+" inner join la_partygroup_gender GN on SP.gender= GN.genderid "
-						+" inner join la_partygroup_relationshiptype RL on  SP.relation=RL.relationshiptypeid where   SP.landid="+ landId + " and SP.isactive= true and SP.transactionid="+transactionid;
- 
- 
-				
-				Query query = getEntityManager().createNativeQuery(sql, PoiReport.class);
-				List<PoiReport> PoiReportlst = query.getResultList();
+        int length = 6;
+        String str = "";
+        for (int i = 0; i < length - landNo.length(); i++) {
+            str = str + "0";
+        }
+        return communityID + "- " + str + "" + landNo;
 
-				if (PoiReportlst.size() > 0) 
-				{
-					 return PoiReportlst;
-				}
-				else
-				{
-	                return null;
-	            }
-			}
-			catch (Exception e) 
-			{	
-				e.printStackTrace();
-				logger.error(e);
-				return null;
-			}
-			
-			
-		}
+    }
 
-		@Override
-		public List<PersonsReport> getDataCorrectionPersonsReport(Long transactionid, Long landId) {
-			
-			String sql = null;
-			try 
-			{
-				
-				sql = "  select ps.personid as id,  ps.firstname as firstname ,ps.middlename as middlename ,ps.lastname as lastname ,ps.address as address ,ps.dateofbirth as dateofbirth, g.gender as gender ,ms.maritalstatus as maritalstatus ,id.identitytype as identitytype ,ps.identityno as identityno , "
-						+" ps.contactno as contact ,oc.occupation_en as occupation,eu.educationlevel_en as educationlevel, aopt.optiontext as ownertype "
-						+" from la_ext_transactiondetails td "
-						+" inner join la_ext_personlandmapping plm on plm.transactionid=td.transactionid "
-						+" inner join la_spatialunit_land ld on ld.landid=plm.landid "
-						+" inner join la_Party_person ps on ps.personid=plm.partyid "
-						+" left join la_partygroup_gender g on g.genderid=ps.genderid "
-						+" left join la_partygroup_maritalstatus ms on ms.maritalstatusid=ps.maritalstatusid "
-						+" left join la_partygroup_identitytype id on id.identitytypeid=ps.identitytypeid "
-						+" left join la_partygroup_occupation oc on ps.occupationid=oc.occupationid "
-						+" left join la_partygroup_educationlevel eu on ps.educationlevelid=eu.educationlevelid "
-						+" left join la_ext_attributeoptions aopt on aopt.parentid=ps.ownertype and aopt.attributemasterid=1156 "
-						+" where td.transactionid="+ transactionid +" and  ps.isactive='true' order by ownertype desc" ;
+    public List<DataCorrectionReport> getDataCorrectionReport(Long transactionid, Long landId) {
 
-									 
-				
-				Query query = getEntityManager().createNativeQuery(sql, PersonsReport.class);
-				List<PersonsReport> PersonsReportlst = query.getResultList();
+        String sql = null;
 
-				if (PersonsReportlst.size() > 0) 
-				{
-					 return PersonsReportlst;
-				}
-				else
-				{
-	                return null;
-	            }
-			}
-			catch (Exception e) 
-			{	
-				e.printStackTrace();
-				logger.error(e);
-				return null;
-			}
-			
-			
-			
-		}
+        try {
+            sql = " Select Distinct on(LD.landid) LD.landid, LD.landno, TR.transactionid ,ST.landsharetype as landsharetype , LC.claimtype_en as claimtype, LT.landusetype_en as landusetype ,PU.landusetype_en as proposedused, LU.landtype_en as landtype, "
+                    + "TC.tenureclass_en as tenureclasstype ,LD.area,LD.neighbor_east,LD.neighbor_west,LD.neighbor_north,LD.neighbor_south,LD.occupancylength, LD.claimno, PR.projectname,LD.createddate as claimdate,"
+                    + " hie1.name as  county , hie2.name as region,hie3.name as province,hie4.name as commune,hie5.name as place, PL.partyid, case when LD.other_use  is null then ' ' else LD.other_use  end as other_use from la_spatialunit_land LD"
+                    + " Inner join la_ext_personlandmapping PL on LD.landid = PL.landid"
+                    + " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid "
+                    + " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "
+                    + " inner join la_baunit_landusetype LT on LD.landusetypeid=LT.landusetypeid"
+                    + " inner join la_baunit_landusetype PU on LD.proposedused=PU.landusetypeid"
+                    + " inner join la_baunit_landtype LU on LD.landtypeid=LU.landtypeid"
+                    + " inner join la_right_tenureclass TC on LD.tenureclassid=TC.tenureclassid"
+                    + " inner join la_spatialsource_projectname PR on  LD.projectnameid= PR.projectnameid"
+                    + " left join la_spatialunitgroup_hierarchy hie1 on hie1.hierarchyid=ld.hierarchyid1 and LD.spatialunitgroupid1=1"
+                    + " left join la_spatialunitgroup_hierarchy hie2 on hie2.hierarchyid=ld.hierarchyid2 and LD.spatialunitgroupid2=2 "
+                    + " left join la_spatialunitgroup_hierarchy hie3 on hie3.hierarchyid=ld.hierarchyid3 and LD.spatialunitgroupid3=3"
+                    + " left join la_spatialunitgroup_hierarchy hie4 on hie4.hierarchyid=ld.hierarchyid4 and LD.spatialunitgroupid4=4"
+                    + " left join la_spatialunitgroup_hierarchy hie5 on hie5.hierarchyid=ld.hierarchyid5 and LD.spatialunitgroupid5=5"
+                    + " inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid  where TR.transactionid=" + transactionid + "  order by landid";
 
-		@Override
-		public List<FarmReport> getFarmReportByLandId(Long landId) {
-		
-			try{
-				
-				
-			/*String sql = Select distinct on (srl.landid) srl.landid,cast(srl.createddate as date),u.username,h1.name as county,h2.name as District,h3.name as Clanname,h4.name as community,h5.name as town,area, 
+            Query query = getEntityManager().createNativeQuery(sql, DataCorrectionReport.class);
+            List<DataCorrectionReport> datacorrectionlst = query.getResultList();
+
+            if (datacorrectionlst.size() > 0) {
+                for (DataCorrectionReport objDataCorrectionReport : datacorrectionlst) {
+                    long landID = objDataCorrectionReport.getLandId();
+                    String landnumber = addZeroinLandNo(landID + "");
+                    objDataCorrectionReport.setLandno(landnumber);
+                }
+                return datacorrectionlst;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
+
+    }
+
+    @Override
+    public List<PoiReport> getDataCorrectionReportPOI(Long transactionid, Long landId) {
+
+        String sql = null;
+        try {
+
+            sql = " select SP.id as Id,SP.first_name as firstName , SP.middle_name as middleName ,SP.last_name as lastName , GN.gender_en as gender ,RL.relationshiptype_en as relationship, SP.dob from la_ext_spatialunit_personwithinterest SP "
+                    + " inner join la_partygroup_gender GN on SP.gender= GN.genderid "
+                    + " inner join la_partygroup_relationshiptype RL on  SP.relation=RL.relationshiptypeid where   SP.landid=" + landId + " and SP.isactive= true and SP.transactionid=" + transactionid;
+
+            Query query = getEntityManager().createNativeQuery(sql, PoiReport.class);
+            List<PoiReport> PoiReportlst = query.getResultList();
+
+            if (PoiReportlst.size() > 0) {
+                return PoiReportlst;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
+
+    }
+
+    @Override
+    public List<PersonsReport> getDataCorrectionPersonsReport(Long transactionid, Long landId) {
+
+        String sql = null;
+        try {
+
+            sql = "  select ps.personid as id,  ps.firstname as firstname ,ps.middlename as middlename ,ps.lastname as lastname ,ps.address as address ,ps.dateofbirth as dateofbirth, g.gender as gender ,ms.maritalstatus as maritalstatus ,id.identitytype as identitytype ,ps.identityno as identityno , "
+                    + " ps.contactno as contact ,oc.occupation_en as occupation,eu.educationlevel_en as educationlevel, aopt.optiontext as ownertype "
+                    + " from la_ext_transactiondetails td "
+                    + " inner join la_ext_personlandmapping plm on plm.transactionid=td.transactionid "
+                    + " inner join la_spatialunit_land ld on ld.landid=plm.landid "
+                    + " inner join la_Party_person ps on ps.personid=plm.partyid "
+                    + " left join la_partygroup_gender g on g.genderid=ps.genderid "
+                    + " left join la_partygroup_maritalstatus ms on ms.maritalstatusid=ps.maritalstatusid "
+                    + " left join la_partygroup_identitytype id on id.identitytypeid=ps.identitytypeid "
+                    + " left join la_partygroup_occupation oc on ps.occupationid=oc.occupationid "
+                    + " left join la_partygroup_educationlevel eu on ps.educationlevelid=eu.educationlevelid "
+                    + " left join la_ext_attributeoptions aopt on aopt.parentid=ps.ownertype and aopt.attributemasterid=1156 "
+                    + " where td.transactionid=" + transactionid + " and  ps.isactive='true' order by ownertype desc";
+
+            Query query = getEntityManager().createNativeQuery(sql, PersonsReport.class);
+            List<PersonsReport> PersonsReportlst = query.getResultList();
+
+            if (PersonsReportlst.size() > 0) {
+                return PersonsReportlst;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
+
+    }
+
+    @Override
+    public List<FarmReport> getFarmReportByLandId(Long landId) {
+
+        try {
+
+            /*String sql = Select distinct on (srl.landid) srl.landid,cast(srl.createddate as date),u.username,h1.name as county,h2.name as District,h3.name as Clanname,h4.name as community,h5.name as town,area, 
 						cav1.attributevalue as EnterpriseGroupname, cav2.attributevalue as primarycrop, cav3.attributevalue as primarycropdate,cav4.attributevalue as primarycropduration,
 						 cav5.attributevalue as seccrop, cav6.attributevalue as seccropdate,cav7.attributevalue as seccropduration,
 						  case when rav1.attributevalue is null then ' ' else rav1.attributevalue end  as Ethnicity,rav7.attributevalue||' '||rav8.attributevalue||' '||rav2.attributevalue as Name,
@@ -2830,67 +2086,61 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
 						inner join la_spatialsource_projectname prj on rlcm.projectid=prj.projectnameid 
 			
 						where srl.landid =12;*/
-				
-				
-String sql = "Select Distinct on (RA.landID) RA.landID,cast(srl.createddate as date),u.username, (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID "
-		+ " and attributeoptionsid in (100,121,130,139,148,157)) as EnterpriseGroupname, h1.name as county,h2.name as District,h3.name as Clanname,h4.name as community,h5.name as town,"
-		+ "rc.classificationname,rsc.subclassificationname,area,ac.categoryname, case when ac.attributecategoryid in (10,17,11,12) then 'Natural' when ac.attributecategoryid "
-		+ "in (14,18) then 'Non-Natural' end as persontype, "
-		+ " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1063,1017,1035,1079,1088,1097,1108) and groupid=RA.groupid) ||' '|| "
-		+ " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1065,1018,1036,1080,1089,1109,1098) and groupid=RA.groupid) ||' '|| "
-		+ " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1066,1019,1037,1081,1090,1099,1110) and groupid=RA.groupid) as Name, "
-		+ " (Select case when count(*)=0 then 'No' else 'Yes' end as ispoi from la_ext_resourcepoiattributevalue where landID=RA.LandID ) as ispoi, "
-		+ " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1022,1064,1116,22) and groupid=RA.groupid) as MaritalStatus, " 
-		+ " (Select count(distinct groupid) from la_ext_resourcepoiattributevalue where landID=RA.LandID ) as POICount, "
-		+ " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (4,1020,1067,1119) and groupid=RA.groupid) as Gender, "
-		+ " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1024,1059,1070,1122) and groupid=RA.groupid) as Ethnicity, "
-		+ " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (43,1025,1071,1123) and groupid=RA.groupid) as Resident, "
-		+ " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1021,1068,1120,1129) and groupid=RA.groupid) as DOB, "
-		+ " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (5,8,1030,1042,1051,1073,1086,1095,1105,1125) and groupid=RA.groupid) as MobileNo, "
-		+ " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (103,122,131,140,149,158)) as primarycrop, "
-		+ " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (104,123,132,141,150,159)) as primarycropdate, "
-		+ " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (105,124,133,142,151,160)) as primarycropduration, "
-		+ " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (116,125,134,143,152,161)) as seccrop, "
-		+ " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (117,126,135,144,153,162)) as seccropdate, "
-		+ " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (118,127,136,145,154,163)) as seccropduration, " 
-		+ " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (119,128,137,146,155,164)) as TotalExpenditure, "
-		+ " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (120,129,138,147,156,165)) as TotalSale, "
-		+ " prj.projectname as project"
+            String sql = "Select Distinct on (RA.landID) RA.landID,cast(srl.createddate as date),u.username, (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID "
+                    + " and attributeoptionsid in (100,121,130,139,148,157)) as EnterpriseGroupname, h1.name as county,h2.name as District,h3.name as Clanname,h4.name as community,h5.name as town,"
+                    + "rc.classificationname,rsc.subclassificationname,area,ac.categoryname, case when ac.attributecategoryid in (10,17,11,12) then 'Natural' when ac.attributecategoryid "
+                    + "in (14,18) then 'Non-Natural' end as persontype, "
+                    + " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1063,1017,1035,1079,1088,1097,1108) and groupid=RA.groupid) ||' '|| "
+                    + " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1065,1018,1036,1080,1089,1109,1098) and groupid=RA.groupid) ||' '|| "
+                    + " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1066,1019,1037,1081,1090,1099,1110) and groupid=RA.groupid) as Name, "
+                    + " (Select case when count(*)=0 then 'No' else 'Yes' end as ispoi from la_ext_resourcepoiattributevalue where landID=RA.LandID ) as ispoi, "
+                    + " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1022,1064,1116,22) and groupid=RA.groupid) as MaritalStatus, "
+                    + " (Select count(distinct groupid) from la_ext_resourcepoiattributevalue where landID=RA.LandID ) as POICount, "
+                    + " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (4,1020,1067,1119) and groupid=RA.groupid) as Gender, "
+                    + " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1024,1059,1070,1122) and groupid=RA.groupid) as Ethnicity, "
+                    + " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (43,1025,1071,1123) and groupid=RA.groupid) as Resident, "
+                    + " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (1021,1068,1120,1129) and groupid=RA.groupid) as DOB, "
+                    + " (Select attributevalue from la_ext_resourceattributevalue Where landid=RA.landID and attributemasterid in (5,8,1030,1042,1051,1073,1086,1095,1105,1125) and groupid=RA.groupid) as MobileNo, "
+                    + " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (103,122,131,140,149,158)) as primarycrop, "
+                    + " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (104,123,132,141,150,159)) as primarycropdate, "
+                    + " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (105,124,133,142,151,160)) as primarycropduration, "
+                    + " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (116,125,134,143,152,161)) as seccrop, "
+                    + " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (117,126,135,144,153,162)) as seccropdate, "
+                    + " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (118,127,136,145,154,163)) as seccropduration, "
+                    + " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (119,128,137,146,155,164)) as TotalExpenditure, "
+                    + " (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID and attributeoptionsid in (120,129,138,147,156,165)) as TotalSale, "
+                    + " prj.projectname as project"
+                    + " from la_spatialunit_resource_land srl,la_ext_resourceattributevalue RA,la_ext_attributemaster AM,la_ext_attributecategory ac "
+                    + " ,la_ext_user u,la_spatialunitgroup_hierarchy h1 ,la_spatialunitgroup_hierarchy h2,la_spatialunitgroup_hierarchy h3,la_spatialunitgroup_hierarchy h4,la_spatialunitgroup_hierarchy h5 , "
+                    + "	la_ext_resourcelandclassificationmapping rlcm ,la_ext_resourceclassification rc ,la_ext_resourcesubclassification rsc, la_spatialsource_projectname prj "
+                    + "  Where srl.LandID=RA.landID and rlcm.projectid=prj.projectnameid and rlcm.landid=srl.landid and rc.classificationid=rlcm.classificationid and rsc.subclassificationid=rlcm.subclassificationid "
+                    + "  And u.userid=srl.createdby And h1.hierarchyid=srl.hierarchyid1 and h1.spatialunitgroupid=1 And h2.hierarchyid=srl.hierarchyid2 and h2.spatialunitgroupid=2 "
+                    + " And h3.hierarchyid=srl.hierarchyid3 and h3.spatialunitgroupid=3 And h4.hierarchyid=srl.hierarchyid4 and h4.spatialunitgroupid=4 And h5.hierarchyid=srl.hierarchyid5 and h5.spatialunitgroupid=5 "
+                    + "  AND RA.AttributeMasterID=AM.AttributeMasterID AND AM.AttributeCategoryID=ac.AttributeCategoryID AND srl.isactive = true and "
+                    + " srl.landid = " + landId
+                    + " Order by Ra.Landid";
 
-					
-        + " from la_spatialunit_resource_land srl,la_ext_resourceattributevalue RA,la_ext_attributemaster AM,la_ext_attributecategory ac "
-        + " ,la_ext_user u,la_spatialunitgroup_hierarchy h1 ,la_spatialunitgroup_hierarchy h2,la_spatialunitgroup_hierarchy h3,la_spatialunitgroup_hierarchy h4,la_spatialunitgroup_hierarchy h5 , "
-        + "	la_ext_resourcelandclassificationmapping rlcm ,la_ext_resourceclassification rc ,la_ext_resourcesubclassification rsc, la_spatialsource_projectname prj "
-	    + "  Where srl.LandID=RA.landID and rlcm.projectid=prj.projectnameid and rlcm.landid=srl.landid and rc.classificationid=rlcm.classificationid and rsc.subclassificationid=rlcm.subclassificationid "
-		+ "  And u.userid=srl.createdby And h1.hierarchyid=srl.hierarchyid1 and h1.spatialunitgroupid=1 And h2.hierarchyid=srl.hierarchyid2 and h2.spatialunitgroupid=2 "
-		+ " And h3.hierarchyid=srl.hierarchyid3 and h3.spatialunitgroupid=3 And h4.hierarchyid=srl.hierarchyid4 and h4.spatialunitgroupid=4 And h5.hierarchyid=srl.hierarchyid5 and h5.spatialunitgroupid=5 "
-		+ "  AND RA.AttributeMasterID=AM.AttributeMasterID AND AM.AttributeCategoryID=ac.AttributeCategoryID AND srl.isactive = true and "
-		+ " srl.landid = "+ landId 
-		+ " Order by Ra.Landid";
-				
-				
-				
-					Query query = getEntityManager().createNativeQuery(sql, FarmReport.class);
-					List<FarmReport>FarmReportlst = query.getResultList();
-						if(FarmReportlst.size()>0){
-							
-							return FarmReportlst;
-						}
-				
-				return null;
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-				return null;
-			}
-			
-		}
+            Query query = getEntityManager().createNativeQuery(sql, FarmReport.class);
+            List<FarmReport> FarmReportlst = query.getResultList();
+            if (FarmReportlst.size() > 0) {
 
-		@Override
-		public List<DataCorrectionReport> getBatchDataCorrectionReport(
-				Long transactionid) {
-			
-			/*Long startid=transactionidstart;
+                return FarmReportlst;
+            }
+
+            return null;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    @Override
+    public List<DataCorrectionReport> getBatchDataCorrectionReport(
+            Long transactionid) {
+
+        /*Long startid=transactionidstart;
 			
 			Long endid=transactionidend;
 			
@@ -2902,60 +2152,48 @@ String sql = "Select Distinct on (RA.landID) RA.landID,cast(srl.createddate as d
 			}
 			
 			ids=ids.substring(0, ids.length()-1);*/
-			
-		
-			String sql = null;
-			
-			try 
-			{
-				sql = " Select LD.landid, LD.landno, TR.transactionid ,ST.landsharetype as landsharetype , LC.claimtype_en as claimtype, LT.landusetype_en as landusetype ,PU.landusetype_en as proposedused, LU.landtype_en as landtype, "
-						+ "TC.tenureclass_en as tenureclasstype ,LD.area,LD.neighbor_east,LD.neighbor_west,LD.neighbor_north,LD.neighbor_south,LD.occupancylength, LD.claimno, PR.projectname,LD.createddate as claimdate,"
-						+ " hie1.name as  county , hie2.name as region,hie3.name as province,hie4.name as commune,hie5.name as place, PL.partyid from la_spatialunit_land LD"
-						+ " Inner join la_ext_personlandmapping PL on LD.landid = PL.landid"
-						+ " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid "
-						+ " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "
-						+ " inner join la_baunit_landusetype LT on LD.landusetypeid=LT.landusetypeid"
-						+ " inner join la_baunit_landusetype PU on LD.proposedused=PU.landusetypeid"
-						+ " inner join la_baunit_landtype LU on LD.landtypeid=LU.landtypeid"
-						+ " inner join la_right_tenureclass TC on LD.tenureclassid=TC.tenureclassid"
-						+ " inner join la_spatialsource_projectname PR on  LD.projectnameid= PR.projectnameid"
-						+ " left join la_spatialunitgroup_hierarchy hie1 on hie1.hierarchyid=ld.hierarchyid1 and LD.spatialunitgroupid1=1"
-						+ " left join la_spatialunitgroup_hierarchy hie2 on hie2.hierarchyid=ld.hierarchyid2 and LD.spatialunitgroupid2=2 "
-						+ " left join la_spatialunitgroup_hierarchy hie3 on hie3.hierarchyid=ld.hierarchyid3 and LD.spatialunitgroupid3=3"
-						+ " left join la_spatialunitgroup_hierarchy hie4 on hie4.hierarchyid=ld.hierarchyid4 and LD.spatialunitgroupid4=4"
-						+ " left join la_spatialunitgroup_hierarchy hie5 on hie5.hierarchyid=ld.hierarchyid5 and LD.spatialunitgroupid5=5"
-						+ " inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid  where TR.transactionid ="+ transactionid +" order by landid";
+        String sql = null;
 
-				
-				
-				Query query = getEntityManager().createNativeQuery(sql, DataCorrectionReport.class);
-				List<DataCorrectionReport> datacorrectionlst = query.getResultList();
+        try {
+            sql = " Select LD.landid, LD.landno, TR.transactionid ,ST.landsharetype as landsharetype , LC.claimtype_en as claimtype, LT.landusetype_en as landusetype ,PU.landusetype_en as proposedused, LU.landtype_en as landtype, "
+                    + "TC.tenureclass_en as tenureclasstype ,LD.area,LD.neighbor_east,LD.neighbor_west,LD.neighbor_north,LD.neighbor_south,LD.occupancylength, LD.claimno, PR.projectname,LD.createddate as claimdate,"
+                    + " hie1.name as  county , hie2.name as region,hie3.name as province,hie4.name as commune,hie5.name as place, PL.partyid from la_spatialunit_land LD"
+                    + " Inner join la_ext_personlandmapping PL on LD.landid = PL.landid"
+                    + " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid "
+                    + " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "
+                    + " inner join la_baunit_landusetype LT on LD.landusetypeid=LT.landusetypeid"
+                    + " inner join la_baunit_landusetype PU on LD.proposedused=PU.landusetypeid"
+                    + " inner join la_baunit_landtype LU on LD.landtypeid=LU.landtypeid"
+                    + " inner join la_right_tenureclass TC on LD.tenureclassid=TC.tenureclassid"
+                    + " inner join la_spatialsource_projectname PR on  LD.projectnameid= PR.projectnameid"
+                    + " left join la_spatialunitgroup_hierarchy hie1 on hie1.hierarchyid=ld.hierarchyid1 and LD.spatialunitgroupid1=1"
+                    + " left join la_spatialunitgroup_hierarchy hie2 on hie2.hierarchyid=ld.hierarchyid2 and LD.spatialunitgroupid2=2 "
+                    + " left join la_spatialunitgroup_hierarchy hie3 on hie3.hierarchyid=ld.hierarchyid3 and LD.spatialunitgroupid3=3"
+                    + " left join la_spatialunitgroup_hierarchy hie4 on hie4.hierarchyid=ld.hierarchyid4 and LD.spatialunitgroupid4=4"
+                    + " left join la_spatialunitgroup_hierarchy hie5 on hie5.hierarchyid=ld.hierarchyid5 and LD.spatialunitgroupid5=5"
+                    + " inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid  where TR.transactionid =" + transactionid + " order by landid";
 
-				if (datacorrectionlst.size() > 0) 
-				{
-					 return datacorrectionlst;
-				}
-				else
-				{
-	                return null;
-	            }
-			}
-			catch (Exception e) 
-			{	
-				e.printStackTrace();
-				logger.error(e);
-				return null;
-			}
-		
-		
-         }
+            Query query = getEntityManager().createNativeQuery(sql, DataCorrectionReport.class);
+            List<DataCorrectionReport> datacorrectionlst = query.getResultList();
 
-		@Override
-		public List<PoiReport> getBatchDataCorrectionReportPOI(
-				Long transactionid) {
-		
-			
-		/*	Long startid=transactionidstart;
+            if (datacorrectionlst.size() > 0) {
+                return datacorrectionlst;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
+
+    }
+
+    @Override
+    public List<PoiReport> getBatchDataCorrectionReportPOI(
+            Long transactionid) {
+
+        /*	Long startid=transactionidstart;
 			
 			Long endid=transactionidend;
 			
@@ -2967,102 +2205,77 @@ String sql = "Select Distinct on (RA.landID) RA.landID,cast(srl.createddate as d
 			}
 			
 			ids=ids.substring(0, ids.length()-1);*/
-			
-			String sql = null;
-			try 
-			{
-				
+        String sql = null;
+        try {
 
-				sql = " select SP.id as Id,SP.first_name as firstName , SP.middle_name as middleName ,SP.last_name as lastName , GN.gender_en as gender ,RL.relationshiptype_en as relationship, SP.dob from la_ext_spatialunit_personwithinterest SP "   
-						+" inner join la_partygroup_gender GN on SP.gender= GN.genderid "
-						+" inner join la_partygroup_relationshiptype RL on  SP.relation=RL.relationshiptypeid where SP.isactive= true and SP.transactionid="+transactionid;
- 
- 
-				
-				Query query = getEntityManager().createNativeQuery(sql, PoiReport.class);
-				List<PoiReport> PoiReportlst = query.getResultList();
+            sql = " select SP.id as Id,SP.first_name as firstName , SP.middle_name as middleName ,SP.last_name as lastName , GN.gender_en as gender ,RL.relationshiptype_en as relationship, SP.dob from la_ext_spatialunit_personwithinterest SP "
+                    + " inner join la_partygroup_gender GN on SP.gender= GN.genderid "
+                    + " inner join la_partygroup_relationshiptype RL on  SP.relation=RL.relationshiptypeid where SP.isactive= true and SP.transactionid=" + transactionid;
 
-				if (PoiReportlst.size() > 0) 
-				{
-					 return PoiReportlst;
-				}
-				else
-				{
-	                return null;
-	            }
-			}
-			catch (Exception e) 
-			{	
-				e.printStackTrace();
-				logger.error(e);
-				return null;
-			}
-			
-			
-		}
+            Query query = getEntityManager().createNativeQuery(sql, PoiReport.class);
+            List<PoiReport> PoiReportlst = query.getResultList();
 
-		@Override
-		public List<PersonsReport> getBatchDataCorrectionPersonsReport(
-				Long transactionidstart, Long transactionidend) {
-			
-			
-			Long startid=transactionidstart;
-			
-			Long endid=transactionidend;
-			
-			Long transiddiffr = transactionidend - transactionidstart;
-			String ids= startid+",";
-			for(int i=0; i<transiddiffr; i++){
-				transactionidstart =transactionidstart+1;
-				ids=ids+transactionidstart+",";
-			}
-			
-			ids=ids.substring(0, ids.length()-1);
-			
-			
-			String sql = null;
-			try 
-			{
-				
-				sql = "  select ps.personid as id,  ps.firstname as firstname ,ps.middlename as middlename ,ps.lastname as lastname ,ps.address as address ,ps.dateofbirth as dateofbirth, g.gender as gender ,ms.maritalstatus as maritalstatus ,id.identitytype as identitytype ,ps.identityno as identityno , "
-						+" ps.contactno as contact ,oc.occupation_en as occupation,eu.educationlevel_en as educationlevel, aopt.optiontext as ownertype "
-						+" from la_ext_transactiondetails td "
-						+" inner join la_ext_personlandmapping plm on plm.transactionid=td.transactionid "
-						+" inner join la_spatialunit_land ld on ld.landid=plm.landid "
-						+" inner join la_Party_person ps on ps.personid=plm.partyid "
-						+" left join la_partygroup_gender g on g.genderid=ps.genderid "
-						+" left join la_partygroup_maritalstatus ms on ms.maritalstatusid=ps.maritalstatusid "
-						+" left join la_partygroup_identitytype id on id.identitytypeid=ps.identitytypeid "
-						+" left join la_partygroup_occupation oc on ps.occupationid=oc.occupationid "
-						+" left join la_partygroup_educationlevel eu on ps.educationlevelid=eu.educationlevelid "
-						+" left join la_ext_attributeoptions aopt on aopt.parentid=ps.ownertype and aopt.attributemasterid=1156 "
-						+" where td.transactionid in ("+ ids+")" ;
+            if (PoiReportlst.size() > 0) {
+                return PoiReportlst;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
 
-									 
-				
-				Query query = getEntityManager().createNativeQuery(sql, PersonsReport.class);
-				List<PersonsReport> PersonsReportlst = query.getResultList();
+    }
 
-				if (PersonsReportlst.size() > 0) 
-				{
-					 return PersonsReportlst;
-				}
-				else
-				{
-	                return null;
-	            }
-			}
-			catch (Exception e) 
-			{	
-				e.printStackTrace();
-				logger.error(e);
-				return null;
-			}
-			
-			
-			
-		}
+    @Override
+    public List<PersonsReport> getBatchDataCorrectionPersonsReport(
+            Long transactionidstart, Long transactionidend) {
 
-	
+        Long startid = transactionidstart;
+
+        Long endid = transactionidend;
+
+        Long transiddiffr = transactionidend - transactionidstart;
+        String ids = startid + ",";
+        for (int i = 0; i < transiddiffr; i++) {
+            transactionidstart = transactionidstart + 1;
+            ids = ids + transactionidstart + ",";
+        }
+
+        ids = ids.substring(0, ids.length() - 1);
+
+        String sql = null;
+        try {
+
+            sql = "  select ps.personid as id,  ps.firstname as firstname ,ps.middlename as middlename ,ps.lastname as lastname ,ps.address as address ,ps.dateofbirth as dateofbirth, g.gender as gender ,ms.maritalstatus as maritalstatus ,id.identitytype as identitytype ,ps.identityno as identityno , "
+                    + " ps.contactno as contact ,oc.occupation_en as occupation,eu.educationlevel_en as educationlevel, aopt.optiontext as ownertype "
+                    + " from la_ext_transactiondetails td "
+                    + " inner join la_ext_personlandmapping plm on plm.transactionid=td.transactionid "
+                    + " inner join la_spatialunit_land ld on ld.landid=plm.landid "
+                    + " inner join la_Party_person ps on ps.personid=plm.partyid "
+                    + " left join la_partygroup_gender g on g.genderid=ps.genderid "
+                    + " left join la_partygroup_maritalstatus ms on ms.maritalstatusid=ps.maritalstatusid "
+                    + " left join la_partygroup_identitytype id on id.identitytypeid=ps.identitytypeid "
+                    + " left join la_partygroup_occupation oc on ps.occupationid=oc.occupationid "
+                    + " left join la_partygroup_educationlevel eu on ps.educationlevelid=eu.educationlevelid "
+                    + " left join la_ext_attributeoptions aopt on aopt.parentid=ps.ownertype and aopt.attributemasterid=1156 "
+                    + " where td.transactionid in (" + ids + ")";
+
+            Query query = getEntityManager().createNativeQuery(sql, PersonsReport.class);
+            List<PersonsReport> PersonsReportlst = query.getResultList();
+
+            if (PersonsReportlst.size() > 0) {
+                return PersonsReportlst;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
+
+    }
 
 }

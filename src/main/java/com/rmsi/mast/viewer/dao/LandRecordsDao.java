@@ -66,80 +66,91 @@ public interface LandRecordsDao extends GenericDAO<SpatialUnitTable, Long> {
 
     boolean addAllVertexLabel(int k, String lat, String lon);
 
-    /** Returns list of claim summary based on usin, project name, status, results rage, and claim type */
+    /**
+     * Returns list of claim summary based on usin, project name, status,
+     * results rage, and claim type
+     */
     List<ClaimSummary> getClaimsSummary(Long usin, int startRecord, int endRecord, String projectName, int statusId, String claimType);
-    
+
     List<RegistryBook> getRegistryBook(String projectName, long usin);
-    
+
     ClaimProfile getClaimsProfile(String projectName);
-    
+
     ProjectDetails getProjectDetails(String projectName);
-    
+
     List<PersonForEditing> getPersonsForEditing(String projectName, long usin, String firstName, String lastName, String middleName, String idNumber, Integer claimNumber, String neighbourN, String neighbourS, String neighbourE, String neighbourW);
-    
+
     SpatialUnitBasic getSpatialUnitBasic(Long usin);
-    
+
     NaturalPersonBasic getNaturalPersonBasic(Long id);
-    
+
     @Transactional
     PersonForEditing updatePersonForEditing(PersonForEditing pfe) throws Exception;
-    
+
     @Transactional
     NaturalPerson updateNaturalPersonDataForEdit(NaturalPerson np) throws Exception;
-    
-    
-    List<LaSpatialunitLand> findOrderedSpatialUnitRegistry(String defaultProject,int startfrom);
-    
-    List<LaSpatialunitLand> search(Long status, Integer claimType, String project,String communeId,String transId,String parcelId,Integer startpos);
-    
-	List<ReportCertificateFetch> getCertificatedetailsbytransactionid(Long usin);
 
-	List<Object> findsummaryreport(String project);
+    List<LaSpatialunitLand> search(String lang, Integer claimType, int project, String parcelId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int appStatus, Integer startpos);
 
-	List<Object> findprojectdetailedsummaryreport(String project);
-	List<Object> findprojectapplicationstatussummaryreport(String project);
-	List<Object> findprojectapplicationtypesummaryreport(String project);
-	List<Object> findprojectdetailedsummaryreportForCommune(String communeid);
-	List<Object> findprojectworkflowsummaryreport(String project);
-	List<ReportCertificateFetch> getCertificatedetailsinbatch(Long startRecord,Long endRecord);   
-	List<Object> findprojectTenureTypesLandUnitsummaryreport(String project);
-	Integer getTotalrecordByProject(String project);
-	
-	Integer searchCount(Long status, Integer claimType,String project,String communeId,String transId,String parcelId);
-	 
-	 Integer spatialUnitWorkflowCount(int[] workflow_ids,int[] claim_ids,int[] status_ids, String project);
-	    
-	List<LaSpatialunitLand> getspatialUnitWorkFlowResult(int[] workflow_ids,int[] claim_ids,int[] status_ids, Integer startfrom, String project);
+    List<ReportCertificateFetch> getCertificatedetailsbytransactionid(Long usin);
 
-	List<OwnerHistoryForFetch> getownerhistorydetails(Long landid);
+    List<Object> findsummaryreport(String project);
 
-	String checkruntopologychecks(String projectName);
+    List<Object> findprojectdetailedsummaryreport(String project);
 
-	List<LeaseHistoryForFetch> getleasehistorydetails(Long landid);
+    List<Object> findprojectapplicationstatussummaryreport(String project);
 
-	List<MortageHistoryForFetch> getmortagagedetails(Long landid);
+    List<Object> findprojectapplicationtypesummaryreport(String project);
 
-	List<TransactionHistoryForFetch> gettransactiondetails(Long landid);
-	 
-	List<LeaseHistoryForFetch> findleasedetailbylandid(Long transactionid,Long landid);
-	List<LeaseHistoryForFetch> findsurrenderleasedetailbylandid(Long transactionid,Long landid);
-	List<MortageHistoryForFetch> findmortagagedetailbylandid(Long transactionid,Long landid);
-	List<MortageHistoryForFetch> findSurrendermortagagedetailbylandid(Long transactionid,Long landid);
-	List<UploadedDocumentDetailsForFetch>  viewdocumentdetailbytransactioid(Long transactionid);
-	
-	List<DataCorrectionReport> getDataCorrectionReport(Long transactionid,Long landId);
-	
-	List<DataCorrectionReport> getBatchDataCorrectionReport(Long transactionid);
-	
-	public List<PoiReport> getDataCorrectionReportPOI(Long transactionid,Long landId);
-	
-	public List<PoiReport> getBatchDataCorrectionReportPOI(Long transactionid);
+    List<Object> findprojectdetailedsummaryreportForCommune(String communeid);
 
-	List<PersonsReport> getDataCorrectionPersonsReport(Long transactionid,Long landId);
-	
-	List<PersonsReport> getBatchDataCorrectionPersonsReport(Long transactionidstart,Long transactionidend);
-	
-	public List<FarmReport> getFarmReportByLandId(Long landId);
+    List<Object> findprojectworkflowsummaryreport(String project);
 
-	List<Object> findLiberiaFarmummaryreport(String project);
+    List<ReportCertificateFetch> getCertificatedetailsinbatch(Long startRecord, Long endRecord);
+
+    List<Object> findprojectTenureTypesLandUnitsummaryreport(String project);
+
+    Integer getTotalrecordByProject(int project);
+
+    Integer searchCount(Integer claimType, int project, String parcelId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int appStatus);
+
+    Integer spatialUnitWorkflowCount(int[] workflow_ids, int project);
+
+    List<LaSpatialunitLand> getspatialUnitWorkFlowResult(String lang, int[] workflow_ids, Integer startfrom, int project);
+
+    List<OwnerHistoryForFetch> getownerhistorydetails(Long landid);
+
+    String checkruntopologychecks(String projectName);
+
+    List<LeaseHistoryForFetch> getleasehistorydetails(Long landid);
+
+    List<MortageHistoryForFetch> getmortagagedetails(Long landid);
+
+    List<TransactionHistoryForFetch> gettransactiondetails(Long landid);
+
+    List<LeaseHistoryForFetch> findleasedetailbylandid(Long transactionid, Long landid);
+
+    List<LeaseHistoryForFetch> findsurrenderleasedetailbylandid(Long transactionid, Long landid);
+
+    List<MortageHistoryForFetch> findmortagagedetailbylandid(Long transactionid, Long landid);
+
+    List<MortageHistoryForFetch> findSurrendermortagagedetailbylandid(Long transactionid, Long landid);
+
+    List<UploadedDocumentDetailsForFetch> viewdocumentdetailbytransactioid(Long transactionid);
+
+    List<DataCorrectionReport> getDataCorrectionReport(Long transactionid, Long landId);
+
+    List<DataCorrectionReport> getBatchDataCorrectionReport(Long transactionid);
+
+    public List<PoiReport> getDataCorrectionReportPOI(Long transactionid, Long landId);
+
+    public List<PoiReport> getBatchDataCorrectionReportPOI(Long transactionid);
+
+    List<PersonsReport> getDataCorrectionPersonsReport(Long transactionid, Long landId);
+
+    List<PersonsReport> getBatchDataCorrectionPersonsReport(Long transactionidstart, Long transactionidend);
+
+    public List<FarmReport> getFarmReportByLandId(Long landId);
+
+    List<Object> findLiberiaFarmummaryreport(String project);
 }

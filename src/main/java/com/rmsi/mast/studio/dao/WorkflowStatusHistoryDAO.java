@@ -6,8 +6,11 @@ import com.rmsi.mast.studio.domain.WorkflowStatusHistory;
 
 public interface WorkflowStatusHistoryDAO {
 
-	
-	List<WorkflowStatusHistory> getWorkflowStatusHistoryBylandId(long landid);
-	WorkflowStatusHistory getWorkflowStatusHistoryById(Integer landworkflowhistoryid);
-	void addWorkflowStatusHistory(WorkflowStatusHistory workflowStatusHistory);
+    List<WorkflowStatusHistory> getWorkflowStatusHistoryBylandId(long landid);
+
+    WorkflowStatusHistory getWorkflowStatusHistoryById(Integer landworkflowhistoryid);
+
+    void addWorkflowStatusHistory(WorkflowStatusHistory workflowStatusHistory);
+    
+    long findSFRnameByUsin(Long id, int workflowId, int workflowStatus);
 }
