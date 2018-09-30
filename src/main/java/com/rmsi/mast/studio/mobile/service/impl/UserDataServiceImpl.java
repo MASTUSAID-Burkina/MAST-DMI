@@ -460,7 +460,11 @@ public class UserDataServiceImpl implements UserDataService {
                 if (!StringUtils.isEmpty(prop.getPolygonNumber())) {
                     su.setClaimno(Integer.parseInt(prop.getPolygonNumber()));
                 }
-                su.setWorkflowstatusid(1);
+                if (su.getClaimtypeid() == 1) {
+                    su.setWorkflowstatusid(1);
+                } else {
+                    su.setWorkflowstatusid(10);
+                }
                 su.setModifiedby(userId);
                 su.setModifieddate(new Date());
                 su.setOther_use(prop.getOtherUse());
@@ -502,7 +506,7 @@ public class UserDataServiceImpl implements UserDataService {
                 sunitHistory.setUserid((int) userId);
                 sunitHistory.setStatuschangedate(new Date());
                 sunitHistory.setStatus(statusDAO.getStatusById(1));
-                if(su.getClaimtypeid() == 1){
+                if (su.getClaimtypeid() == 1) {
                     sunitHistory.setWorkflow(workflowDAO.getWorkflowByid(1));
                 } else {
                     sunitHistory.setWorkflow(workflowDAO.getWorkflowByid(10));
@@ -745,7 +749,7 @@ public class UserDataServiceImpl implements UserDataService {
     }
 
     private void setRightAttributes(SocialTenureRelationship right, Right propRight) throws ParseException {
-        if (right == null || propRight == null || propRight.getAttributes() == null || propRight.getAttributes().size() < 1) {
+        if (right == null || propRight == null) {
             return;
         }
 
@@ -761,12 +765,14 @@ public class UserDataServiceImpl implements UserDataService {
 
         right.setIsactive(true);
 
-        for (Attribute attribute : propRight.getAttributes()) {
-            String value = attribute.getValue();
-            Long id = attribute.getId();
+        if (propRight.getAttributes() == null || propRight.getAttributes().size() < 1) {
+            for (Attribute attribute : propRight.getAttributes()) {
+                String value = attribute.getValue();
+                Long id = attribute.getId();
 
-            if (id == 12) {
-                right.setSharepercentage(value);
+                if (id == 12) {
+                    right.setSharepercentage(value);
+                }
             }
         }
     }

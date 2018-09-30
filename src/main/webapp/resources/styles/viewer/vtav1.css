@@ -3,15 +3,11 @@ img {
 }
 
 .vtab {
-
     font-size: 12px;
     height: 620px;
-    margin-bottom: 80px;
     margin-left: 0;
     margin-right: 0;
-	overflow-y: auto;
-   /*  margin-top: 10px; */
- 
+    overflow-y: auto;
     width: 100%;
 }
 

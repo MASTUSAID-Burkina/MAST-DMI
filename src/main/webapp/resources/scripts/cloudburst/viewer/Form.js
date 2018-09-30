@@ -23,11 +23,11 @@ function generateform1(usin, id) {
                 jQuery("#printDiv div").empty();
                 jQuery("#printDiv").append(data1);
                 jQuery("#printDiv").i18n();
-                
+
                 var generateForm = new generateForms();
                 var form1Obj = generateForm.Form1(usin);
                 removeNulls(form1Obj);
-                
+
                 $('.commune_logo').append("<img width='125' height='100' src='" + formImage + "'>");
                 $('#region_1').text(form1Obj.region);
                 $('#province_1').text(form1Obj.province);
@@ -111,7 +111,7 @@ function generateform2(usin, id) {
                         jQuery("#printDiv div").empty();
                         jQuery("#printDiv").append(data1);
                         jQuery("#printDiv").i18n();
-                        
+
                         var fromTmp = new generateForms();
                         var form2Obj = fromTmp.Form2(usin);
                         removeNulls(form2Obj);
@@ -152,7 +152,7 @@ function generateform2(usin, id) {
                         if (mapUrl !== "") {
                             jQuery('#areamap_url2').append('<img  src=' + mapUrl + '>');
                         }
-                        
+
                         var printWindow = window.open('', 'form2' + usin, 'height=900,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no,status=no, location=no');
 
                         var html = $("#printDiv").html();
@@ -190,6 +190,7 @@ function generateform3(usin) {
 
                     var fromTmp = new generateForms();
                     var form3obj = fromTmp.Form3(usin);
+                    removeNulls(form3obj);
 
                     var str1 = "pour son propre compte";
                     var str2 = "pour le compte de la famille";
@@ -198,7 +199,7 @@ function generateform3(usin) {
                     var firstname_cfv = "";
                     var lastname_cfv = "";
 
-                    if (cfv != null) {
+                    if (cfv !== null) {
                         var cfv = form3obj.cfv_president.split(" ");
                         firstname_cfv = cfv[0];
                         lastname_cfv = cfv[1];
@@ -207,7 +208,7 @@ function generateform3(usin) {
                     var endDate = getCurrentDate();
                     var extendedDate = getExtendedDate();
 
-                    $('.commune_logo').append("<img width='125' height='100' src='../../" + formImage + "'>");
+                    $('.commune_logo').append("<img width='125' height='100' src='" + formImage + "'>");
 
                     $('#region3').text(form3obj.region);
                     $('#province3').text(form3obj.province);
@@ -218,11 +219,11 @@ function generateform3(usin) {
                     $('#person_address3').text(form3obj.address);
                     $('#person_birthdate3').text(form3obj.dob);
                     $('#person_birthplace3').text(form3obj.birthplace);
-                    if (form3obj.tennancytypeID == 7) {
+                    if (form3obj.tennancytypeID === 7) {
                         $('#choice_ind3').text(str1);
                         $('#choice_col3').text(str2);
                         $('#choice_col3').css('textDecoration', 'line-through');
-                    } else if (form3obj.tennancytypeID == 8) {
+                    } else if (form3obj.tennancytypeID === 8) {
                         $('#choice_ind3').text(str1);
                         $('#choice_ind3').css('textDecoration', 'line-through');
                         $('#choice_col3').text(str3 + " " + form3obj.familyname);
@@ -239,7 +240,7 @@ function generateform3(usin) {
                     $('#cfv_lastname3').text(lastname_cfv);
                     $('#cfv_firstname3').text(firstname_cfv);
                     $('#extended_date').text(extendedDate);
-                    if (form3obj.other_use == "null") {
+                    if (form3obj.other_use === "0" || form3obj.other_use === null || form3obj.other_use === "" || form3obj.other_use === 0) {
                         $('#other_use3').text("");
                     } else {
                         $('#other_use3').text(form3obj.other_use);
@@ -247,19 +248,16 @@ function generateform3(usin) {
 
                     $('#flag').text(form3obj.flag);
 
-
-                    if (form3obj.existing_use != null) {
+                    if (form3obj.existing_use !== null) {
                         for (var i = 0; i < form3obj.existing_use.length; i++) {
-                            jQuery("#existing_use-div").append("o " + form3obj.existing_use[i][2] + "<br>");
+                            jQuery("#existing_use-div").append("o " + form3obj.existing_use[i][1] + "<br>");
                         }
                     }
                     var printWindow = window.open('form3', 'popUpWindow', 'height=900,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no,status=no, location=no');
 
-                    var html = null;
-                    html = $("#printDiv").html();
+                    var html = $("#printDiv").html();
                     printWindow.document.write('<html><head><title>MAST</title>' + ' <link rel="stylesheet" href="../resources/styles/viewer/form.css" type="text/css" />' + ' <link rel="stylesheet" href="../resources/styles/viewer/style-new.css" type="text/css" />' +
                             '<script src="../resources/scripts/cloudburst/viewer/Form.js"></script>' +
-                            '<script src="../resources/scripts/cloudburst/viewer/LandRecordTemp.js"></script>' +
                             '<script src="../resources/scripts/jquery-1.7.1/jquery-1.7.1.min.js"></script>' +
                             '<script src="../resources/scripts/jquery-alert/jquery.alerts.js"></script>' +
                             ' <link rel="stylesheet" href="../resources/scripts/jquery-alert/jquery.alerts.css" type="text/css" />' +
@@ -270,7 +268,6 @@ function generateform3(usin) {
                 }
             });
 }
-
 
 function generateform8(usin) {
     var formImage = getFormImage();
@@ -287,7 +284,9 @@ function generateform8(usin) {
 
                     var fromTmp = new generateForms();
                     var form8obj = fromTmp.Form8(usin);
-                    $('.commune_logo').append("<img width='125' height='100' src='../../" + formImage + "'>");
+                    removeNulls(form8obj);
+
+                    $('.commune_logo').append("<img width='125' height='100' src='" + formImage + "'>");
                     $('#region8').text(form8obj.region);
                     $('#province8').text(form8obj.province);
                     $('.commune8').text(form8obj.commune);
@@ -323,41 +322,37 @@ function generateform8(usin) {
                     $('#mandateDate').text(form8obj.mandateDate);
                     $('#applicationno8').text(form8obj.application_no);
                     $('#mayor_firstname').text(form8obj.mayor_name);
-                    if (form8obj.other_use == "0" || form8obj.other_use == "null" || form8obj.other_use == 0) {
+                    if (form8obj.other_use === "0" || form8obj.other_use === null || form8obj.other_use === "" || form8obj.other_use === 0) {
                         $('#other_use8').text("");
                     } else {
                         $('#other_use8').text(form8obj.other_use);
                     }
 
-                    if (form8obj.existing_use != null) {
+                    if (form8obj.existing_use !== null) {
                         for (var i = 0; i < form8obj.existing_use.length; i++) {
-                            jQuery("#existing_use8").append("o " + form8obj.existing_use[i][2] + "<br>");
+                            jQuery("#existing_use8").append("o " + form8obj.existing_use[i][1] + "<br>");
                         }
                     }
 
                     jQuery("#APFRTableRowData").empty();
 
                     APFRpoiList = [];
-                    if (form8obj.poiLst != null)
+                    if (form8obj.poiLst !== null)
                     {
                         for (var i = 1; i <= form8obj.poiLst.length; i++) {
                             var tempArray = [];
                             tempArray["sno"] = i;
-                            tempArray["name"] = form8obj.poiLst[i - 1].personName + " " + form8obj.poiLst[i - 1].last_name;
-                            tempArray["idcardref"] = form8obj.poiLst[i - 1].idcard_refrence;
+                            tempArray["name"] = form8obj.poiLst[i - 1].firstName + " " + form8obj.poiLst[i - 1].lastName;
+                            tempArray["idcardref"] = form8obj.poiLst[i - 1].idNumber;
                             tempArray["address"] = form8obj.poiLst[i - 1].address;
                             APFRpoiList.push(tempArray);
                         }
-
-
                         jQuery("#APFR_template").tmpl(APFRpoiList).appendTo("#APFRTableRowData");
-
                     }
 
                     var printWindow = window.open('form8', 'popUpWindow', 'height=900,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no,status=no, location=no');
 
-                    var html = null;
-                    html = $("#printDiv").html();
+                    var html = $("#printDiv").html();
                     printWindow.document.write('<html><head><title>MAST</title>' + ' <link rel="stylesheet" href="../resources/styles/viewer/form.css" type="text/css" />' + ' <link rel="stylesheet" href="../resources/styles/viewer/style-new.css" type="text/css" />' +
                             '<script src="../resources/scripts/cloudburst/viewer/Form.js"></script>' +
                             '<script src="../resources/scripts/jquery-1.7.1/jquery-1.7.1.min.js"></script>' +
@@ -365,12 +360,9 @@ function generateform8(usin) {
 
                     printWindow.document.close();
                     printWindow.focus();
-
-
                 }
             });
 }
-
 
 function generateform7(usin) {
     var formImage = getFormImage();
@@ -383,112 +375,106 @@ function generateform7(usin) {
                 success: function (data7)
                 {
                     jQuery("#printDiv div").empty();
-                    //$('#masterdiv div').empty();
-
                     jQuery("#printDiv").append(data7);
 
                     var fromTmp = new generateForms();
-                    var form7attributeObject = fromTmp.Form7(usin);
+                    var form7Obj = fromTmp.Form7(usin);
+                    removeNulls(form7Obj);
 
-                    $('.commune_logo').append("<img width='125' height='100' src='../../" + formImage + "'>");
+                    $('.commune_logo').append("<img width='125' height='100' src='" + formImage + "'>");
 
-                    $('#region_7').text(form7attributeObject.region);
-                    $('#province_7').text(form7attributeObject.province);
-                    $('.commune7').text(form7attributeObject.commune);
-                    $('.village_7').text(form7attributeObject.village);
-                    $('#villageno_7').text(form7attributeObject.village_no);
-                    $('.familyname7').text(form7attributeObject.family_name);
-                    $('.application_date7').text(form7attributeObject.application_date);
-                    $('.application_no7').text(form7attributeObject.application_no);
-                    $('#application_year7').text(form7attributeObject.application_year);
-                    $('#application_dd7').text(form7attributeObject.application_dd);
-                    $('#application_month7').text(form7attributeObject.application_month);
-                    $('.name7').text(form7attributeObject.name);
-                    $('.profession7').text(form7attributeObject.profession);
-                    $('.address7').text(form7attributeObject.address);
-                    $('#cfv_president7').text(form7attributeObject.cfv_president);
-                    $('#area7').text(((form7attributeObject.area) * area_constant).toFixed(2));
-                    $('#nr_north7').text(form7attributeObject.neighbour_north);
-                    $('#nr_east7').text(form7attributeObject.neighbour_east);
-                    $('#nr_south7').text(form7attributeObject.neighbour_south);
-                    $('#nr_west7').text(form7attributeObject.neighbour_west);
-                    $('#public_issue_date7').text(form7attributeObject.public_issuansedate);
-                    $('#date_recognition7').text(form7attributeObject.date_recognition_rights);
-                    $('#location').text(form7attributeObject.location);
-                    $('#application_type7').text(form7attributeObject.application_type);
+                    $('#region_7').text(form7Obj.region);
+                    $('#province_7').text(form7Obj.province);
+                    $('.commune7').text(form7Obj.commune);
+                    $('.village_7').text(form7Obj.village);
+                    $('#villageno_7').text(form7Obj.village_no);
+                    $('.familyname7').text(form7Obj.family_name);
+                    $('.application_date7').text(form7Obj.application_date);
+                    $('.application_no7').text(form7Obj.application_no);
+                    $('#application_year7').text(form7Obj.application_year);
+                    $('#application_dd7').text(form7Obj.application_dd);
+                    $('#application_month7').text(form7Obj.application_month);
+                    $('.name7').text(form7Obj.name);
+                    $('.profession7').text(form7Obj.profession);
+                    $('.address7').text(form7Obj.address);
+                    $('#cfv_president7').text(form7Obj.cfv_president);
+                    $('#area7').text(((form7Obj.area) * area_constant).toFixed(2));
+                    $('#nr_north7').text(form7Obj.neighbour_north);
+                    $('#nr_east7').text(form7Obj.neighbour_east);
+                    $('#nr_south7').text(form7Obj.neighbour_south);
+                    $('#nr_west7').text(form7Obj.neighbour_west);
+                    $('#public_issue_date7').text(form7Obj.public_issuansedate);
+                    $('#date_recognition7').text(String.empty(form7Obj.date_recognition_rights));
+                    $('#location').text(form7Obj.location);
+                    $('#application_type7').text(form7Obj.application_type);
 
-                    $('#pv_no7').text(form7attributeObject.pv_no);
+                    $('#pv_no7').text(form7Obj.pv_no);
 
                     jQuery("#poiTableRowData7").empty();
 
                     poiList = [];
-                    if (form7attributeObject.poiLst != null && form7attributeObject.poiLst.length != undefined && form7attributeObject.poiLst.length != 0)
+                    if (form7Obj.poiLst !== null && form7Obj.poiLst.length !== undefined && form7Obj.poiLst.length > 0)
                     {
-                        for (var i = 1; i <= form7attributeObject.poiLst.length; i++) {
+                        for (var i = 1; i <= form7Obj.poiLst.length; i++) {
                             var tempArray = [];
                             tempArray["sno"] = i;
-                            tempArray["name"] = form7attributeObject.poiLst[i - 1].personName + " " + form7attributeObject.poiLst[i - 1].last_name;
-
+                            tempArray["name"] = form7Obj.poiLst[i - 1].firstName + " " + form7Obj.poiLst[i - 1].lastName;
                             poiList.push(tempArray);
-
                         }
                         //push neighbour north
                         var tempArray = [];
-                        tempArray["sno"] = form7attributeObject.poiLst.length + 1;
-                        tempArray["name"] = form7attributeObject.neighbour_north;
+                        tempArray["sno"] = form7Obj.poiLst.length + 1;
+                        tempArray["name"] = form7Obj.neighbour_north;
                         poiList.push(tempArray);
                         //push neighbour south
                         var tempArray = [];
-                        tempArray["sno"] = form7attributeObject.poiLst.length + 2;
-                        tempArray["name"] = form7attributeObject.neighbour_south;
+                        tempArray["sno"] = form7Obj.poiLst.length + 2;
+                        tempArray["name"] = form7Obj.neighbour_south;
                         poiList.push(tempArray);
 
                         //push neighbour east
                         var tempArray = [];
-                        tempArray["sno"] = form7attributeObject.poiLst.length + 3;
-                        tempArray["name"] = form7attributeObject.neighbour_east;
+                        tempArray["sno"] = form7Obj.poiLst.length + 3;
+                        tempArray["name"] = form7Obj.neighbour_east;
                         poiList.push(tempArray);
                         //push neighbour west
                         var tempArray = [];
-                        tempArray["sno"] = form7attributeObject.poiLst.length + 4;
-                        tempArray["name"] = form7attributeObject.neighbour_west;
+                        tempArray["sno"] = form7Obj.poiLst.length + 4;
+                        tempArray["name"] = form7Obj.neighbour_west;
                         poiList.push(tempArray);
 
                         for (var i = 1; i <= 4; i++) {
                             var tempArray1 = [];
-                            tempArray1["sno"] = form7attributeObject.poiLst.length + 4 + i;
+                            tempArray1["sno"] = form7Obj.poiLst.length + 4 + i;
                             tempArray1["name"] = "";
-
                             poiList.push(tempArray1);
-
                         }
-
                     } else {
                         //push neighbour north
                         var tempArray = [];
-                        tempArray["sno"] = form7attributeObject.poiLst.length + 1;
-                        tempArray["name"] = form7attributeObject.neighbour_north;
+                        tempArray["sno"] = form7Obj.poiLst.length + 1;
+                        tempArray["name"] = form7Obj.neighbour_north;
                         poiList.push(tempArray);
                         //push neighbour south
                         var tempArray = [];
-                        tempArray["sno"] = form7attributeObject.poiLst.length + 2;
-                        tempArray["name"] = form7attributeObject.neighbour_south;
+                        tempArray["sno"] = form7Obj.poiLst.length + 2;
+                        tempArray["name"] = form7Obj.neighbour_south;
                         poiList.push(tempArray);
 
                         //push neighbour east
                         var tempArray = [];
-                        tempArray["sno"] = form7attributeObject.poiLst.length + 3;
-                        tempArray["name"] = form7attributeObject.neighbour_east;
+                        tempArray["sno"] = form7Obj.poiLst.length + 3;
+                        tempArray["name"] = form7Obj.neighbour_east;
                         poiList.push(tempArray);
                         //push neighbour west
                         var tempArray = [];
-                        tempArray["sno"] = form7attributeObject.poiLst.length + 4;
-                        tempArray["name"] = form7attributeObject.neighbour_west;
+                        tempArray["sno"] = form7Obj.poiLst.length + 4;
+                        tempArray["name"] = form7Obj.neighbour_west;
                         poiList.push(tempArray);
 
                         for (var i = 1; i <= 4; i++) {
                             var tempArray1 = [];
-                            tempArray1["sno"] = form7attributeObject.poiLst.length + 4 + i;
+                            tempArray1["sno"] = form7Obj.poiLst.length + 4 + i;
                             tempArray1["name"] = "";
 
                             poiList.push(tempArray1);
@@ -496,12 +482,9 @@ function generateform7(usin) {
                     }
                     jQuery("#poi_template7").tmpl(poiList).appendTo("#poiTableRowData7");
 
-
-
                     var printWindow = window.open('', 'form7' + usin, 'height=900,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no,status=no, location=no');
 
-                    var html = null;
-                    html = $("#printDiv").html();
+                    var html = $("#printDiv").html();
                     printWindow.document.write('<html><head><title>MAST</title>' + ' <link rel="stylesheet" href="../resources/styles/viewer/form.css" type="text/css" />' + ' <link rel="stylesheet" href="../resources/styles/viewer/style-new.css" type="text/css" />' +
                             '<script src="../resources/scripts/cloudburst/viewer/Form.js"></script>' +
                             '<script src="../resources/scripts/jquery-1.7.1/jquery-1.7.1.min.js"></script>' +
@@ -509,13 +492,9 @@ function generateform7(usin) {
 
                     printWindow.document.close();
                     printWindow.focus();
-
-
                 }
             });
 }
-
-
 
 function generateform5(usin) {
 
@@ -529,73 +508,67 @@ function generateform5(usin) {
                 success: function (data5)
                 {
                     jQuery("#printDiv div").empty();
-                    //$('#masterdiv div').empty();
-
                     jQuery("#printDiv").append(data5);
 
                     var fromTmp = new generateForms();
-                    var form5attributeObject = fromTmp.Form5(usin);
+                    var form5Obj = fromTmp.Form5(usin);
+                    removeNulls(form5Obj);
+                    
+                    $('.commune_logo').append("<img width='125' height='100' src='" + formImage + "'>");
 
-                    $('.commune_logo').append("<img width='125' height='100' src='../../" + formImage + "'>");
+                    $('#region_5').text(form5Obj.region);
+                    $('#province_5').text(form5Obj.province);
+                    $('.commune_5').text(form5Obj.commune);
+                    $('.village_5').text(form5Obj.village);
+                    $('.villageno_5').text(form5Obj.village_no);
+                    $('.application_date5').text(form5Obj.application_date);
+                    $('.apfrno5').text(form5Obj.application_no);
+                    $('.apfrno_5').text(form5Obj.apfrno);  //kamal
 
-                    $('#region_5').text(form5attributeObject.region);
-                    $('#province_5').text(form5attributeObject.province);
-                    $('.commune_5').text(form5attributeObject.commune);
-                    $('.village_5').text(form5attributeObject.village);
-                    $('.villageno_5').text(form5attributeObject.village_no);
-                    $('.application_date5').text(form5attributeObject.application_date);
-                    //$('.application_no5').text(form5attributeObject.application_no);
-                    $('.apfrno5').text(form5attributeObject.application_no);
-                    $('.apfrno_5').text(form5attributeObject.apfrno);  //kamal
-
-                    $('#lastname_5').text(form5attributeObject.last_name);
-                    $('#firstname_5').text(form5attributeObject.first_name);
-                    $('#gender_5').text(form5attributeObject.sex);
-                    $('#idcard5').text(form5attributeObject.refrence_id_card);
-                    $('#birthdate5').text(form5attributeObject.dob);
-                    $('#birthplace5').text(form5attributeObject.birthplace);
-                    $('#profession5').text(form5attributeObject.profession);
-                    $('#address_5').text(form5attributeObject.address);
-                    $('#location5').text(form5attributeObject.location);
-                    $('#section5').text(form5attributeObject.section);
-                    $('#lot5').text(form5attributeObject.lot);
-                    $('#parcel_no5').text(form5attributeObject.parcel_no);
-                    $('#area5').text(((form5attributeObject.area) * area_constant).toFixed(2));
-                    $('#nr-north5').text(form5attributeObject.neighbour_north);
-                    $('#nr-east5').text(form5attributeObject.neighbour_east);
-                    $('#nr-south5').text(form5attributeObject.neighbour_south);
-                    $('#nr-west5').text(form5attributeObject.neighbour_west);
-                    $('.mayor5').text(form5attributeObject.mayor_name);
-                    $('#pv_no5').text(form5attributeObject.pv_no);
-                    $('#recognition_date5').text(form5attributeObject.date_recognition_right);
+                    $('#lastname_5').text(form5Obj.last_name);
+                    $('#firstname_5').text(form5Obj.first_name);
+                    $('#gender_5').text(form5Obj.sex);
+                    $('#idcard5').text(form5Obj.refrence_id_card);
+                    $('#birthdate5').text(form5Obj.dob);
+                    $('#birthplace5').text(form5Obj.birthplace);
+                    $('#profession5').text(form5Obj.profession);
+                    $('#address_5').text(form5Obj.address);
+                    $('#location5').text(form5Obj.location);
+                    $('#section5').text(form5Obj.section);
+                    $('#lot5').text(form5Obj.lot);
+                    $('#parcel_no5').text(form5Obj.parcel_no);
+                    $('#area5').text(((form5Obj.area) * area_constant).toFixed(2));
+                    $('#nr-north5').text(form5Obj.neighbour_north);
+                    $('#nr-east5').text(form5Obj.neighbour_east);
+                    $('#nr-south5').text(form5Obj.neighbour_south);
+                    $('#nr-west5').text(form5Obj.neighbour_west);
+                    $('.mayor5').text(form5Obj.mayor_name);
+                    $('#pv_no5').text(form5Obj.pv_no);
+                    $('#recognition_date5').text(form5Obj.date_recognition_right);
                     // new changes
-                    if (form5attributeObject.apfr_date == null) {
+                    if (form5Obj.apfr_date === null) {
                         var generateForm = new generateForms();
                         $('#apfrdate5').text(generateForm.getCurrentDate());
                         $('#apfrdate_5').text(generateForm.getCurrentDate());  // kamal
                     } else {
-                        $('#apfrdate5').text(form5attributeObject.apfr_date);
-                        $('#apfrdate_5').text(form5attributeObject.apfr_date); // kamal
+                        $('#apfrdate5').text(form5Obj.apfr_date);
+                        $('#apfrdate_5').text(form5Obj.apfr_date); // kamal
                     }
-                    //$('#apfrdate5').text(form5attributeObject.apfr_date);
-                    //$('#existing_use5').text(form5attributeObject.existing_use);
-                    if (form5attributeObject.other_use == "null") {
+                    if (form5Obj.other_use === "0" || form5Obj.other_use === null || form5Obj.other_use === "" || form5Obj.other_use === 0) {
                         $('#other_use5').text("");
                     } else {
-                        $('#other_use5').text(form5attributeObject.other_use);
+                        $('#other_use5').text(form5Obj.other_use);
                     }
 
-
-                    if (form5attributeObject.existing_use != null) {
-                        for (var i = 0; i < form5attributeObject.existing_use.length; i++) {
-                            jQuery("#existing_use_div5").append("o " + form5attributeObject.existing_use[i][2] + "<br>");
+                    if (form5Obj.existing_use !== null) {
+                        for (var i = 0; i < form5Obj.existing_use.length; i++) {
+                            jQuery("#existing_use_div5").append("o " + form5Obj.existing_use[i][1] + "<br>");
                         }
                     }
 
                     var printWindow = window.open('', 'form5' + usin, 'height=900,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no,status=no, location=no');
 
-                    var html = null;
-                    html = $("#printDiv").html();
+                    var html = $("#printDiv").html();
                     printWindow.document.write('<html><head><title>MAST</title>' + ' <link rel="stylesheet" href="../resources/styles/viewer/form.css" type="text/css" />' + ' <link rel="stylesheet" href="../resources/styles/viewer/style-new.css" type="text/css" />' +
                             '<script src="../resources/scripts/cloudburst/viewer/Form.js"></script>' +
                             '<script src="../resources/scripts/cloudburst/viewer/LandRecordTemp.js"></script>' +
@@ -604,11 +577,10 @@ function generateform5(usin) {
 
                     printWindow.document.close();
                     printWindow.focus();
-
-
                 }
             });
 }
+
 function generatePaymentLetter(usin) {
     var formImage = getFormImage();
     jQuery.ajax(
@@ -623,8 +595,9 @@ function generatePaymentLetter(usin) {
 
                     var generateForm = new generateForms();
                     attrObject = generateForm.paymentDetails(usin);
-                    $('.commune_logo').append("<img width='125' height='100' src='../../" + formImage + "'>");
-
+                    removeNulls(attrObject);
+                    
+                    $('.commune_logo').append("<img width='125' height='100' src='" + formImage + "'>");
                     $('#_region').text(attrObject.region);
                     $('#_province').text(attrObject.province);
                     $('.commune').text(attrObject.commune);
@@ -635,17 +608,12 @@ function generatePaymentLetter(usin) {
                     $('#last_name').text(attrObject.lastname);
                     $('#letter_date').text(attrObject.printDate);
                     $('#area_print').text(((attrObject.area) * area_constant).toFixed(2));
-
-
-                    // Added for pv number and date
-
                     $('.pv_no').text(attrObject.pv_no);
                     $('.pv_date').text(attrObject.pv_date);
 
                     var printWindow = window.open('', 'paymentLetter' + usin, 'height=900,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no,status=no, location=no');
 
-                    var html = null;
-                    html = $("#printDiv").html();
+                    var html = $("#printDiv").html();
                     printWindow.document.write('<html><head><title>MAST</title>' + ' <link rel="stylesheet" href="../resources/styles/viewer/form.css" type="text/css" />' + ' <link rel="stylesheet" href="../resources/styles/viewer/style-new.css" type="text/css" />' +
                             '<script src="../resources/scripts/cloudburst/viewer/Form.js"></script>' +
                             '<script src="../resources/scripts/jquery-1.7.1/jquery-1.7.1.min.js"></script>' +
@@ -654,8 +622,6 @@ function generatePaymentLetter(usin) {
 
                     printWindow.document.close();
                     printWindow.focus();
-
-
                 }
             });
 }

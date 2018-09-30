@@ -27,6 +27,7 @@ import com.rmsi.mast.studio.domain.NaturalPerson;
 import com.rmsi.mast.studio.domain.NatureOfPower;
 import com.rmsi.mast.studio.domain.NonNaturalPerson;
 import com.rmsi.mast.studio.domain.OccupancyType;
+import com.rmsi.mast.studio.domain.PaymentInfo;
 import com.rmsi.mast.studio.domain.Person;
 import com.rmsi.mast.studio.domain.PersonType;
 import com.rmsi.mast.studio.domain.ProjectAdjudicator;
@@ -850,7 +851,7 @@ public interface LandRecordsService {
 
     List<SpatialUnitTemp> AllSpatialUnitTemp(Integer id);
 
-    List<LaSpatialunitLand> search(String lang, Integer claimType, int project, String parcelId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int appStatus, Integer startpos);
+    List<LaSpatialunitLand> search(String lang, Integer claimType, int project, String parcelId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int appStatus, int workflowId, Integer startpos);
 
     List<ReportCertificateFetch> getCertificatedetailsbytransactionid(Long usin);
 
@@ -870,9 +871,9 @@ public interface LandRecordsService {
 
     List<Object> findprojectTenureTypesLandUnitsummaryreport(String project);
 
-    Integer getTotalrecordByProject(int project);
+    Integer getTotalrecordByProject(int project, int workflowId);
 
-    Integer searchCount(Integer claimType, int project, String parcelId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int appStatus);
+    Integer searchCount(Integer claimType, int project, String parcelId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int workflowId, int appStatus);
 
     Integer spatialUnitWorkflowCount(int[] workflow_ids, int project);
 
@@ -914,10 +915,24 @@ public interface LandRecordsService {
     List<FarmReport> getFarmReportByLandId(Long landId);
 
     List<Object> findLiberiaFarmummaryreport(String project);
-    
+
     List<ApplicationNature> getApplicationNatures();
-    
+
     List<NatureOfPower> getNatureOfPowers();
-    
+
     List<TitleType> getTitleTypes();
+
+    List<LandUseType> getExistingUseName(String existingUse);
+
+    @Transactional
+    boolean updateParcelNumber(long usin, long parcelNumber, String comment, int userId);
+
+    @Transactional
+    boolean savePayment(PaymentInfo paymentInfo);
+    
+    List<Object> findregparcelcountbyTenure(int project, String tag, Integer villageId);
+    
+    List<Object> findparcelcountbygender(int project,String tag, Integer villageId);
+    
+    List<Object> findRegistrytable(int project, String tag, Integer villageId);
 }

@@ -17,6 +17,7 @@ var map;
 var _projectExtent;
 var extent = ol.proj.transformExtent([35.739998, -7.900000999970367, 35.83000249996666, -7.82], "EPSG:4326", "EPSG:3857");
 var bounds = [34.9655456095934, -8.57657546620732, 35.9042312577367, -7.83167176245347];
+var villageList = null;
 
 Cloudburst.loadMap = function (mapdiv, options, callback) {
     _projectExtent = "";
@@ -43,7 +44,7 @@ Cloudburst.loadMap = function (mapdiv, options, callback) {
         success: function (data) {
             projectName = data.name;
             _projectExtent = data.maxextent;
-            
+
             if (data.active) {
                 cookieProjectName = data.name + '|' + user;
 
@@ -466,6 +467,27 @@ jQuery(document).ready(function () {
     });
     $("#tab4").click(function (event) {
         hideMapComponents();
+        
+        if (villageList === null) {
+            $.ajax({
+                url: "village/getbyproject/" + activeProject,
+                async: false,
+                success: function (data) {
+                    villageList = data;
+                    // report fields
+                    fillFieldWithVillages("cbxVillagesByTenure");
+                    fillFieldWithVillages("cbxVillagesByGender");
+                    fillFieldWithVillages("cbxVillagesByTenureAppReg");
+                    fillFieldWithVillages("cbxVillagesByGEnderAppReg");
+                    fillFieldWithVillages("cbxVillagesByTenureApfrReg");
+                    fillFieldWithVillages("cbxVillagesByGEnderApfrReg");
+                    fillFieldWithVillages("cbxVillagesByAppProccess");
+                    fillFieldWithVillages("cbxVillagesByAppPublish");
+                    fillFieldWithVillages("cbxVillagesByAppApfr");
+                }
+            });
+        }
+
         $.ajax({
             url: "landrecordsdetails/getAllProjectsdetailsCall/",
             async: false,
@@ -498,30 +520,35 @@ jQuery(document).ready(function () {
                     $("#selectProjectsForWorkFlowSummary").append($("<option></option>").attr("value", projectName.projectnameid).text(projectName.name));
                     $("#selectProjectsForTenureTypesLandUnitsSummary").append($("<option></option>").attr("value", projectName.projectnameid).text(projectName.name));
                     $("#selectProjectsForLiberaFarmSummary").append($("<option></option>").attr("value", projectName.projectnameid).text(projectName.name));
-
                 });
-
             }
         });
         $("#reportsAccordion").accordion();
-        $("#selectProjects").val(activeProject);
     });
 
-    $("#tab5").click(function (event) {
+    function fillFieldWithVillages(fieldId) {
+        $("#" + fieldId).empty();
+        $("#" + fieldId).append(jQuery("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
+        if (villageList !== null) {
+            jQuery.each(villageList, function (i, village) {
+                var displayName = village.name;
+                if (Global.LANG === "en") {
+                    displayName = village.nameEn;
+                }
+                $("#" + fieldId).append(jQuery("<option></option>").attr("value", village.hierarchyid).text(displayName));
+            });
+        }
+    }
 
+    $("#tab5").click(function (event) {
         var registrationRecords = new RegistrationRecords("registrationRecords");
         hideMapComponents();
     });
     $("#tab6").click(function (event) {
-
         var resourceRecords = new resource("resource");
         hideMapComponents();
     });
     // Load projects list
-
-
-
-
     $.ajax({
         url: "landrecords/allprojects/",
         async: false,
@@ -534,10 +561,18 @@ jQuery(document).ready(function () {
         }
     });
 
-
-
     var landRecords = new LandRecords("landRecords");
 });
+
+if (!String.empty) {
+    String.empty = function (val) {
+        if (val === null || typeof val === 'undefined') {
+            return "";
+        } else {
+            return val;
+        }
+    };
+}
 
 function hideMapComponents() {
     $('#sidebar').hide();

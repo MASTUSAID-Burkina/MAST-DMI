@@ -137,6 +137,7 @@ function LandRecords(_selectedItem) {
             communeList = data;
         }
     });
+
     displayRefreshedLandRecords(_selectedItem);
 }
 
@@ -153,7 +154,7 @@ function displayRefreshedLandRecords(_selectedItem) {
     searchRecords = null
     workflowRecords = null
     selectedItem = _selectedItem;
-    URL = "landrecords/spatialunit/landrecord/default/" + 0;
+    URL = "landrecords/spatialunit/landrecord/default/" + 0 + "/" + Global.LANG;
     if (activeProject !== null && activeProject !== "") {
         URL = "landrecords/spatialunit/landrecord/" + activeProject + "/" + 0 + "/" + Global.LANG;
     }
@@ -216,10 +217,16 @@ function displayRefreshedLandRecords(_selectedItem) {
                     });
                 }
 
-                jQuery("#workFlowTemplateNew").tmpl(wfStepsNew).appendTo("#newtbl");
-                jQuery("#workFlowTemplateExisting").tmpl(wfStepsExisting).appendTo("#newtb2");
+                if (roles === "ROLE_DPI") {
+                    $('#vtab').removeClass("vtab");
+                    $('#workflowDiv').hide();
+                } else {
+                    jQuery("#workFlowTemplateNew").tmpl(wfStepsNew).appendTo("#newtbl");
+                    jQuery("#workFlowTemplateExisting").tmpl(wfStepsExisting).appendTo("#newtb2");
 
-                $("#workflow-accordion").accordion();
+                    $("#workflow-accordion").accordion();
+                }
+
                 jQuery("#landRecordsRowData").empty();
 
                 if (dataList.length != 0 && dataList.length != undefined) {
@@ -1600,33 +1607,6 @@ reports.prototype.ProjectTenureTypesLandUnitsSummaryReport = function (tag, proj
 
 }
 
-function generateProjectsForLiberaFarmSummaryReport()
-{
-    projectid = $("#selectProjectsForLiberaFarmSummary").val();
-    if (projectid == "" || projectid == null)
-    {
-        alert($.i18n("viewer-select-proj"));
-        return false;
-
-    }
-    var rep = "1";
-    var reportTmp = new reports();
-    if (rep == "1")
-    {
-        //console.log(villageSelected);
-        reportTmp.ProjectsForLiberaFarmSummaryReport("NEW", projectid, "1");
-        // reportDialog.dialog( "destroy" );
-    }
-
-}
-
-reports.prototype.ProjectsForLiberaFarmSummaryReport = function (tag, projectid, villageId) {
-    //alert ("Under Function");
-    window.open("landrecords/projectdetailedliberiafarmSummaryreport/" + projectid + "/" + tag + "/" + villageId, 'popUp', 'height=500,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,titlebar=no,menubar=no,status=no,replace=false');
-
-}
-
-
 function generateCcros()
 {
     result = RESPONSE_OK;
@@ -2254,6 +2234,8 @@ function CustomAction(refrence, landid, workflowid, transactionid, parcelnum, cl
         dialogueAction(landid, workflowid, (refrence.title).trim(), claimtypeid)
     } else if ((refrence.title).trim() == "generate map") {
         generateMap(landid, shareTypeId);
+    } else if ((refrence.title).trim() == "generate forms") {
+        showFormsList(landid, workflowid, shareTypeId);
     } else if ((refrence.title).trim() == "edit") {
         editAttributeNew(landid, workflowid, true);
     } else if ((refrence.title).trim() == "view") {
@@ -2272,8 +2254,14 @@ function CustomAction(refrence, landid, workflowid, transactionid, parcelnum, cl
         showOnMap(landid, workflowid, "", false);
     } else if (refrence.title.trim() === "view parcel number") {
         showParcelNumber($("#hSection" + landid).val(), $("#hParcelInSection" + landid).val());
-    } else if ((refrence.title).trim() == "edit  parcel") {
+    } else if (refrence.title.trim() === "edit parcel number") {
+        editParcelNumber(landid, $("#hSection" + landid).val(), $("#hParcelInSection" + landid).val());
+    } else if ((refrence.title).trim() === "edit  parcel") {
         edituserDefineParcel(landid, workflowid);
+    } else if ((refrence.title).trim() === "payment info") {
+        paymentDialog(landid);
+    } else if ((refrence.title).trim() === "signatory info") {
+        signatoryDialog(landid);
     }
 }
 
@@ -2374,10 +2362,7 @@ function _printReport(workflowid, transactionid, landid) {
     } else if (workflowid == 5) {
         generateDataCorrectionReport(transactionid);
     }
-
 }
-
-
 
 function RefreshedLandRecordsgrid()
 {
@@ -2434,7 +2419,7 @@ function dialogueAction(usin, workId, actionName, claimtypeid) {
                         click: function () {
                             showActionDialog(usin, workId, actionName, claimtypeid);
                             printFormInfoDialog.dialog("destroy");
-                            printFormInfoDialog.dialog("close");
+                            //printFormInfoDialog.dialog("close");
                         }
                     },
                     {
@@ -2442,7 +2427,7 @@ function dialogueAction(usin, workId, actionName, claimtypeid) {
                         "id": "info_cancel",
                         click: function () {
                             printFormInfoDialog.dialog("destroy");
-                            printFormInfoDialog.dialog("close");
+                            //printFormInfoDialog.dialog("close");
                         }
                     }],
                 close: function () {
@@ -2480,22 +2465,22 @@ function showActionDialog(usin, workId, actionName, claimtypeid) {
                     } else {
                         if (actionName === "approve") {
                             var status = approveParcel(usin, workId);
-                            if (status !== 0) {
+                            if (status > 0) {
                                 approveInfoDialog.dialog("destroy");
                                 RefreshedLandRecordsgrid();
                                 jAlert($.i18n("reg-record-approved"));
-                            } else {
+                            } else if (status === 0) {
                                 jAlert($.i18n("err-approve-failed"), $.i18n("err-error"));
                             }
                         } else if (actionName === "reject") {
                             jConfirm($.i18n("gen-confirm-question"), $.i18n("gen-confirmation"), function (result) {
                                 if (result) {
                                     var status = rejectParcel(usin, workId);
-                                    if (status !== 0) {
+                                    if (status > 0) {
                                         approveInfoDialog.dialog("destroy");
                                         RefreshedLandRecordsgrid();
                                         jAlert($.i18n("reg-record-rejected"));
-                                    } else {
+                                    } else if (status === 0) {
                                         jAlert($.i18n("err-reject-failed"), $.i18n("err-error"));
                                     }
                                 }
@@ -2530,13 +2515,16 @@ function  approveParcel(usin, workId) {
 
     //check public notice 45 days
     if (workId === 4) {
+        allowApprove = false;
         jQuery.ajax({
             url: "landrecords/comparedate/" + usin,
             async: false,
             success: function (data) {
                 if (data.msg === "donotapproveparcel") {
                     jAlert($.i18n("err-public-notice-pending").format(data.date), $.i18n("err-alert"));
-                    allowApprove = false;
+                    approve = -1;
+                } else {
+                    allowApprove = true;
                 }
             }
         });
@@ -2561,13 +2549,16 @@ function  rejectParcel(usin, workId) {
     var allowReject = true;
     //check public notice 45 days
     if (workId === 4) {
+        allowReject = false;
         jQuery.ajax({
-            url: "landrecords/comparedate/reject/" + refrence.name,
+            url: "landrecords/comparedate/reject/" + usin,
             async: false,
             success: function (data) {
                 if (data.msg === "donotReject") {
                     jAlert($.i18n("err-public-notice-pending-cant-reject").format(data.date), $.i18n("err-alert"));
-                    allowReject = false;
+                    reject = -1;
+                } else {
+                    allowReject = true;
                 }
             }
         });
@@ -2822,27 +2813,21 @@ function  deleteParcel(usin, workId) {
 
 }
 
-function commentsDialog(usin)
-{
+function commentsDialog(usin) {
     jQuery.ajax({
         type: 'POST',
         url: "landrecords/workflow/comment/" + usin,
         async: false,
         success: function (data) {
-
             if (data.length > 0) {
                 jQuery('#commentsHistoryTableBody').empty();
                 jQuery("#commentsTable").show();
-                if (data != null || data != undefined || data.toString() != "") {
-
+                if (data !== null || data !== undefined || data.toString() !== "") {
                     for (var i = 0; i < data.length; i++)
                     {
                         jQuery("#commentstemplate").tmpl(data[i]).appendTo("#commentsHistoryTableBody");
                         jQuery("#commentsTable").show();
                     }
-
-
-                    //	
                     commentHistoryDialog = $("#commentsDialog").dialog({
                         autoOpen: false,
                         height: 242,
@@ -2854,71 +2839,143 @@ function commentsDialog(usin)
                                 "id": "comment_cancel",
                                 click: function () {
                                     setInterval(function () {
-
                                     }, 4000);
                                     jQuery('#commentsHistoryTableBody').empty();
                                     jQuery("#commentsTable").hide();
                                     commentHistoryDialog.dialog("destroy");
-
                                 }
                             }],
                         close: function () {
-
                             commentHistoryDialog.dialog("destroy");
-
-
                         }
                     });
                     $("#comment_cancel").html('<span class="ui-button-text">' + $.i18n("gen-cancel") + '</span>');
                     commentHistoryDialog.dialog("open");
-
                 }
-
-
             } else {
                 jAlert($.i18n("err-no-records"), $.i18n("gen-info"));
             }
         }
-
-
     });
-
-
-
-
-
 }
 
 
 function generateSummaryReport()
 {
     projectid = $("#selectProjectsForSummary").val();
-    if (projectid == "" || projectid == null)
-    {
+    if (projectid === "" || projectid === null) {
         alert($.i18n("viewer-select-proj"));
         return false;
-
     }
-    var rep = "1";
     var reportTmp = new reports();
-    if (rep == "1")
-    {
-        //console.log(villageSelected);
-        reportTmp.ParcelCountByTenure("NEW", projectid, "1");
-        //reportDialog.dialog( "destroy" );
+    reportTmp.ParcelCountByTenure("NEW", "1", projectid);
+}
+
+function reportByTenure() {
+    var villageId = $("#cbxVillagesByTenure").val();
+    if (isEmpty(villageId) || villageId < 1) {
+        alert($.i18n("err-select-village"));
+        return;
     }
+    var reportsObj = new reports();
+    reportsObj.ParcelCountByTenure("NEW", villageId, activeProject);
+}
+
+function reportByTenureAppReg() {
+    var villageId = $("#cbxVillagesByTenureAppReg").val();
+    if (isEmpty(villageId) || villageId < 1) {
+        alert($.i18n("err-select-village"));
+        return;
+    }
+    var reportsObj = new reports();
+    reportsObj.ParcelCountByTenure("REGISTERED", villageId, activeProject);
+}
+
+function reportByTenureApfrReg() {
+    var villageId = $("#cbxVillagesByTenureApfrReg").val();
+    if (isEmpty(villageId) || villageId < 1) {
+        alert($.i18n("err-select-village"));
+        return;
+    }
+    var reportsObj = new reports();
+    reportsObj.ParcelCountByTenure("APFR", villageId, activeProject);
+}
+
+function reportByGender() {
+    var villageId = $("#cbxVillagesByGender").val();
+    if (isEmpty(villageId) || villageId < 1) {
+        alert($.i18n("err-select-village"));
+        return;
+    }
+    var reportsObj = new reports();
+    reportsObj.ParcelCountByGender("NEW", villageId);
+}
+
+function reportByGenderAppReg() {
+    var villageId = $("#cbxVillagesByGEnderAppReg").val();
+    if (isEmpty(villageId) || villageId < 1) {
+        alert($.i18n("err-select-village"));
+        return;
+    }
+    var reportsObj = new reports();
+    reportsObj.ParcelCountByGender("REGISTERED", villageId);
+}
+
+function reportByGenderApfrReg() {
+    var villageId = $("#cbxVillagesByGEnderApfrReg").val();
+    if (isEmpty(villageId) || villageId < 1) {
+        alert($.i18n("err-select-village"));
+        return;
+    }
+    var reportsObj = new reports();
+    reportsObj.ParcelCountByGender("APFR", villageId);
+}
+
+function reportByAppProcess(){
+    var villageId = $("#cbxVillagesByAppProccess").val();
+    if (isEmpty(villageId) || villageId < 1) {
+        alert($.i18n("err-select-village"));
+        return;
+    }
+    var reportsObj = new reports();
+    reportsObj.RegistryParcel("PROCESSEDAPPLICATION", villageId);
+}
+
+function reportByAppPublish(){
+    var villageId = $("#cbxVillagesByAppPublish").val();
+    if (isEmpty(villageId) || villageId < 1) {
+        alert($.i18n("err-select-village"));
+        return;
+    }
+    var reportsObj = new reports();
+    reportsObj.RegistryParcel("PUBLISHEDAPPLICATION", villageId);
+}
+
+function reportByAppApfr(){
+    var villageId = $("#cbxVillagesByAppApfr").val();
+    if (isEmpty(villageId) || villageId < 1) {
+        alert($.i18n("err-select-village"));
+        return;
+    }
+    var reportsObj = new reports();
+    reportsObj.RegistryParcel("PROCESSEDAPFR", villageId);
 }
 
 function reports() {
-
-
 }
 
-reports.prototype.ParcelCountByTenure = function (tag, projectid, villageId) {
-//alert ("Under Function");
-    window.open("landrecords/parcelcountbytenure/" + projectid + "/" + tag + "/" + villageId, 'popUp', 'height=500,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,titlebar=no,menubar=no,status=no,replace=false');
+reports.prototype.ParcelCountByTenure = function (tag, villageId, proj) {
+    window.open("landrecords/parcelcountbytenure/" + proj + "/" + tag + "/" + villageId, 'popUp', 'height=500,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,titlebar=no,menubar=no,status=no,replace=false');
+};
 
-}
+
+reports.prototype.ParcelCountByGender = function (tag, villageId) {
+    window.open("landrecords/parcelcountbygender/" + activeProject + "/" + tag + "/" + villageId, 'popUp', 'height=500,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,titlebar=no,menubar=no,status=no,replace=false');
+};
+
+reports.prototype.RegistryParcel = function (tag, villageId) {
+    window.open("landrecords/registrytable/" + activeProject + "/" + tag + "/" + villageId, 'popUp', 'height=500,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,titlebar=no,menubar=no,status=no,replace=false');
+};
 
 function reportButtonClick() {
 
@@ -5369,6 +5426,405 @@ generateForms.prototype.getCurrentDate = function () {
     return currentDate;
 };
 
+function showFormsList(usin, workflowId, sharetype) {
+    $('#radio2').show();
+    $('#radio5').hide();
+    $('#radio6').show();
+
+    $('#applicationformID')[0].reset();
+    formDialog = $("#applicationform-dialog-form").dialog({
+        autoOpen: false,
+        height: 370,
+        width: 280,
+        resizable: false,
+        modal: true,
+        buttons: [{
+                text: $.i18n("gen-ok"),
+                "id": "appform_ok",
+                click: function () {
+                    var option = checkForm;
+                    if (option !== '0')
+                    {
+                        if (option === "1")
+                        {
+                            generateform1(usin, 1);
+                            formDialog.dialog("destroy");
+                            $('#applicationformID')[0].reset();
+                        } else if (option === "2")
+                        {
+                            generateform2(usin, 1);
+                            formDialog.dialog("destroy");
+                            $('#applicationformID')[0].reset();
+                        } else if (option === "3")
+                        {
+                            generateform3(usin);
+                            formDialog.dialog("destroy");
+                            $('#applicationformID')[0].reset();
+                        } else if (option === "4")
+                        {
+                            var fromTmp = new generateForms();
+                            var form7attributeObject = fromTmp.Form7(usin);
+                            if (form7attributeObject.application_date === null) {
+                                jAlert($.i18n("err-print-public-notice-for-pv"), $.i18n("err-alert"));
+                            } else {
+                                generateform7(usin);
+                                formDialog.dialog("destroy");
+                                $('#applicationformID')[0].reset();
+                            }
+                        } else if (option === "5")
+                        {
+                            generateform5(usin);
+                            formDialog.dialog("destroy");
+                            $('#applicationformID')[0].reset();
+                        } else if (option === "6")
+                        {
+                            generateform8(usin);
+                            formDialog.dialog("destroy");
+                            $('#applicationformID')[0].reset();
+                        } else if (option === "7")
+                        {
+                            generatePaymentLetter(usin);
+                            formDialog.dialog("destroy");
+                            $('#applicationformID')[0].reset();
+                        }
+                    } else
+                    {
+                        jAlert($.i18n("err-select-option"), $.i18n("err-alert"));
+                    }
+                }
+            },
+            {
+                text: $.i18n("gen-cancel"),
+                "id": "appform_cancel",
+                click: function () {
+                    formDialog.dialog("destroy");
+                    $('#applicationformID')[0].reset();
+                }
+            }],
+        close: function () {
+            formDialog.dialog("destroy");
+            $('#applicationformID')[0].reset();
+        }
+    });
+
+
+    $('input[type=radio][name=print]').change(function () {
+        $('input:radio[name="print"][value=' + this.value + ']').prop('checked', true);
+        checkForm = this.value;
+    });
+
+    checkForm = "0";
+
+    $('input[type=radio][name="print"][value="1"]').css('display', 'none');
+    $('input[type=radio][name="print"][value="2"]').css('display', 'none');
+    $('input[type=radio][name="print"][value="3"]').css('display', 'none');
+    $('input[type=radio][name="print"][value="4"]').css('display', 'none');
+    $('input[type=radio][name="print"][value="5"]').css('display', 'none');
+    $('input[type=radio][name="print"][value="6"]').css('display', 'none');
+    $('input[type=radio][name="print"][value="7"]').css('display', 'none');
+    $('input[type=radio][name="print"][value="8"]').css('display', 'none');
+    $('input[type=radio][name="print"][value="9"]').css('display', 'none');
+    $('#radio1').css('display', 'none');
+    $('#radio2').css('display', 'none');
+    $('#radio3').css('display', 'none');
+    $('#radio4').css('display', 'none');
+    $('#radio5').css('display', 'none');
+    $('#radio6').css('display', 'none');
+    $('#radio7').css('display', 'none');
+    $('#radio8').css('display', 'none');
+    $('#radio9').css('display', 'none');
+
+    switch (workflowId) {
+        case 1:
+            $('input[type=radio][name="print"][value="1"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="2"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="3"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="4"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="5"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="6"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="7"]').css('display', 'none');
+            $('#radio1').css('display', 'none');
+            $('#radio2').css('display', 'none');
+            $('#radio3').css('display', 'none');
+            $('#radio4').css('display', 'none');
+            $('#radio5').css('display', 'none');
+            $('#radio6').css('display', 'none');
+            $('#radio7').css('display', 'none');
+
+            break;
+        case 2:
+            $('input[type=radio][name="print"][value="1"]').css('display', 'inline');
+            if (sharetype === 8) {
+                $('#radio2').css('display', 'inline');
+                $('input[type=radio][name="print"][value="2"]').css('display', 'inline');
+            } else if (sharetype === 7) {
+                $('input[type=radio][name="print"][value="2"]').css('display', 'none');
+                $('#radio2').css('display', 'none');
+            }
+            $('input[type=radio][name="print"][value="3"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="4"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="5"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="6"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="7"]').css('display', 'none');
+            $('#radio1').css('display', 'inline');
+
+            $('#radio3').css('display', 'none');
+            $('#radio4').css('display', 'none');
+            $('#radio5').css('display', 'none');
+            $('#radio6').css('display', 'none');
+            $('#radio7').css('display', 'none');
+
+            break;
+
+        case 3:
+            $('input[type=radio][name="print"][value="1"]').css('display', 'inline');
+            if (sharetype === 8) {
+                $('#radio2').css('display', 'inline');
+                $('input[type=radio][name="print"][value="2"]').css('display', 'inline');
+            } else if (sharetype === 7) {
+                $('input[type=radio][name="print"][value="2"]').css('display', 'none');
+                $('#radio2').css('display', 'none');
+            }
+            $('input[type=radio][name="print"][value="3"]').css('display', 'inline');
+            $('input[type=radio][name="print"][value="4"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="5"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="6"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="7"]').css('display', 'none');
+            $('#radio1').css('display', 'inline');
+            //$('#radio2').css('display', 'inline');
+            $('#radio3').css('display', 'inline');
+            $('#radio4').css('display', 'none');
+            $('#radio5').css('display', 'none');
+            $('#radio6').css('display', 'none');
+            $('#radio7').css('display', 'none');
+            break;
+
+        case 5:
+            $('input[type=radio][name="print"][value="1"]').css('display', 'inline');
+            if (sharetype === 8) {
+                $('#radio2').css('display', 'inline');
+                $('input[type=radio][name="print"][value="2"]').css('display', 'inline');
+            } else if (sharetype === 7) {
+                $('input[type=radio][name="print"][value="2"]').css('display', 'none');
+                $('#radio2').css('display', 'none');
+            }
+            $('input[type=radio][name="print"][value="3"]').css('display', 'inline');
+            $('input[type=radio][name="print"][value="4"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="5"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="6"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="7"]').css('display', 'none');
+            $('#radio1').css('display', 'inline');
+            //$('#radio2').css('display', 'inline');
+            $('#radio3').css('display', 'inline');
+            $('#radio4').css('display', 'none');
+            $('#radio5').css('display', 'none');
+            $('#radio6').css('display', 'none');
+            $('#radio7').css('display', 'none');
+            break;
+        case 6:
+            $('input[type=radio][name="print"][value="1"]').css('display', 'inline');
+            if (sharetype === 7) {
+                $('input[type=radio][name="print"][value="2"]').css('display', 'none');
+                $('#radio2').css('display', 'none');
+            }
+            if (sharetype === 8) {
+                $('input[type=radio][name="print"][value="2"]').css('display', 'inline');
+                $('#radio2').css('display', 'inline');
+            }
+            $('input[type=radio][name="print"][value="3"]').css('display', 'inline');
+            $('input[type=radio][name="print"][value="4"]').css('display', 'inline');
+            $('input[type=radio][name="print"][value="5"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="6"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="7"]').css('display', 'none');
+            $('#radio1').css('display', 'inline');
+
+            $('#radio3').css('display', 'inline');
+            $('#radio4').css('display', 'inline');
+            $('#radio5').css('display', 'none');
+            $('#radio6').css('display', 'none');
+            $('#radio7').css('display', 'none');
+            break;
+
+        case 7:
+            $('input[type=radio][name="print"][value="1"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="2"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="3"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="4"]').css('display', 'none');
+            if (sharetype === 7) {
+                $('input[type=radio][name="print"][value="5"]').css('display', 'inline');
+                $('#radio5').css('display', 'inline');
+                $('input[type=radio][name="print"][value="6"]').css('display', 'none');
+                $('#radio6').css('display', 'none');
+            } else if (sharetype === 8) {
+                $('input[type=radio][name="print"][value="5"]').css('display', 'none');
+                $('#radio5').css('display', 'none');
+                $('input[type=radio][name="print"][value="6"]').css('display', 'inline');
+                $('#radio6').css('display', 'inline');
+            }
+
+            $('input[type=radio][name="print"][value="7"]').css('display', 'inline');
+            $('#radio1').css('display', 'none');
+            $('#radio2').css('display', 'none');
+            $('#radio3').css('display', 'none');
+            $('#radio4').css('display', 'none');
+
+
+            $('#radio7').css('display', 'inline');
+
+            break;
+
+        case 8:
+            $('input[type=radio][name="print"][value="1"]').css('display', 'inline');
+            if (sharetype === 8) {
+                $('#radio2').css('display', 'inline');
+                $('input[type=radio][name="print"][value="2"]').css('display', 'inline');
+            } else if (sharetype === 7) {
+                $('input[type=radio][name="print"][value="2"]').css('display', 'none');
+                $('#radio2').css('display', 'none');
+            }
+            $('input[type=radio][name="print"][value="3"]').css('display', 'inline');
+            $('input[type=radio][name="print"][value="4"]').css('display', 'inline');
+            $('input[type=radio][name="print"][value="5"]').css('display', 'inline');
+            $('input[type=radio][name="print"][value="6"]').css('display', 'inline');
+            $('input[type=radio][name="print"][value="7"]').css('display', 'none');
+            $('#radio1').css('display', 'inline');
+            //$('#radio2').css('display', 'inline');
+            $('#radio3').css('display', 'inline');
+            $('#radio4').css('display', 'inline');
+            $('#radio5').css('display', 'inline');
+            $('#radio6').css('display', 'inline');
+            $('#radio7').css('display', 'none');
+            break;
+
+        case 9:
+            if (sharetype === 7) {
+                $('input[type=radio][name="print"][value="2"]').css('display', 'none');
+                $('input[type=radio][name="print"][value="6"]').css('display', 'none');
+                $('input[type=radio][name="print"][value="5"]').css('display', 'inline');
+                $('#radio5').css('display', 'inline');
+                $('#radio6').css('display', 'none');
+                $('#radio2').css('display', 'none');
+
+                $('input[type=radio][name="print"][value="1"]').css('display', 'inline');
+                $('input[type=radio][name="print"][value="3"]').css('display', 'inline');
+                $('input[type=radio][name="print"][value="4"]').css('display', 'inline');
+                $('input[type=radio][name="print"][value="7"]').css('display', 'inline');
+
+                $('#radio1').css('display', 'inline');
+                $('#radio3').css('display', 'inline');
+                $('#radio4').css('display', 'inline');
+                $('#radio7').css('display', 'inline');
+
+            } else if (sharetype === 8) {
+                $('input[type=radio][name="print"][value="2"]').css('display', 'inline');
+                $('input[type=radio][name="print"][value="6"]').css('display', 'inline');
+                $('input[type=radio][name="print"][value="5"]').css('display', 'none');
+                $('#radio5').css('display', 'none');
+                $('#radio6').css('display', 'inline');
+                $('#radio2').css('display', 'inline');
+
+                $('input[type=radio][name="print"][value="1"]').css('display', 'inline');
+                $('input[type=radio][name="print"][value="3"]').css('display', 'inline');
+                $('input[type=radio][name="print"][value="4"]').css('display', 'inline');
+                $('input[type=radio][name="print"][value="7"]').css('display', 'inline');
+
+                $('#radio1').css('display', 'inline');
+                $('#radio3').css('display', 'inline');
+                $('#radio4').css('display', 'inline');
+                $('#radio7').css('display', 'inline');
+            }
+            break;
+
+        case 10:
+            $('input[type=radio][name="print"][value="1"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="2"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="3"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="4"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="5"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="6"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="7"]').css('display', 'none');
+            $('#radio1').css('display', 'none');
+            $('#radio2').css('display', 'none');
+            $('#radio3').css('display', 'none');
+            $('#radio4').css('display', 'none');
+            $('#radio5').css('display', 'none');
+            $('#radio6').css('display', 'none');
+            $('#radio7').css('display', 'none');
+            break;
+
+        case 11:
+            $('input[type=radio][name="print"][value="1"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="2"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="3"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="4"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="5"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="6"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="7"]').css('display', 'none');
+            $('#radio1').css('display', 'none');
+            $('#radio2').css('display', 'none');
+            $('#radio3').css('display', 'none');
+            $('#radio4').css('display', 'none');
+            $('#radio5').css('display', 'none');
+            $('#radio6').css('display', 'none');
+            $('#radio7').css('display', 'none');
+            break;
+
+        case 12:
+            $('input[type=radio][name="print"][value="1"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="2"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="3"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="4"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="5"]').css('display', 'inline');
+            $('input[type=radio][name="print"][value="6"]').css('display', 'inline');
+            $('input[type=radio][name="print"][value="7"]').css('display', 'none');
+            $('#radio1').css('display', 'none');
+            $('#radio2').css('display', 'none');
+            $('#radio3').css('display', 'none');
+            $('#radio4').css('display', 'none');
+            $('#radio5').css('display', 'inline');
+            $('#radio6').css('display', 'inline');
+            $('#radio7').css('display', 'none');
+
+            break;
+        case 13:
+            $('input[type=radio][name="print"][value="1"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="2"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="3"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="4"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="5"]').css('display', 'inline');
+            $('input[type=radio][name="print"][value="6"]').css('display', 'inline');
+            $('input[type=radio][name="print"][value="7"]').css('display', 'inline');
+            $('#radio1').css('display', 'none');
+            $('#radio2').css('display', 'none');
+            $('#radio3').css('display', 'none');
+            $('#radio4').css('display', 'none');
+            $('#radio5').css('display', 'inline');
+            $('#radio6').css('display', 'inline');
+            $('#radio7').css('display', 'inline');
+
+            break;
+        case 14:
+            $('input[type=radio][name="print"][value="1"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="2"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="3"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="4"]').css('display', 'none');
+            $('input[type=radio][name="print"][value="5"]').css('display', 'inline');
+            $('input[type=radio][name="print"][value="6"]').css('display', 'inline');
+            $('input[type=radio][name="print"][value="7"]').css('display', 'inline');
+            $('#radio1').css('display', 'none');
+            $('#radio2').css('display', 'none');
+            $('#radio3').css('display', 'none');
+            $('#radio4').css('display', 'none');
+            $('#radio5').css('display', 'inline');
+            $('#radio6').css('display', 'inline');
+            $('#radio7').css('display', 'inline');
+            break;
+        default:
+    }
+    formDialog.dialog("open");
+}
+;
+
 generateForms.prototype.FeatureInfo = function (usin) {
     var cql = "usin='" + usin + "'";
     var geomInfo = "http://localhost:8080/geoserver/wfs?request=GetFeature&typeName=mast:spatial_unit&CQL_FILTER=" + cql + "&version=1.0.0";
@@ -5393,3 +5849,206 @@ generateForms.prototype.FeatureInfo = function (usin) {
         }
     });
 };
+
+function editParcelNumber(usin, section, parcelNum) {
+    $('#section_no_edit').text(section);
+    $('#lot_no_edit').text("000");
+    $('#number_seq_edit').val(parcelNum);
+    $("#usin_editId").val(usin);
+    $("#commentsStatus_parcelEdit").val("");
+
+    editParcelDialog = $("#edit-parcelno-form").dialog({
+        autoOpen: false,
+        height: 300,
+        width: 320,
+        resizable: false,
+        modal: true,
+        buttons: [{
+                text: $.i18n("gen-save"),
+                "id": "egp_ok",
+                click: function () {
+                    var parcel = $('#number_seq_edit').val();
+                    if (parcel !== "" && !$.isNumeric(parcel)) {
+                        jAlert($.i18n("err-enter-numeric-parcel-num"), $.i18n("err-alert"));
+                        return false;
+                    }
+
+                    var comment = $('#commentsStatus_parcelEdit').val();
+                    if (comment === "") {
+                        jAlert($.i18n("err-enter-comments"), $.i18n("err-alert"));
+                        return false;
+                    }
+
+                    jQuery.ajax({
+                        type: "POST",
+                        url: "landrecords/updateparcelnumber",
+                        data: jQuery("#parcelnoEditeformID").serialize(),
+                        success: function (data) {
+                            if (data) {
+                                jAlert($.i18n("reg-parcel-num-updated"), $.i18n("gen-info"));
+                                refreshLandRecords();
+                                editParcelDialog.dialog("destroy");
+                            } else {
+                                jAlert($.i18n("err-parcel-number-exists"), $.i18n("err-alert"));
+                            }
+                        }
+                    });
+                }
+            },
+            {
+                text: $.i18n("gen-cancel"),
+                "id": "egp_cancel",
+                click: function () {
+                    editParcelDialog.dialog("destroy");
+                }
+            }
+
+        ],
+        close: function () {
+            editParcelDialog.dialog("destroy");
+        }
+    });
+    editParcelDialog.dialog("open");
+}
+
+function paymentDialog(usin) {
+    $("#receiptId").val("");
+    $("#paymentAmount").val("");
+    $("#paymentDate").val("");
+    $("#amount_comment").val("");
+    paymentUpdateDialog = $("#paymentInfo-dialog-form").dialog({
+        autoOpen: false,
+        height: 500,
+        width: 450,
+        resizable: false,
+        modal: true,
+        buttons: [{
+                text: $.i18n("gen-ok"),
+                "id": "payment_ok",
+                click: function () {
+                    savePayment(usin);
+                }
+            },
+            {
+                text: $.i18n("gen-cancel"),
+                "id": "payment_cancel",
+                click: function () {
+                    paymentUpdateDialog.dialog("destroy");
+                }
+            }],
+        close: function () {
+            paymentUpdateDialog.dialog("destroy");
+        }
+    });
+    paymentUpdateDialog.dialog("open");
+}
+
+function savePayment(usin) {
+    $("#paymentInfoID").validate({
+        rules: {
+            receiptId: "required",
+            paymentAmount: "required",
+            paymentDate: "required"
+        },
+        messages: {
+            receiptId: $.i18n("err-fill-required-field"),
+            paymentAmount: $.i18n("err-fill-required-field"),
+            paymentDate: $.i18n("err-fill-required-field")
+        }
+    });
+
+    if ($("#paymentInfoID").valid()) {
+        jQuery.ajax({
+            type: "POST",
+            url: "landrecords/updatepayment/" + usin,
+            data: jQuery("#paymentInfoID").serialize(),
+            success: function (result)
+            {
+                if (result !== "") {
+                    jAlert($.i18n("reg-payment-successful") + " " + result, $.i18n("gen-info"));
+                    paymentUpdateDialog.dialog("destroy");
+                } else {
+                    jAlert($.i18n("err-failed-handling-request"));
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                jAlert($.i18n("err-failed-handling-request"));
+            }
+        });
+    } else {
+        jAlert($.i18n("err-fill-details"), $.i18n("err-alert"));
+    }
+}
+
+function signatoryDialog(usin) {
+    jQuery('#signatoryDate').val("");
+    $.ajax({
+        type: 'GET',
+        url: "landrecords/signatory/" + usin,
+        async: false,
+        success: function (data) {
+            if (!isEmpty(data)) {
+                jQuery('#signatoryDate').val(data);
+            }
+        }
+    });
+
+    signatureDateUpdateDialog = $("#signatory-dialog-form").dialog({
+        autoOpen: false,
+        height: 370,
+        width: 370,
+        resizable: false,
+        modal: true,
+        buttons: [{
+                text: $.i18n("gen-update"),
+                "id": "signatory_update",
+                click: function () {
+                    saveSignatoryDate(usin);
+                }
+            },
+            {
+                text: $.i18n("gen-cancel"),
+                "id": "signatory_cancel",
+                click: function () {
+                    signatureDateUpdateDialog.dialog("destroy");
+                }
+            }],
+        close: function () {
+            signatureDateUpdateDialog.dialog("destroy");
+        }
+    });
+    signatureDateUpdateDialog.dialog("open");
+}
+
+function saveSignatoryDate(usin) {
+    $("#signatoryformID").validate({
+        rules: {
+            signatoryDate: "required"
+        },
+        messages: {
+            signatoryDate: $.i18n("err-fill-required-field")
+        }
+    });
+
+    if ($("#signatoryformID").valid()) {
+        jQuery.ajax({
+            type: "POST",
+            url: "landrecords/updatedate/" + usin,
+            data: jQuery("#signatoryformID").serialize(),
+            success: function (result)
+            {
+                if (result) {
+                    jAlert($.i18n("gen-data-saved"), $.i18n("gen-info"));
+                    signatureDateUpdateDialog.dialog("destroy");
+                } else {
+                    jAlert($.i18n("err-failed-handling-request"));
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                jAlert($.i18n("err-failed-handling-request"));
+            }
+        });
+    } else {
+        jAlert($.i18n("err-fill-details"), $.i18n("err-alert"));
+    }
+}

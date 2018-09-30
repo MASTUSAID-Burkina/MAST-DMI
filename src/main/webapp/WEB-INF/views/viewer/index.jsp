@@ -120,8 +120,8 @@
               href="<c:url value="resources/styles/viewer/jsgrid-theme.min.css" />"
               type="text/css" media="screen, projection" />
         <link rel="stylesheet"
-            href="<c:url value="resources/styles/viewer/jquery.multiselect.css" />"
-            type="text/css" media="screen, projection" />
+              href="<c:url value="resources/styles/viewer/jquery.multiselect.css" />"
+              type="text/css" media="screen, projection" />
         <!--[if IE 7]>  
         <link rel="stylesheet"
                 href="<c:url value="resources/styles/viewer/ie7.css" />"
@@ -147,7 +147,7 @@
         <script src="http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false"></script>
         <script src="<c:url value="resources/scripts/Cloudburst-Viewer.js"  />" type="text/javascript"></script>
         <%@include file="../../jspf/HeaderResources.jspf" %>
-        
+
         <script language="javascript">
             var loggedUser = null;
             var tDlg = new $.timeoutDialog({
@@ -322,9 +322,11 @@
                     <ul>
                         <li><a href="#map-tab" id="tab1" data-i18n="viewer-map" onclick="javascript:closeDialog('taskMngrdiv')"></a></li>
                         <li><a href="#landrecords-div" id="tab2" data-i18n="viewer-land-records"></a></li>
+                        <%if(s.equalsIgnoreCase ("ROLE_ADMIN") || s.equalsIgnoreCase("ROLE_PM") || s.equalsIgnoreCase("ROLE_SFR")){%>
                         <li><a href="#landresource-div" id="tab6" data-i18n="viewer-res"> </a></li>
                         <li><a href="#tabReports" id="tab4" data-i18n="viewer-reports"></a></li>
                         <li><a href="#registryTab-div" id="tab5" data-i18n="viewer-reg"></a></li>
+                        <%}%>
                     </ul>
 
                     <div id="map-tab">
@@ -340,11 +342,12 @@
                                 </div>
                             </div>
 
-
+                            <%if(s.equalsIgnoreCase ("ROLE_ADMIN") || s.equalsIgnoreCase("ROLE_PM")){%>
                             <div style="float: left; margin: 3px 6px;">
                                 <button type="button" class="btn" onclick="javascript:initTaskManager();" data-i18n="viewer-taskman"></button>
                             </div>
-
+                            <%}%>
+                            
                             <div style="float: right; postion: relative; height: 38px;">
                                 <div id="toolbar" class="toolbar">
                                     <div class="fg-buttonset fg-buttonset-single">
@@ -546,167 +549,92 @@
                             </table>
                         </div>
                     </div>
-                                                
-                    <div id="landresource-div"></div>
-                    <!--Land records div  -->
+                    
                     <div id="landrecords-div"></div>
+                    
+                    <%if(s.equalsIgnoreCase ("ROLE_ADMIN") || s.equalsIgnoreCase("ROLE_PM") || s.equalsIgnoreCase("ROLE_SFR")){%>
+                    <div id="landresource-div"></div>
+                    
                     <div id="tabReports">
                         <div style="padding: 10px;">
                             <div id="reportsAccordion">
-                                <h3 data-i18n="viewer-landrec-forms"></h3>
-                                <div class="filter-details">
-                                    <form id="formAdjudicationForms" action="" onsubmit="return false;">
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <label data-i18n="viewer-start-tran-id"></label>
-                                                    <input type="text" id="landformStart" value="1" />
-                                                </td>
-                                                <td>
-                                                    <label data-i18n="viewer-end-tran-id"></label> 
-                                                    <input type="text" id="landformEnd" class="input-medium" /></td>
-                                                <td>
-                                                    <label>&nbsp;</label> 
-                                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:generateLandForm();" />
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        <br />
-                                    </form>
-                                </div>
-                                <h3 data-i18n="viewer-land-certs"></h3>
-                                <div class="filter-details">
-                                    <form id="formAdjudicationForms" action="" onsubmit="return false;">
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <label data-i18n="viewer-report-tran-id"></label>
-                                                    <input type="text" id="ccroStart" />
-                                                </td>
-                                                <td>
-                                                    <label>&nbsp;</label> 
-                                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:generateCcro();" />
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        <br />
-                                    </form>
-                                </div>
-                                <h3 data-i18n="viewer-batch-certs-report"></h3>
-                                <div class="filter-details">
-                                    <form id="formAdjudicationForms" action="" onsubmit="return false;">
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <label data-i18n="viewer-start-tran-id"></label> 
-                                                    <input type="text" id="ccroStartbatch" />
-                                                </td>
-                                                <td>
-                                                    <label data-i18n="viewer-end-tran-id"></label> 
-                                                    <input type="text" id="ccroEndbatch" class="input-medium" />
-                                                </td>
-                                                <td>
-                                                    <label>&nbsp;</label> 
-                                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="generateCcros();" />
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        <br />
-                                    </form>
-                                </div>
-
-                                <h3 data-i18n="viewer-report-by-village"></h3>
+                                <h3 data-i18n="reg-report-by-tenure"></h3>
                                 <div>
-                                    <br /> <label data-i18n="viewer-report-project"></label> 
-                                    <select id="selectProjectsForSummary"></select> &nbsp;&nbsp; 
-                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:generateSummaryReport();" /> 
+                                    <br /> <label data-i18n="reg-village"></label> 
+                                    <select id="cbxVillagesByTenure"></select> &nbsp;&nbsp; 
+                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:reportByTenure();" /> 
                                     <br />
                                 </div>
-                                <h3 data-i18n="viewer-report-by-tenure"></h3>
+                                
+                                <h3 data-i18n="reg-report-by-gender"></h3>
                                 <div>
-                                    <br /> <label data-i18n="viewer-report-project"></label> 
-                                    <select id="selectProjectsForDetailSummary"></select> &nbsp;&nbsp; 
-                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:generateProjectDetailedSummaryReport();" />
+                                    <br /> <label data-i18n="reg-village"></label> 
+                                    <select id="cbxVillagesByGender"></select> &nbsp;&nbsp; 
+                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:reportByGender();" /> 
                                     <br />
                                 </div>
-                                <h3 data-i18n="viewer-report-by-village-and-tenure"></h3>
-
+                                
+                                <h3 data-i18n="reg-report-by-tenure-app-reg"></h3>
                                 <div>
-                                    <br /> <label data-i18n="viewer-report-select-village"></label> 
-                                    <select class="pagesize" id="CommuneId" name="CommuneId" onchange="getplaceval(this);">
-                                        <option value="" data-i18n="gen-select"></option>
-                                        <option value="10">Bana</option>
-                                        <option value="9">Bagassi</option>
-                                        <option value="15">Pompoi</option>
-                                        <option value="13">Ouri</option>
-                                        <option value="11">Boromo</option></select> 
-                                        &nbsp;&nbsp; 
-                                        <input type="button" data-i18n="[value]gen-generate" class="btn1"
-                                            onclick="javascript:generateProjectDetailedSummaryReportForCommune();" />
-                                    <br /> 
-                                </div>
-
-                                <h3 data-i18n="viewer-report-by-appstatus"></h3>
-                                <div>
-                                    <br /> <label data-i18n="viewer-report-project"></label> 
-                                    <select id="selectProjectsForAppStatusSummary"></select> &nbsp;&nbsp; 
-                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:generateProjectAppStatusSummaryReport();" />
+                                    <br /> <label data-i18n="reg-village"></label> 
+                                    <select id="cbxVillagesByTenureAppReg"></select> &nbsp;&nbsp; 
+                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:reportByTenureAppReg();" /> 
                                     <br />
                                 </div>
-                                <h3 data-i18n="viewer-report-by-claimtype"></h3>
+                                
+                                <h3 data-i18n="reg-report-by-gender-app-reg"></h3>
                                 <div>
-                                    <br /> <label data-i18n="viewer-report-project"></label> 
-                                    <select id="selectProjectsForAppTypeSummary"></select> &nbsp;&nbsp; 
-                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:generateProjectTypeStatusSummaryReport();" />
+                                    <br /> <label data-i18n="reg-village"></label> 
+                                    <select id="cbxVillagesByGEnderAppReg"></select> &nbsp;&nbsp; 
+                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:reportByGenderAppReg();" /> 
                                     <br />
                                 </div>
-                                <h3 data-i18n="viewer-report-workflow"></h3>
+                                
+                                <h3 data-i18n="reg-report-by-tenure-apfr-reg"></h3>
                                 <div>
-                                    <br /> <label data-i18n="viewer-report-project"></label> 
-                                    <select id="selectProjectsForWorkFlowSummary"></select> &nbsp;&nbsp; <input
-                                        type="button" data-i18n="[value]gen-generate" class="btn1"
-                                        onclick="javascript:generateProjectWorkFlowSummaryReport();" />
+                                    <br /> <label data-i18n="reg-village"></label> 
+                                    <select id="cbxVillagesByTenureApfrReg"></select> &nbsp;&nbsp; 
+                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:reportByTenureApfrReg();" /> 
                                     <br />
                                 </div>
-                                <h3 data-i18n="viewer-report-by-tenure-and-land"></h3>
+                                
+                                <h3 data-i18n="reg-report-by-gender-apfr-reg"></h3>
                                 <div>
-                                    <br /> <label data-i18n="viewer-report-project"></label> 
-                                    <select id="selectProjectsForTenureTypesLandUnitsSummary"></select> &nbsp;&nbsp; 
-                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:generateProjectTenureTypesLandUnitsSummaryReport();" />
+                                    <br /> <label data-i18n="reg-village"></label> 
+                                    <select id="cbxVillagesByGEnderApfrReg"></select> &nbsp;&nbsp; 
+                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:reportByGenderApfrReg();" /> 
                                     <br />
                                 </div>
-
-                                <h3>Liberia Farm Status Report</h3>
+                                
+                                <h3 data-i18n="reg-reg-app-proccess"></h3>
                                 <div>
-                                    <br /> <label data-i18n="viewer-report-project"></label> <select
-                                        id="selectProjectsForLiberaFarmSummary"></select> &nbsp;&nbsp; 
-                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:generateProjectsForLiberaFarmSummaryReport();" />
+                                    <br /> <label data-i18n="reg-village"></label> 
+                                    <select id="cbxVillagesByAppProccess"></select> &nbsp;&nbsp; 
+                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:reportByAppProcess();" /> 
                                     <br />
                                 </div>
-
-                                <h3 data-i18n="viewer-report-datacorrection"></h3>
-                                <div class="filter-details">
-                                    <form id="formAdjudicationForms" action="" onsubmit="return false;">
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <label data-i18n="viewer-report-tran-id"></label>
-                                                    <input type="text" id="ccroStartTransid" />
-                                                </td>
-
-                                                <td>
-                                                    <label>&nbsp;</label> 
-                                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:generateDataCorrectionReport();" />
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        <br />
-                                    </form>
+                                
+                                <h3 data-i18n="reg-reg-app-publish"></h3>
+                                <div>
+                                    <br /> <label data-i18n="reg-village"></label> 
+                                    <select id="cbxVillagesByAppPublish"></select> &nbsp;&nbsp; 
+                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:reportByAppPublish();" /> 
+                                    <br />
+                                </div>
+                                
+                                <h3 data-i18n="reg-reg-app-apfr"></h3>
+                                <div>
+                                    <br /> <label data-i18n="reg-village"></label> 
+                                    <select id="cbxVillagesByAppApfr"></select> &nbsp;&nbsp; 
+                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:reportByAppApfr();" /> 
+                                    <br />
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div id="registryTab-div"></div>
+                    <%}%>
+                    
                     <div id="bottomstatusbar" class="bottom_statusbar"></div>
                 </div>
 

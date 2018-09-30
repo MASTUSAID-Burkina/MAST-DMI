@@ -43,6 +43,11 @@ public class ProjectRegionServiceImpl implements ProjectRegionService {
     }
     
     @Override
+    public List<ProjectRegion> getVillagesByProjectName(String name){
+        return projectRegionDAO.getVillagesByProjectName(name);
+    }
+    
+    @Override
     public VillageSearchResult getVillage(Integer id){
         return projectRegionDAO.getVillage(id);
     }

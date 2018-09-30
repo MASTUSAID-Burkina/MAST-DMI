@@ -204,6 +204,23 @@ public class ProjectRegionHibernateDAO extends GenericHibernateDAO<ProjectRegion
     }
     
     @Override
+    public List<ProjectRegion> getVillagesByProjectName(String name){
+        try {
+            String q = "select v.hierarchyid, v.uperhierarchyid, v.isactive, v.name, v.name_en, v.code, v.cfv_agent, null as spatialunitgroupid "
+                    + "from la_spatialunitgroup_hierarchy v inner join (la_ext_projectarea p inner join la_spatialsource_projectname pn on p.projectnameid = pn.projectnameid) on v.uperhierarchyid = p.hierarchyid4 "
+                    + "where pn.projectname = :projectName and v.isactive = true and v.spatialunitgroupid = 5 order by v.name";
+
+            Query query = getEntityManager().createNativeQuery(q, ProjectRegion.class);
+            query.setParameter("projectName", name);
+
+            return query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    @Override
     public VillageSearchResult getVillage(Integer id) {
         try {
             StringBuilder q = new StringBuilder(

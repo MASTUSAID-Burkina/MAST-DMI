@@ -19,7 +19,7 @@ public class WorkflowStatusHistoryHibernateDAO extends GenericHibernateDAO<Workf
         List<WorkflowStatusHistory> lstWorkflowStatusHistory = new ArrayList<WorkflowStatusHistory>();
 
         try {
-            lstWorkflowStatusHistory = getEntityManager().createQuery("Select w from WorkflowStatusHistory w where w.landid= :Id").setParameter("Id", landid).getResultList();
+            lstWorkflowStatusHistory = getEntityManager().createQuery("Select w from WorkflowStatusHistory w where w.landid= :Id order by w.createddate desc, w.landworkflowhistoryid desc").setParameter("Id", landid).getResultList();
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

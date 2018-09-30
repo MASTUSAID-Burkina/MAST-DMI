@@ -156,7 +156,7 @@
                     <form id="updatebyWorkflow" class="cmxform" action="" onsubmit="return false;">
                         <input type="hidden" name="type" id="type" value="">
                         <input type="hidden" name="workflow_lang" id="workflow_lang" value="">
-                        <div id="vtab" class="vtab">
+                        <div id="vtab" class="vtab" style="padding-bottom: 140px;">
 
                             <ul id="workflowDiv">
                                 <li class="login selected ">
@@ -619,7 +619,6 @@
                         <ul>
                             <li><a href="#tabs-1" data-i18n="gen-main"></a></li>
                             <li><a href="#tabPersonPhoto" data-i18n="gen-photo"></a></li>
-                            <!--  <li><a href="#tabs-2">Custom</a></li> -->
                         </ul>
 
                         <form class="cmxform" id="editNaturalPersonformID" action="" onsubmit="return false;">
@@ -1350,6 +1349,100 @@
         </form>
     </div>
 
+    <div id="applicationform-dialog-form" data-i18n="[title]reg-forms" style="display: none;">
+        <form class="cmxform" id="applicationformID" action="" onsubmit="return false;">
+            <fieldset>
+                <p>
+                    <label for="email" data-i18n="reg-select-form-type"></label>
+                </p>
+                <div style="">
+                    <p>
+                        <input class="selectPrint " name="print" type="radio" value="1" id="sel-one" />
+                        <label id="radio1" data-i18n="reg-form1" style="font-weight: normal;"></label>
+                    </p>
+                    <p>
+                        <input class="selectPrint" name="print" type="radio" value="2" id="sel-two" />
+                        <label id="radio2" data-i18n="reg-form2" style="font-weight: normal;"></label>
+                    </p>
+                    <p>
+                        <input class="selectPrint" name="print" type="radio" value="3" id="sel-three" />
+                        <label  id="radio3" data-i18n="reg-form3" style="font-weight: normal;"></label>
+                    </p>
+                    <p>
+                        <input class="selectPrint" name="print" type="radio" value="4" id="sel-four" />
+                        <label id="radio4" data-i18n="reg-form7" style="font-weight: normal;"></label>
+                    </p>
+                    <p>
+                        <input class="selectPrint" name="print" type="radio" value="7" id="sel-seven" />
+                        <label  id="radio7" data-i18n="reg-payment-letter" style="font-weight: normal;"></label>
+                    </p>
+                    <p>
+                        <input class="selectPrint" name="print" type="radio" value="5" id="sel-five" />
+                        <label id="radio5" data-i18n="reg-form5" style="font-weight: normal;"></label>
+                    </p>
+                    <div class="showCheck">
+                        <p>
+                            <input class="selectPrint" name="print" type="radio" value="6" id="sel-six" />
+                            <label id="radio6" data-i18n="reg-form8" style="font-weight: normal;"></label>
+                        </p>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
+
+    <div id="paymentInfo-dialog-form" data-i18n="[title]reg-payment-info" style="display: none;">
+        <form class="cmxform landrecords22" id="paymentInfoID" action="" onsubmit="return false;">
+            <fieldset>
+                <label data-i18n="reg-receipt-no"></label> 
+                <input type='text' name="receiptId" id="receiptId" maxlength="100" style="width: 96%" /> 
+                <label data-i18n="gen-amount"></label> 
+                <input type='text' onkeypress='return event.charCode >= 48 && event.charCode <= 57' name="paymentAmount" id="paymentAmount" maxlength="10" style="width: 96%" /> 
+                <label data-i18n="gen-date"></label>
+                <input type='text' class='datepicker' name="paymentDate" id="paymentDate" style="width: 96%" readonly /> 
+                <label data-i18n="gen-comments"></label> 
+                <input type='text' name="amount_comment" id="amount_comment" maxlength="2000" style="width: 96%" />
+            </fieldset>
+        </form>
+    </div>
+
+    <div id="edit-parcelno-form" data-i18n="[title]reg-edit-parcel-num" style="display: none;">
+        <form class="cmxform" id="parcelnoEditeformID" action="" onsubmit="return false;">
+            <fieldset>
+                <input type="hidden" id="usin_editId" name="usin_editId" />
+                <table style="width: 100%" class="p-number">
+                    <tr>
+                        <td>
+                            <label data-i18n="reg-section"></label>
+                            <span style="display: inline-block" id="section_no_edit"></span></td>
+                        <td>
+                            <label data-i18n="reg-lot"></label> 
+                            <span style="display: inline-block" id="lot_no_edit"></span></td>
+                        <td>
+                            <label data-i18n="reg-parcel-num"></label>  
+                            <input style="display: inline-block" id="number_seq_edit" name="number_seq_edit" maxlength="6" />
+                        </td>
+                    </tr>
+                </table>
+                <br>
+                <label data-i18n="reg-confirm-opinion" style="font-weight: normal;"></label>
+                <textarea name="commentsStatus_parcelEdit" id="commentsStatus_parcelEdit" style="width: 96%; height: 80px;"></textarea>
+            </fieldset>
+
+        </form>
+    </div> 
+
+    <div id="signatory-dialog-form" data-i18n="[title]reg-mayor-signatory-date" style="display: none;">
+
+        <form class="cmxform landrecords22" id="signatoryformID" action="" onsubmit="return false;">
+            <fieldset>
+                <label for="email" data-i18n="reg-signatory-date"></label>
+                <input type="text" name="signatoryDate" id="signatoryDate" value="" class="datepicker text ui-widget-content ui-corner-all" readonly>
+            </fieldset>
+        </form>
+    </div>
+    
     <form action="landrecords/exportdata/" name="dataExportForm" id="dataExportForm" method="post" target="_blank">
         <input type="hidden" name="hVertices" id="hVertices">
     </form>

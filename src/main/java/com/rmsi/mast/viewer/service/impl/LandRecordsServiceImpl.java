@@ -23,6 +23,7 @@ import com.rmsi.mast.studio.dao.IdTypeDao;
 import com.rmsi.mast.studio.dao.LandTypeDAO;
 import com.rmsi.mast.studio.dao.MaritalStatusDAO;
 import com.rmsi.mast.studio.dao.OccupancyDAO;
+import com.rmsi.mast.studio.dao.PaymentInfoDAO;
 import com.rmsi.mast.studio.dao.PersonDAO;
 import com.rmsi.mast.studio.dao.PersonTypeDAO;
 import com.rmsi.mast.studio.dao.ProjectAdjudicatorDAO;
@@ -38,6 +39,8 @@ import com.rmsi.mast.studio.dao.TenureClassDAO;
 import com.rmsi.mast.studio.dao.TitleTypeDao;
 import com.rmsi.mast.studio.dao.UnitDAO;
 import com.rmsi.mast.studio.dao.UsertableDAO;
+import com.rmsi.mast.studio.dao.WorkflowDAO;
+import com.rmsi.mast.studio.dao.WorkflowStatusHistoryDAO;
 import com.rmsi.mast.studio.domain.AcquisitionType;
 import com.rmsi.mast.studio.domain.ApplicationNature;
 import com.rmsi.mast.studio.domain.AttributeCategory;
@@ -59,6 +62,7 @@ import com.rmsi.mast.studio.domain.NaturalPerson;
 import com.rmsi.mast.studio.domain.NatureOfPower;
 import com.rmsi.mast.studio.domain.NonNaturalPerson;
 import com.rmsi.mast.studio.domain.OccupancyType;
+import com.rmsi.mast.studio.domain.PaymentInfo;
 import com.rmsi.mast.studio.domain.Person;
 import com.rmsi.mast.studio.domain.PersonType;
 import com.rmsi.mast.studio.domain.ProjectAdjudicator;
@@ -74,7 +78,10 @@ import com.rmsi.mast.studio.domain.Status;
 import com.rmsi.mast.studio.domain.TenureClass;
 import com.rmsi.mast.studio.domain.TitleType;
 import com.rmsi.mast.studio.domain.Unit;
+import com.rmsi.mast.studio.domain.User;
+import com.rmsi.mast.studio.domain.WorkflowStatusHistory;
 import com.rmsi.mast.studio.domain.fetch.AttributeValuesFetch;
+import com.rmsi.mast.studio.domain.fetch.ClaimBasic;
 import com.rmsi.mast.studio.domain.fetch.ClaimProfile;
 import com.rmsi.mast.studio.domain.fetch.ClaimSummary;
 import com.rmsi.mast.studio.domain.fetch.DataCorrectionReport;
@@ -108,6 +115,8 @@ import com.rmsi.mast.studio.mobile.dao.NaturalPersonDao;
 import com.rmsi.mast.studio.mobile.dao.NonNaturalPersonDao;
 import com.rmsi.mast.studio.mobile.dao.StatusDao;
 import com.rmsi.mast.studio.mobile.dao.SurveyProjectAttributeDao;
+import com.rmsi.mast.studio.mobile.service.SpatialUnitService;
+import com.rmsi.mast.studio.service.ClaimBasicService;
 import com.rmsi.mast.studio.util.StringUtils;
 import com.rmsi.mast.viewer.dao.ApplicationNatureDao;
 import com.rmsi.mast.viewer.dao.LandRecordsDao;
@@ -119,6 +128,7 @@ import com.rmsi.mast.viewer.dao.SpatialUnitDeceasedPersonDao;
 import com.rmsi.mast.viewer.dao.SpatialUnitPersonAdministratorDao;
 import com.rmsi.mast.viewer.dao.SpatialUnitPersonWithInterestDao;
 import com.rmsi.mast.viewer.dao.SpatialUnitTempDao;
+import com.rmsi.mast.viewer.dao.StatusDAO;
 import com.rmsi.mast.viewer.service.LandRecordsService;
 
 @Service
@@ -268,6 +278,24 @@ public class LandRecordsServiceImpl implements LandRecordsService {
     @Autowired
     private TitleTypeDao titleTypeDao;
 
+    @Autowired
+    WorkflowStatusHistoryDAO workflowStatusHistoryDAO;
+
+    @Autowired
+    StatusDAO statusDAO;
+
+    @Autowired
+    WorkflowDAO workflowDAO;
+
+    @Autowired
+    private SpatialUnitService spatialUnitService;
+
+    @Autowired
+    private ClaimBasicService claimBasicService;
+
+    @Autowired
+    private PaymentInfoDAO paymentInfoDAO;
+    
     @Override
     public List<SpatialUnitTable> findAllSpatialUnit(String defaultProject) {
         return landRecordsDao.findallspatialUnit(defaultProject);
@@ -1313,8 +1341,8 @@ public class LandRecordsServiceImpl implements LandRecordsService {
     }
 
     @Override
-    public List<LaSpatialunitLand> search(String lang, Integer claimType, int project, String parcelId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int appStatus, Integer startpos) {
-        return landRecordsDao.search(lang, claimType, project, parcelId, appNum, pvNum, apfrNum, firstName, appType, appStatus, startpos);
+    public List<LaSpatialunitLand> search(String lang, Integer claimType, int project, String parcelId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int appStatus, int workflowId, Integer startpos) {
+        return landRecordsDao.search(lang, claimType, project, parcelId, appNum, pvNum, apfrNum, firstName, appType, appStatus, workflowId, startpos);
     }
 
     @Override
@@ -1358,14 +1386,14 @@ public class LandRecordsServiceImpl implements LandRecordsService {
     }
 
     @Override
-    public Integer getTotalrecordByProject(int project) {
+    public Integer getTotalrecordByProject(int project, int workflowId) {
         // TODO Auto-generated method stub
-        return landRecordsDao.getTotalrecordByProject(project);
+        return landRecordsDao.getTotalrecordByProject(project, workflowId);
     }
 
     @Override
-    public Integer searchCount(Integer claimType, int project, String parcelId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int appStatus) {
-        return landRecordsDao.searchCount(claimType, project, parcelId, appNum, pvNum, apfrNum, firstName, appType, appStatus);
+    public Integer searchCount(Integer claimType, int project, String parcelId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int workflowId, int appStatus) {
+        return landRecordsDao.searchCount(claimType, project, parcelId, appNum, pvNum, apfrNum, firstName, appType, workflowId, appStatus);
     }
 
     @Override
@@ -1503,5 +1531,63 @@ public class LandRecordsServiceImpl implements LandRecordsService {
     @Override
     public List<TitleType> getTitleTypes() {
         return titleTypeDao.findAll();
+    }
+
+    @Override
+    public List<LandUseType> getExistingUseName(String existingUse) {
+        return landUseTypeDao.findEntriesById(existingUse);
+    }
+
+    @Override
+    public boolean updateParcelNumber(long usin, long parcelNumber, String comment, int userId) {
+        ClaimBasic su = spatialUnitService.getClaimsBasicByLandId(usin).get(0);
+
+        boolean flag = spatialUnitService.checkParcelNumberInSection((int) parcelNumber, su.getSection());
+        if (!flag) {
+            su.setParcelNoInSection(parcelNumber);
+            claimBasicService.saveClaimBasicDAO(su);
+
+            WorkflowStatusHistory sunitHistory = new WorkflowStatusHistory();
+            sunitHistory.setComments(comment);
+            sunitHistory.setCreatedby(userId);
+            sunitHistory.setIsactive(true);
+            sunitHistory.setLandid(usin);
+            sunitHistory.setCreateddate(new Date());
+            sunitHistory.setUserid(userId);
+            sunitHistory.setStatuschangedate(new Date());
+            sunitHistory.setStatus(statusDAO.getStatusById(8));
+            sunitHistory.setWorkflow(workflowDAO.getWorkflowByid(4));
+
+            workflowStatusHistoryDAO.addWorkflowStatusHistory(sunitHistory);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean savePayment(PaymentInfo paymentInfo) {
+        try {
+            paymentInfoDAO.makePersistent(paymentInfo);
+            return true;
+        } catch (Exception e) {
+            logger.error(e);
+            return false;
+        }
+    }
+    
+    @Override
+    public List<Object> findregparcelcountbyTenure(int project, String tag, Integer villageId) {
+        return landRecordsDao.findregparcelcountbyTenure(project, tag, villageId);
+    }
+    
+    @Override
+    public List<Object> findparcelcountbygender(int project,String tag, Integer villageId){
+        return landRecordsDao.findparcelcountbygender(project, tag, villageId);
+    }
+    
+    @Override
+    public List<Object> findRegistrytable(int project, String tag, Integer villageId){
+        return landRecordsDao.findRegistrytable(project, tag, villageId);
     }
 }

@@ -74,7 +74,7 @@ public class SpatialUnitHibernateDao extends
         String query = "select s from SpatialUnit s where s.imei =:imeiNumber";
 
         try {
-        	Integer id=Integer.parseInt(imeiNumber);
+            Integer id = Integer.parseInt(imeiNumber);
             @SuppressWarnings("unchecked")
             List<SpatialUnit> spatialUnit = getEntityManager()
                     .createQuery(query).setParameter("imeiNumber", imeiNumber).getResultList();
@@ -199,27 +199,46 @@ public class SpatialUnitHibernateDao extends
         return null;
     }
 
-	@Override
-	public List<ClaimBasic> getClaimsBasicByLandId(Long landid) {
-		
-		  String query = "select s from ClaimBasic s where s.landid = :landid and s.isactive = true";
+    @Override
+    public List<ClaimBasic> getClaimsBasicByLandId(Long landid) {
 
-	        try {
-	            @SuppressWarnings("unchecked")
-	            List<ClaimBasic> claims = getEntityManager()
-	                    .createQuery(query).setParameter("landid", landid)
-	                    .getResultList();
+        String query = "select s from ClaimBasic s where s.landid = :landid and s.isactive = true";
 
-	            if (!claims.isEmpty()) {
-	                return claims;
-	            }
-	        } catch (Exception ex) {
-	            System.out.println("Exception while fetching the data from data base " + ex);
-	            logger.error(ex);
-	        }
-	        return null;
-	        
-	}
+        try {
+            @SuppressWarnings("unchecked")
+            List<ClaimBasic> claims = getEntityManager()
+                    .createQuery(query).setParameter("landid", landid)
+                    .getResultList();
 
+            if (!claims.isEmpty()) {
+                return claims;
+            }
+        } catch (Exception ex) {
+            System.out.println("Exception while fetching the data from data base " + ex);
+            logger.error(ex);
+        }
+        return null;
 
+    }
+
+    @Override
+    public boolean checkParcelNumberInSection(long parcel_no, int section) {
+        try {
+            String query = "SELECT COUNT(a) from SpatialUnit a where a.section=:section and a.parcelNoInSection=:parcel_no";
+
+            long count = (long) getEntityManager().createQuery(query)
+                    .setParameter("section", section)
+                    .setParameter("parcel_no", parcel_no)
+                    .getSingleResult();
+
+            if (count > 0) {
+                return true;
+            }
+        } catch (Exception ex) {
+            logger.error(ex);
+            ex.printStackTrace();
+        }
+        return false;
+
+    }
 }

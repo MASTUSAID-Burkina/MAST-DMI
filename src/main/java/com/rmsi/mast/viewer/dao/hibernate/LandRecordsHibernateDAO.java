@@ -762,6 +762,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
             String firstName,
             int appType,
             int appStatus,
+            int workflowId,
             Integer startpos) {
 
         String sql;
@@ -770,9 +771,13 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
         if (claimType > 0) {
             strWhere = strWhere + " and LC.claimtypeid = " + claimType;
         }
-        
+
         if (appStatus > 0) {
             strWhere = strWhere + " and LD.applicationstatusid = " + appStatus;
+        }
+
+        if (workflowId > 0) {
+            strWhere = strWhere + " and LD.workflowstatusid = " + workflowId;
         }
 
         if (!"".equals(parcelId)) {
@@ -815,7 +820,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                 + "  inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid"
                 + "  inner Join  la_party_person LP on PL.partyid = LP.personid"
                 + "  inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "
-                + "where Pl.isactive=true and LD.applicationstatusid != 7 and LD.isactive=true and LD.projectnameid = :projectId"
+                + "where Pl.isactive=true and LD.isactive=true and LD.projectnameid = :projectId"
                 + strWhere
                 + " order by LD.landid desc";
 
@@ -1232,9 +1237,13 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
     }
 
     @Override
-    public Integer getTotalrecordByProject(int project) {
-
+    public Integer getTotalrecordByProject(int project, int workflowId) {
         try {
+            String strWhere = "";
+            if (workflowId > 0) {
+                strWhere = " and LD.workflowstatusid = " + workflowId;
+            }
+
             String sql = "select count(*) from "
                     + "("
                     + "  select LD.landid"
@@ -1246,8 +1255,8 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                     + "    inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid"
                     + "    inner Join  la_party_person LP on PL.partyid = LP.personid"
                     + "    inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid"
-                    + "  where Pl.isactive=true and LD.applicationstatusid != 7 and LD.isactive=true and LD.projectnameid = "
-                    + project + ") as t1";
+                    + "  where Pl.isactive=true and LD.isactive=true and LD.projectnameid = "
+                    + project + strWhere + ") as t1";
 
             List<BigInteger> arrObject = getEntityManager().createNativeQuery(sql).getResultList();
 
@@ -1273,6 +1282,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
             String apfrNum,
             String firstName,
             int appType,
+            int workflowId,
             int appStatus) {
 
         String sql;
@@ -1281,9 +1291,13 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
         if (claimType > 0) {
             strWhere = strWhere + " and LC.claimtypeid = " + claimType;
         }
-        
+
         if (appStatus > 0) {
             strWhere = strWhere + " and LD.applicationstatusid = " + appStatus;
+        }
+
+        if (workflowId > 0) {
+            strWhere = strWhere + " and LD.workflowstatusid = " + workflowId;
         }
 
         if (!"".equals(parcelId)) {
@@ -1323,7 +1337,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                 + "    inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid"
                 + "    inner Join  la_party_person LP on PL.partyid = LP.personid"
                 + "    inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid"
-                + "  where Pl.isactive=true and LD.applicationstatusid != 7 and LD.isactive=true and LD.projectnameid = :projectId"
+                + "  where Pl.isactive=true and LD.isactive=true and LD.projectnameid = :projectId"
                 + strWhere + ") as t1";
 
         try {
@@ -1375,7 +1389,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
         if (!resultwrk.isEmpty()) {
             strWhereCls = " and LD.workflowstatusid in (" + resultwrk + ")";
         }
-        
+
         String sql = "select count(1) "
                 + "from la_spatialunit_land LD"
                 + "  inner join la_ext_personlandmapping PL on LD.landid = PL.landid"
@@ -1385,7 +1399,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                 + "  inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid"
                 + "  inner Join  la_party_person LP on PL.partyid = LP.personid"
                 + "  inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "
-                + "where Pl.isactive=true and LD.applicationstatusid != 7 and LD.isactive=true and LD.projectnameid = :projectId "
+                + "where Pl.isactive=true and LD.isactive=true and LD.projectnameid = :projectId "
                 + strWhereCls;
 
         try {
@@ -1421,7 +1435,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
         if (!resultwrk.isEmpty()) {
             strWhereCls = " and LD.workflowstatusid in (" + resultwrk + ")";
         }
-        
+
         try {
 
             String sql = "select LD.landid, LD.landno, LC.claimtypeid, (case when :lang = 'en' then LC.claimtype_en else LC.claimtype end) as claimtype, LD.area, "
@@ -1438,7 +1452,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                     + "  inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid"
                     + "  inner Join  la_party_person LP on PL.partyid = LP.personid"
                     + "  inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "
-                    + "where Pl.isactive=true and LD.applicationstatusid != 7 and LD.isactive=true and LD.projectnameid = :projectId "
+                    + "where Pl.isactive=true and LD.isactive=true and LD.projectnameid = :projectId "
                     + strWhereCls
                     + " order by LD.landid desc";
 
@@ -2278,4 +2292,126 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
 
     }
 
+    @Override
+    public List<Object> findregparcelcountbyTenure(int project, String tag, Integer villageId) {
+        try {
+            List<Object> spatialUnit;
+            int existingworkflow = 0;
+            int newworkflow = 0;
+
+            if (tag.equalsIgnoreCase("NEW")) {
+                existingworkflow = 10;
+                newworkflow = 1;
+            } else if (tag.equalsIgnoreCase("REGISTERED")) {
+                existingworkflow = 11;
+                newworkflow = 3;
+            } else if (tag.equalsIgnoreCase("APFR")) {
+                existingworkflow = 13;
+                newworkflow = 7;
+            }
+
+            String sql = "select count(sp.landid) as count, pt.claimtype, st.landsharetype\n "
+                    + "from la_spatialunit_land sp inner join la_right_claimtype pt on sp.claimtypeid=pt.claimtypeid\n "
+                    + "  inner join la_right_landsharetype st on sp.landsharetypeid = st.landsharetypeid\n "
+                    + "where sp.projectnameid = :project_name_id and sp.isactive=true and "
+                    + "((sp.workflowstatusid >= :newworkflow and sp.workflowstatusid < 10) or sp.workflowstatusid >= :existingworkflow)\n "
+                    + " and sp.applicationstatusid != 5 and sp.hierarchyid5 = :villageId \n "
+                    + "group by pt.claimtypeid, st.landsharetypeid \n "
+                    + "order by pt.claimtypeid, st.landsharetypeid";
+
+            Query executeQuery = getEntityManager().createNativeQuery(sql);
+            executeQuery.setParameter("project_name_id", project)
+                    .setParameter("existingworkflow", existingworkflow)
+                    .setParameter("newworkflow", newworkflow)
+                    .setParameter("villageId", villageId);
+            spatialUnit = executeQuery.getResultList();
+            if (spatialUnit.size() > 0) {
+                return spatialUnit;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
+
+    @Override
+    public List<Object> findparcelcountbygender(int project, String tag, Integer villageId) {
+        int newworkflow_id = 0;
+        int existingworkflow_id = 0;
+
+        if (tag.equalsIgnoreCase("NEW")) {
+            newworkflow_id = 1;
+            existingworkflow_id = 10;
+        } else if (tag.equalsIgnoreCase("REGISTERED")) {
+            newworkflow_id = 2;
+            existingworkflow_id = 11;
+        } else if (tag.equalsIgnoreCase("APFR")) {
+            newworkflow_id = 7;
+            existingworkflow_id = 13;
+        }
+
+        try {
+            List<Object> spatialUnit;
+            String query = "select g.gender, sum(case when p.genderid is null then 0 else 1 end) as cnt \n"
+                    + "from la_partygroup_gender g left join (select p.genderid from la_party_person p \n"
+                    + "  inner join la_ext_personlandmapping r on p.personid = r.partyid \n"
+                    + "  inner join la_spatialunit_land sp on r.landid = sp.landid \n"
+                    + "  where sp.projectnameid = :project_name_id and sp.hierarchyid5 = :villageId and sp.isactive "
+                    + "  and ((sp.workflowstatusid >= :newworkflow_id and sp.workflowstatusid < 10) or sp.workflowstatusid >= :existingworkflow_id)) p\n"
+                    + "  on g.genderid = p.genderid \n"
+                    + "group by g.genderid \n"
+                    + "order by g.genderid";
+
+            Query executeQuery = getEntityManager().createNativeQuery(query);
+            executeQuery.setParameter("project_name_id", project)
+                    .setParameter("newworkflow_id", newworkflow_id)
+                    .setParameter("existingworkflow_id", existingworkflow_id)
+                    .setParameter("villageId", villageId);
+            spatialUnit = executeQuery.getResultList();
+            if (spatialUnit.size() > 0) {
+                return spatialUnit;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
+
+    @Override
+    public List<Object> findRegistrytable(int project, String tag, Integer villageId) {
+        try {
+            int workflowId = 0;
+            if (tag.equalsIgnoreCase("PROCESSEDAPPLICATION")) {
+                workflowId = 3;
+            } else if (tag.equalsIgnoreCase("PUBLISHEDAPPLICATION")) {
+                workflowId = 6;
+            } else if (tag.equalsIgnoreCase("PROCESSEDAPFR")) {
+                workflowId = 7;
+            }
+
+            String query = "select p.firstname, p.lastname, sp.application_no, sp.applicationdate \n"
+                    + "from la_party_person p inner join la_ext_personlandmapping r on p.personid = r.partyid \n"
+                    + "  inner join la_spatialunit_land sp on r.landid = sp.landid \n"
+                    + "where sp.projectnameid = :project_name_id and sp.hierarchyid5 = :villageId and sp.isactive and sp.workflowstatusid = :workId \n"
+                    + "order by p.firstname, p.lastname";
+
+            Query executeQuery = getEntityManager().createNativeQuery(query);
+            executeQuery.setParameter("project_name_id", project)
+                    .setParameter("workId", workflowId)
+                    .setParameter("villageId", villageId);
+            List<Object> spatialUnit = executeQuery.getResultList();
+            if (spatialUnit.size() > 0) {
+                return spatialUnit;
+            }
+
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+        return null;
+    }
 }

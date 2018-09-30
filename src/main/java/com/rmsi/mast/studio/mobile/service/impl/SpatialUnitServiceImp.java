@@ -86,19 +86,19 @@ public class SpatialUnitServiceImp implements SpatialUnitService {
 
     @Autowired
     ClaimTypeDao claimTypeDAO;
-    
+
     @Autowired
     TitleTypeDao titleTypeDAO;
-    
+
     @Autowired
     DisputeTypeDao disputeTypeDao;
-    
+
     @Autowired
     AcquisitionTypeDao acquisitionTypeDao;
-    
+
     @Autowired
     DocumentTypeDao documentTypeDao;
-    
+
     @Override
     public List<SpatialUnit> getSpatialUnitDataByProjectId(String projectId) {
 
@@ -148,10 +148,11 @@ public class SpatialUnitServiceImp implements SpatialUnitService {
     }
 
     @Override
+    @Deprecated
     public SpatialUnit getSpatialUnitByUsin(long usin) {
 
 //        return spatialUnitDao.getSpatialUnitByUsin(usin);
-return null;
+        return null;
     }
 
     @Override
@@ -212,39 +213,39 @@ return null;
     public List<ClaimType> getClaimTypes() {
         return claimTypeDAO.findAll();
     }
-    
+
     @Override
-    public List<TitleType> getTitleTypes(){
+    public List<TitleType> getTitleTypes() {
         return titleTypeDAO.findAll();
     }
-    
+
     @Override
     public ClaimType getClaimTypeById(String code) {
         return claimTypeDAO.findById(code, true);
     }
-    
+
     @Override
-    public List<DisputeType> getDisputeTypes(){
+    public List<DisputeType> getDisputeTypes() {
         return disputeTypeDao.findAll();
     }
-    
+
     @Override
-    public DisputeType getDisputeTypeById(int code){
+    public DisputeType getDisputeTypeById(int code) {
         return disputeTypeDao.findById(code, true);
     }
-    
+
     @Override
-    public List<AcquisitionType> getAcquisitionTypes(){
+    public List<AcquisitionType> getAcquisitionTypes() {
         return acquisitionTypeDao.findAll();
     }
-    
+
     @Override
-    public AcquisitionType getAcquisitionTypeByAttributeOptionId(int optId){
+    public AcquisitionType getAcquisitionTypeByAttributeOptionId(int optId) {
         return acquisitionTypeDao.getTypeByAttributeOptionId(optId);
     }
-    
+
     @Override
-    public DocumentType getDocumentTypeByAttributeOptionId(int optId){
+    public DocumentType getDocumentTypeByAttributeOptionId(int optId) {
         return documentTypeDao.getTypeByAttributeOptionId(optId);
     }
 
@@ -257,15 +258,20 @@ return null;
     public List<TenureClass> getTenureClasses() {
         return tenureClassDao.findAll();
     }
-    
+
     @Override
-    public List<Gender> getGenders(){
+    public List<Gender> getGenders() {
         return genderDao.findAll();
     }
 
-	@Override
-	public List<ClaimBasic> getClaimsBasicByLandId(Long landid) {
-		
-		return spatialUnitDao.getClaimsBasicByLandId(landid);
-	}
+    @Override
+    public List<ClaimBasic> getClaimsBasicByLandId(Long landid) {
+
+        return spatialUnitDao.getClaimsBasicByLandId(landid);
+    }
+
+    @Override
+    public boolean checkParcelNumberInSection(long parcel_no, int section) {
+        return spatialUnitDao.checkParcelNumberInSection(parcel_no, section);
+    }
 }

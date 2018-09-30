@@ -117,6 +117,10 @@ public class ClaimBasic implements Serializable {
     @Column(name = "apfr_no")
     private String apfrNum;
     
+    @Column(name = "apfr_date")
+    @Temporal(javax.persistence.TemporalType.DATE)
+    private Date apfrDate;
+    
     @Column
     private Integer section;
     
@@ -719,6 +723,14 @@ public class ClaimBasic implements Serializable {
 
     public void setApfrNum(String apfrNum) {
         this.apfrNum = apfrNum;
+    }
+
+    public Date getApfrDate() {
+        return apfrDate;
+    }
+
+    public void setApfrDate(Date apfrDate) {
+        this.apfrDate = apfrDate;
     }
 
     public Integer getSection() {

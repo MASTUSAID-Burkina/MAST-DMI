@@ -206,4 +206,6 @@ public interface SpatialUnitService {
     DocumentType getDocumentTypeByAttributeOptionId(int optId);
     
     List<ClaimBasic> getClaimsBasicByLandId(Long landid) ;
+    
+    boolean checkParcelNumberInSection(long parcel_no,int section);
 }

@@ -15,6 +15,7 @@ public interface ProjectRegionService {
     List<ProjectRegion> findAllProjectRegion();
     List<VillageSearchResult> searchVillage(String villageName, Integer startpos);
     List<ProjectRegion> getVillagesByProject(int id);
+    List<ProjectRegion> getVillagesByProjectName(String name);
     VillageSearchResult getVillage(Integer id);
     ProjectRegion getFullVillage(Integer id);
     List<ProjectRegion> getAllCommunes();

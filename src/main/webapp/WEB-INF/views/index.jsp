@@ -59,17 +59,10 @@
         </script>
 
         <%
-        } else if (s.equalsIgnoreCase("ROLE_PUBLICUSER") || s.equalsIgnoreCase("ROLE_USER")) {
-        %>
-        <script type="text/javascript">
-            var studio_url = window.location.href;
-            var pos = studio_url.indexOf("index");
-            studio_url = studio_url.substring(0, pos - 1);
-            studio_url = studio_url + "/viewer/";
-            document.location.href = studio_url;
-        </script>
-        <%
-            }
+	}
+        if(s.equalsIgnoreCase("ROLE_PUBLICUSER") || s.equalsIgnoreCase("ROLE_USER") ||s.equalsIgnoreCase("ROLE_SFR") || s.equalsIgnoreCase("ROLE_DPI") ){
+            response.sendRedirect(request.getContextPath() + "/viewer/");
+        }
         %>
     </head>
 

@@ -90,7 +90,7 @@ public interface LandRecordsDao extends GenericDAO<SpatialUnitTable, Long> {
     @Transactional
     NaturalPerson updateNaturalPersonDataForEdit(NaturalPerson np) throws Exception;
 
-    List<LaSpatialunitLand> search(String lang, Integer claimType, int project, String parcelId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int appStatus, Integer startpos);
+    List<LaSpatialunitLand> search(String lang, Integer claimType, int project, String parcelId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int appStatus, int workflowId, Integer startpos);
 
     List<ReportCertificateFetch> getCertificatedetailsbytransactionid(Long usin);
 
@@ -110,9 +110,9 @@ public interface LandRecordsDao extends GenericDAO<SpatialUnitTable, Long> {
 
     List<Object> findprojectTenureTypesLandUnitsummaryreport(String project);
 
-    Integer getTotalrecordByProject(int project);
+    Integer getTotalrecordByProject(int project, int workflowId);
 
-    Integer searchCount(Integer claimType, int project, String parcelId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int appStatus);
+    Integer searchCount(Integer claimType, int project, String parcelId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int workflowId, int appStatus);
 
     Integer spatialUnitWorkflowCount(int[] workflow_ids, int project);
 
@@ -153,4 +153,10 @@ public interface LandRecordsDao extends GenericDAO<SpatialUnitTable, Long> {
     public List<FarmReport> getFarmReportByLandId(Long landId);
 
     List<Object> findLiberiaFarmummaryreport(String project);
+    
+    List<Object> findregparcelcountbyTenure(int project, String tag, Integer villageId);
+    
+    List<Object> findparcelcountbygender(int project,String tag, Integer villageId);
+    
+    List<Object> findRegistrytable(int project, String tag, Integer villageId);
 }

@@ -15,6 +15,8 @@ public interface ProjectRegionDAO extends GenericDAO<ProjectRegion, Integer> {
     
     List<ProjectRegion> getVillagesByProject(int id);
     
+    List<ProjectRegion> getVillagesByProjectName(String name);
+    
     VillageSearchResult getVillage(Integer id);
             
     List<ProjectRegion> getAllCommunes();
