@@ -103,9 +103,6 @@ public class SpatialUnit implements Serializable {
     @Column(name = "pv_no")
     private String pvNum;
 
-    @Column(name = "apfr_no")
-    private String apfrNum;
-    
     @Column
     private Integer section;
     
@@ -177,11 +174,6 @@ public class SpatialUnit implements Serializable {
 
     @Column(name = "claimtypeid")
     private Integer claimtypeid;
-
-    //bi-directional many-to-one association to LaRightLandsharetype
-    @ManyToOne
-    @JoinColumn(name = "landsharetypeid")
-    private ShareType laRightLandsharetype;
 
     //bi-directional many-to-one association to LaSpatialunitgroup
     @ManyToOne
@@ -484,21 +476,6 @@ public class SpatialUnit implements Serializable {
         this.claimtypeid = claimtypeid;
     }
 
-    public ShareType getLaRightLandsharetype() {
-        return laRightLandsharetype;
-    }
-
-    public void setLaRightLandsharetype(ShareType laRightLandsharetype) {
-        this.laRightLandsharetype = laRightLandsharetype;
-    }
-
-    /*public TenureClass getLaRightTenureclass() {
-		return laRightTenureclass;
-	}
-
-	public void setLaRightTenureclass(TenureClass laRightTenureclass) {
-		this.laRightTenureclass = laRightTenureclass;
-	}*/
     public LaSpatialunitgroup getLaSpatialunitgroup1() {
         return laSpatialunitgroup1;
     }
@@ -647,14 +624,6 @@ public class SpatialUnit implements Serializable {
 
     public void setPvNum(String pvNum) {
         this.pvNum = pvNum;
-    }
-
-    public String getApfrNum() {
-        return apfrNum;
-    }
-
-    public void setApfrNum(String apfrNum) {
-        this.apfrNum = apfrNum;
     }
 
     public Integer getSection() {

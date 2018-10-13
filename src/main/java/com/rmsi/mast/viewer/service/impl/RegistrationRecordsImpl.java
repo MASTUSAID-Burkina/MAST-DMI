@@ -1,5 +1,7 @@
 package com.rmsi.mast.viewer.service.impl;
 
+import com.ibm.icu.util.Calendar;
+import com.rmsi.mast.studio.dao.ProjectDAO;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -26,14 +28,20 @@ import com.rmsi.mast.studio.domain.La_Month;
 import com.rmsi.mast.studio.domain.LandType;
 import com.rmsi.mast.studio.domain.MaritalStatus;
 import com.rmsi.mast.studio.domain.NaturalPerson;
+import com.rmsi.mast.studio.domain.ParcelCount;
 import com.rmsi.mast.studio.domain.PersonType;
+import com.rmsi.mast.studio.domain.Project;
 import com.rmsi.mast.studio.domain.ProjectRegion;
 import com.rmsi.mast.studio.domain.ShareType;
 import com.rmsi.mast.studio.domain.SocialTenureRelationship;
 import com.rmsi.mast.studio.domain.SourceDocument;
 import com.rmsi.mast.studio.domain.SpatialUnit;
 import com.rmsi.mast.studio.domain.Status;
+import com.rmsi.mast.studio.domain.fetch.ClaimBasic;
 import com.rmsi.mast.studio.domain.fetch.ClaimBasicLand;
+import com.rmsi.mast.studio.domain.fetch.RightBasic;
+import com.rmsi.mast.studio.mobile.dao.hibernate.SpatialUnitHibernateDao;
+import com.rmsi.mast.studio.util.ConstantUtil;
 import com.rmsi.mast.viewer.dao.ClaimBasicLandDao;
 import com.rmsi.mast.viewer.dao.GenderLDao;
 import com.rmsi.mast.viewer.dao.IDTypeDAO;
@@ -54,6 +62,7 @@ import com.rmsi.mast.viewer.dao.LandShareTypeDao;
 import com.rmsi.mast.viewer.dao.LandTypeLadmDAO;
 import com.rmsi.mast.viewer.dao.MaritalStatusaDao;
 import com.rmsi.mast.viewer.dao.NaturalPersonDAO;
+import com.rmsi.mast.viewer.dao.ParcelCountDao;
 import com.rmsi.mast.viewer.dao.PersonTypeLDao;
 import com.rmsi.mast.viewer.dao.ProjectRegionDao;
 import com.rmsi.mast.viewer.dao.RegistrationRecordsDao;
@@ -62,476 +71,501 @@ import com.rmsi.mast.viewer.dao.SourceDocumentsDao;
 import com.rmsi.mast.viewer.dao.SpatialUnitDAO;
 import com.rmsi.mast.viewer.dao.StatusDAO;
 import com.rmsi.mast.viewer.service.RegistrationRecordsService;
+import java.util.Date;
 
 @Service
-public class RegistrationRecordsImpl implements RegistrationRecordsService{
+public class RegistrationRecordsImpl implements RegistrationRecordsService {
 
-	private static final Logger logger = Logger.getLogger(RegistrationRecordsImpl.class);
-	/*@Autowired
+    private static final Logger logger = Logger.getLogger(RegistrationRecordsImpl.class);
+    /*@Autowired
     private SpatialUnitTempDao spatialUnitTempDao;
-	*/
-	
-	/*@Autowired
+     */
+
+ /*@Autowired
 	private LaSpatialunitLandDao laSpatialunitLandDao;
 	
 	@Autowired
 	SocialTenureRelationshipDAO socialTenureRelationshipDao;
-	*/
-	@Autowired
-	RegistrationRecordsDao registrationRecordsDao;
-	
-	@Autowired
-	LaExtPersonLandMappingsDao laExtPersonLandMappingsDao;
-	
-	@Autowired
-	LaPartyPersonDao laPartyPersonDao;
-	
-	@Autowired
-	MaritalStatusaDao maritalStatusDao;
-	
-	@Autowired
-	GenderLDao genderLDao;
-	
-	@Autowired
-	IDTypeDAO idTypeDAO;
-	
-	@Autowired
-	SpatialUnitDAO spatialUnitDAO;
-	
-	@Autowired
-	LaSpatialunitLandDao laSpatialunitLandDao;
-	
-	@Autowired
-	LandTypeLadmDAO landTypeLadmDAO;
-	
-	@Autowired
-	LaSpatialunitgroupHierarchyDao  laSpatialunitgroupHierarchyDao;
-	
-	@Autowired
-	LandShareTypeDao landShareTypeDao;
-	
-	@Autowired
-	LaExtProcessDao laExtProcessDao;
-	
-	@Autowired
-	StatusDAO statusDAO; 
-	
-	@Autowired
-	PersonTypeLDao personTypeLDao;
-	
-	@Autowired
-	LaExtTransactiondetailDao laExtTransactiondetailDao;
-	
-	@Autowired
-	LaPartyDao laPartyDao;
-	
-	@Autowired
-	NaturalPersonDAO naturalPersonDAO;
-	
-	@Autowired
-	LaSpatialunitgroupDAO laSpatialunitgroupDAO;
-	
-	@Autowired
-	ProjectRegionDao projectRegionDao;
-	
-	@Autowired
-	SocialTenureRelationshipDao socialTenureRelationshipDao;
-	
-	@Autowired
-	ClaimBasicLandDao claimBasicLandDao;
-	
-	@Autowired
-	SourceDocumentsDao sourceDocumentsDao;
-	
-	@Autowired
-	LaMortgageDao laMortgageDao;
-	
-	@Autowired
-	LaLeaseDao laLeaseDao;
-	
-	@Autowired
-	LaSurrenderLeaseDao lasurrenderleaseDao;
-	
-	@Autowired
-	LaExtTransactionHistoryDao laexttransactionhistoryDao;
-	
-	@Autowired
-	LaMortgageSurrenderDao laMortgageSurrenderDao;
-	
-	/*@Autowired
-	LaExtPersonLandMappingDao laExtPersonLandMappingDao; */
-	
-	@Override
-	public List<LaSpatialunitLand> findAllSpatialUnitTemp(String defaultProject,
-			int startfrom) {
-		return registrationRecordsDao.findOrderedSpatialUnitRegistry(defaultProject, startfrom);
-	}
+     */
+    @Autowired
+    RegistrationRecordsDao registrationRecordsDao;
 
-	@Override
-	public LaExtPersonLandMapping getPersonLandMapDetails(Integer landid) {
-		return laExtPersonLandMappingsDao.getPersonLandMapDetails(landid);
+    @Autowired
+    LaExtPersonLandMappingsDao laExtPersonLandMappingsDao;
+
+    @Autowired
+    LaPartyPersonDao laPartyPersonDao;
+
+    @Autowired
+    MaritalStatusaDao maritalStatusDao;
+
+    @Autowired
+    GenderLDao genderLDao;
+
+    @Autowired
+    IDTypeDAO idTypeDAO;
+
+    @Autowired
+    SpatialUnitDAO spatialUnitDAO;
+
+    @Autowired
+    LaSpatialunitLandDao laSpatialunitLandDao;
+
+    @Autowired
+    LandTypeLadmDAO landTypeLadmDAO;
+
+    @Autowired
+    LaSpatialunitgroupHierarchyDao laSpatialunitgroupHierarchyDao;
+
+    @Autowired
+    LandShareTypeDao landShareTypeDao;
+
+    @Autowired
+    LaExtProcessDao laExtProcessDao;
+
+    @Autowired
+    StatusDAO statusDAO;
+
+    @Autowired
+    PersonTypeLDao personTypeLDao;
+
+    @Autowired
+    LaExtTransactiondetailDao transactionDao;
+
+    @Autowired
+    LaPartyDao laPartyDao;
+
+    @Autowired
+    NaturalPersonDAO naturalPersonDAO;
+
+    @Autowired
+    LaSpatialunitgroupDAO laSpatialunitgroupDAO;
+
+    @Autowired
+    ProjectRegionDao projectRegionDao;
+
+    @Autowired
+    SocialTenureRelationshipDao socialTenureRelationshipDao;
+
+    @Autowired
+    ClaimBasicLandDao claimBasicLandDao;
+
+    @Autowired
+    SourceDocumentsDao sourceDocumentsDao;
+
+    @Autowired
+    LaMortgageDao laMortgageDao;
+
+    @Autowired
+    LaLeaseDao laLeaseDao;
+
+    @Autowired
+    LaSurrenderLeaseDao lasurrenderleaseDao;
+
+    @Autowired
+    LaExtTransactionHistoryDao laexttransactionhistoryDao;
+
+    @Autowired
+    LaMortgageSurrenderDao laMortgageSurrenderDao;
+
+    @Autowired
+    private ParcelCountDao parcelCountDao;
+
+    @Autowired
+    ProjectDAO projectDAO;
+
+    @Autowired
+    SpatialUnitHibernateDao spatialUnitDao;
+
+    @Override
+    public List<LaSpatialunitLand> findAllSpatialUnitTemp(String defaultProject,
+            int startfrom) {
+        return registrationRecordsDao.findOrderedSpatialUnitRegistry(defaultProject, startfrom);
+    }
+
+    @Override
+    public LaExtPersonLandMapping getPersonLandMapDetails(Integer landid) {
+        return laExtPersonLandMappingsDao.getPersonLandMapDetails(landid);
 //		return null;
-	}
-	
-	@Override
-	public LaPartyPerson getPartyPersonDetails(Integer landid){
-		return laPartyPersonDao.getPartyPersonDetails(landid);
-	}
-	
-	@Override
-	public List<LaPartyPerson> getAllPartyPersonDetails(Integer landid){
-		return laPartyPersonDao.getAllPartyPersonDetails(landid);
-	}
-	
-	
-	@Override
-	public List<LaPartyPerson> fillAllPartyPersonDetails(Integer landid,Integer processid){
-		return laPartyPersonDao.fillAllPartyPersonDetails(landid,processid);
-	}
-	
-	@Override
-	public LaPartyPerson getPartyPersonDetailssurrenderlease(Integer landid){
-		return laPartyPersonDao.getPartyPersonDetailssurrenderlease(landid);
-	}
-	
-	
+    }
 
-	@Override
-	public List<MaritalStatus> getMaritalStatusDetails() {
-		return maritalStatusDao.getMaritalStatus();
-	}
+    @Override
+    public LaPartyPerson getPartyPersonDetails(Integer landid) {
+        return laPartyPersonDao.getPartyPersonDetails(landid);
+    }
 
-	@Override
-	public List<Gender> getGenderDetails() {
-		return genderLDao.getGenderDetails();
-	}
+    @Override
+    public List<LaPartyPerson> getAllPartyPersonDetails(Integer landid) {
+        return laPartyPersonDao.getAllPartyPersonDetails(landid);
+    }
 
-	@Override
-	public List<IdType> getIDTypeDetails() {
-		return idTypeDAO.getIDTypeDetails();
-	}
+    @Override
+    public List<LaPartyPerson> fillAllPartyPersonDetails(Integer landid, Integer processid) {
+        return laPartyPersonDao.fillAllPartyPersonDetails(landid, processid);
+    }
 
-	@Override
-	public List<SpatialUnit> getSpatialUnitLandMappingDetails(Long landid) {
-		return spatialUnitDAO.getSpatialUnitLandMappingDetails(landid);
-	}
+    @Override
+    public LaPartyPerson getPartyPersonDetailssurrenderlease(Integer landid) {
+        return laPartyPersonDao.getPartyPersonDetailssurrenderlease(landid);
+    }
 
-	@Override
-	public List<LaSpatialunitLand> getLaSpatialunitLandDetails(Long landid) {
-		return laSpatialunitLandDao.getLaSpatialunitLandDetails(landid);
-	}
+    @Override
+    public List<MaritalStatus> getMaritalStatusDetails() {
+        return maritalStatusDao.getMaritalStatus();
+    }
 
-	@Override
-	public List<LandType> getAllLandType() {
-		return landTypeLadmDAO.getAllLandType();
-	}
+    @Override
+    public List<Gender> getGenderDetails() {
+        return genderLDao.getGenderDetails();
+    }
 
-	@Override
-	public List<ProjectRegion> getAllCountry() {
-		return laSpatialunitgroupHierarchyDao.getAllCountry();
-	}
+    @Override
+    public List<IdType> getIDTypeDetails() {
+        return idTypeDAO.getIDTypeDetails();
+    }
 
-	@Override
-	public List<ProjectRegion> getAllRegion(Integer country_r_id) {
-		return laSpatialunitgroupHierarchyDao.getAllRegion(country_r_id);
-	}
+    @Override
+    public List<SpatialUnit> getSpatialUnitLandMappingDetails(Long landid) {
+        return spatialUnitDAO.getSpatialUnitLandMappingDetails(landid);
+    }
 
-	@Override
-	public List<ShareType> getAlllandsharetype() {
-		return landShareTypeDao.getAlllandsharetype();
-	}
+    @Override
+    public LaSpatialunitLand getLaSpatialunitLandDetails(Long landid) {
+        return laSpatialunitLandDao.getLaSpatialunitLandDetails(landid);
+    }
 
-	@Override
-	public List<ProjectRegion> getAllProvience(Integer region_r_id) {
-		return laSpatialunitgroupHierarchyDao.getAllProvience(region_r_id);
-	}
+    @Override
+    public List<LandType> getAllLandType() {
+        return landTypeLadmDAO.getAllLandType();
+    }
 
-	@Override
-	public List<LaExtProcess> getAllProcessDetails() {
-		return laExtProcessDao.getAllProcessDetails();
-	}
+    @Override
+    public List<ProjectRegion> getAllCountry() {
+        return laSpatialunitgroupHierarchyDao.getAllCountry();
+    }
 
-	@Override
-	public Status getStatusById(int statusId) {
-		return statusDAO.getStatusById(statusId);
-	}
+    @Override
+    public List<ProjectRegion> getAllRegion(Integer country_r_id) {
+        return laSpatialunitgroupHierarchyDao.getAllRegion(country_r_id);
+    }
 
-	@Override
-	public PersonType getPersonTypeById(int personTypeGid) {
-		return personTypeLDao.getPersonTypeById(personTypeGid);
-	}
+    @Override
+    public List<ShareType> getAlllandsharetype() {
+        return landShareTypeDao.getAlllandsharetype();
+    }
 
-	@Override
-	public MaritalStatus getMaritalStatusByID(Integer id) {
-		return maritalStatusDao.getMaritalStatusByID(id);
-	}
+    @Override
+    public List<ProjectRegion> getAllProvience(Integer region_r_id) {
+        return laSpatialunitgroupHierarchyDao.getAllProvience(region_r_id);
+    }
 
-	@Override
-	public IdType getIDTypeDetailsByID(Integer id) {
-		return idTypeDAO.getIDTypeDetailsByID(id);
-	}
+    @Override
+    public List<LaExtProcess> getAllProcessDetails() {
+        return laExtProcessDao.getAllProcessDetails();
+    }
 
-	@Override
-//	@Transactional
-	public LaExtTransactiondetail saveTransaction(LaExtTransactiondetail laExtTransactiondetail) {
-		try {
-			return laExtTransactiondetailDao.makePersistent(laExtTransactiondetail);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-			return null;
-		}
-	}
+    @Override
+    public Status getStatusById(int statusId) {
+        return statusDAO.getStatusById(statusId);
+    }
 
-	@Override
-	//@Transactional
-	public LaParty saveParty(LaParty laParty) {
-		return laPartyDao.saveParty(laParty);
-		/*try {
-			laPartyDao.makePersistent(laParty);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-		}*/
-	}
+    @Override
+    public PersonType getPersonTypeById(int personTypeGid) {
+        return personTypeLDao.getPersonTypeById(personTypeGid);
+    }
 
-	@Override
-	@Transactional
-	public NaturalPerson saveNaturalPerson(NaturalPerson naturalPerson) {
-		try {
-			return naturalPersonDAO.saveNaturalPerson(naturalPerson);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-			throw e;
-		}
-	}
+    @Override
+    public MaritalStatus getMaritalStatusByID(Integer id) {
+        return maritalStatusDao.getMaritalStatusByID(id);
+    }
 
-	@Override
-	public LaSpatialunitgroup findLaSpatialunitgroupById(Integer id) {
-		return laSpatialunitgroupDAO.findLaSpatialunitgroupById(id);
-	}
+    @Override
+    public IdType getIDTypeDetailsByID(Integer id) {
+        return idTypeDAO.getIDTypeDetailsByID(id);
+    }
 
-	@Override
-	public ProjectRegion findProjectRegionById(Integer id) {
-		return projectRegionDao.findProjectRegionById(id);
-	}
+    @Override
+    public LaExtTransactiondetail saveTransaction(LaExtTransactiondetail laExtTransactiondetail) {
+        try {
+            return transactionDao.makePersistent(laExtTransactiondetail);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
+    }
 
-	@Override
-	@Transactional
-	public SocialTenureRelationship saveSocialTenureRelationship(
-			SocialTenureRelationship socialTenureRelationship) {
-		
-		return socialTenureRelationshipDao.saveSocialTenureRelationship(socialTenureRelationship);
-	}
+    @Override
+    public boolean registerLease(LaLease lease) {
+        laLeaseDao.saveLease(lease);
+        
+        LaExtTransactiondetail laExtTransactiondetail = transactionDao.getLaExtTransactionByLeaseeid(lease.getLeaseid().longValue());
+        Status status = getStatusById(7); // Final
+        laExtTransactiondetail.setLaExtApplicationstatus(status);
+        transactionDao.makePersistent(laExtTransactiondetail);
+        return true;
+    }
 
-	@Override
-	public ClaimBasicLand getClaimBasicLandById(Long id) {
-		return claimBasicLandDao.getClaimBasicLandById(id);
-	}
+    @Override
+    public LaParty saveParty(LaParty laParty) {
+        return laPartyDao.saveParty(laParty);
+    }
 
-	@Override
-	public List<LaSpatialunitLand> getLaSpatialunitLandDetailsQ(Integer landid) {
-		return laSpatialunitLandDao.getLaSpatialunitLandDetailsQ(landid);
-	}
+    @Override
+    @Transactional
+    public NaturalPerson saveNaturalPerson(NaturalPerson naturalPerson) {
+        try {
+            return naturalPersonDAO.saveNaturalPerson(naturalPerson);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            throw e;
+        }
+    }
 
-	@Override
-	public boolean updateLaSpatialunitLand(LaSpatialunitLand laSpatialunitLand) {
-		return laSpatialunitLandDao.updateLaSpatialunitLand(laSpatialunitLand);
-	}
+    @Override
+    public LaSpatialunitgroup findLaSpatialunitgroupById(Integer id) {
+        return laSpatialunitgroupDAO.findLaSpatialunitgroupById(id);
+    }
 
-	@Override
-	public boolean addLaSpatialunitLand(LaSpatialunitLand laSpatialunitLand) {
-		return laSpatialunitLandDao.addLaSpatialunitLand(laSpatialunitLand);
-	}
+    @Override
+    public ProjectRegion findProjectRegionById(Integer id) {
+        return projectRegionDao.findProjectRegionById(id);
+    }
 
-	@Override
-	public List<LaSpatialunitLand> search( Long transactionid,Integer startfrom,String project,String communeId,String parcelId) {
-		return registrationRecordsDao.search(transactionid,startfrom,project,communeId,parcelId);
-	}
+    @Override
+    @Transactional
+    public SocialTenureRelationship saveSocialTenureRelationship(
+            SocialTenureRelationship socialTenureRelationship) {
 
-	@Override
-	public SocialTenureRelationship getSocialTenureRelationshipByLandId(
-			Long landId) {
-		return socialTenureRelationshipDao.getSocialTenureRelationshipByLandId(landId);
-	}
-	
-	@Override
-	public SocialTenureRelationship getSocialTenureRelationshipByLandIdForBuyer(Long landId,Long processid) {
-		return socialTenureRelationshipDao.getSocialTenureRelationshipByLandIdForBuyer(landId,processid);
-	}
+        return socialTenureRelationshipDao.saveSocialTenureRelationship(socialTenureRelationship);
+    }
 
-	@Override
-	public SocialTenureRelationship getSocialTenureRelationshipForSellerByLandId(Long landId) 
-	{
-		return socialTenureRelationshipDao.getSocialTenureRelationshipForSellerByLandId(landId);
-	}
-	
-	
-	@Override
-	public boolean updateSocialTenureRelationshipByPartyId(Long partyId, Long landid) {
-		return socialTenureRelationshipDao.updateSocialTenureRelationshipByPartyId(partyId,landid);
-	}
-	
-	@Override
-	public boolean updateSocialTenureRelationshipByPartytypeId(Long partyId,Long landid) {
-		return socialTenureRelationshipDao.updateSocialTenureRelationshipByPartytypeId(partyId,landid);
-	}
+    @Override
+    public ClaimBasicLand getClaimBasicLandById(Long id) {
+        return claimBasicLandDao.getClaimBasicLandById(id);
+    }
 
-	@Override
-	public LaParty getLaPartyById(Long partyId) {
-		return laPartyDao.getPartyIdByID(partyId);
-	}
+    @Override
+    public List<LaSpatialunitLand> getLaSpatialunitLandDetailsQ(Integer landid) {
+        return laSpatialunitLandDao.getLaSpatialunitLandDetailsQ(landid);
+    }
 
-	@Override
-	public LaExtTransactiondetail getLaExtTransactiondetail(Integer id) {
-		return laExtTransactiondetailDao.getLaExtTransactiondetail(id);
-	}
+    @Override
+    public boolean updateLaSpatialunitLand(LaSpatialunitLand laSpatialunitLand) {
+        return laSpatialunitLandDao.updateLaSpatialunitLand(laSpatialunitLand);
+    }
 
-	@Override
-	//@Transactional
-	public SourceDocument saveUploadedDocuments(SourceDocument sourceDocument) {
-		return sourceDocumentsDao.saveUploadedDocuments(sourceDocument);
-	}
+    @Override
+    public boolean addLaSpatialunitLand(LaSpatialunitLand laSpatialunitLand) {
+        return laSpatialunitLandDao.addLaSpatialunitLand(laSpatialunitLand);
+    }
 
-	@Override
-	public List<LaExtFinancialagency> getFinancialagencyDetails() {
-		return registrationRecordsDao.getFinancialagencyDetails();
-	}
+    @Override
+    public List<LaSpatialunitLand> search(Long transactionid, Integer startfrom, String project, String villageId, String parcelId) {
+        return registrationRecordsDao.search(transactionid, startfrom, project, villageId, parcelId);
+    }
 
-	@Override
-	public LaExtFinancialagency getFinancialagencyByID(int financial_AgenciesID) {
-		return registrationRecordsDao.getFinancialagencyByID(financial_AgenciesID);
-	}
+    @Override
+    public SocialTenureRelationship getSocialTenureRelationshipByLandId(
+            Long landId) {
+        return socialTenureRelationshipDao.getSocialTenureRelationshipByLandId(landId);
+    }
 
-	
+    @Override
+    public SocialTenureRelationship getSocialTenureRelationshipByLandIdForBuyer(Long landId, Long processid) {
+        return socialTenureRelationshipDao.getSocialTenureRelationshipByLandIdForBuyer(landId, processid);
+    }
 
-	
-	
-	@Override
-	public List<La_Month> getmonthofleaseDetails() {
-		return registrationRecordsDao.getmonthofleaseDetails();
-	}
+    @Override
+    public SocialTenureRelationship getSocialTenureRelationshipForSellerByLandId(Long landId) {
+        return socialTenureRelationshipDao.getSocialTenureRelationshipForSellerByLandId(landId);
+    }
 
-	@Override
-	public La_Month getLaMonthById(int no_Of_month_Lease) {
-		return registrationRecordsDao.getLaMonthById(no_Of_month_Lease);
-	}
+    @Override
+    public boolean updateSocialTenureRelationshipByPartyId(Long partyId, Long landid) {
+        return socialTenureRelationshipDao.updateSocialTenureRelationshipByPartyId(partyId, landid);
+    }
 
-	@Override
-	//@Transactional
-	public LaLease saveLease(LaLease laLease) {
-		return laLeaseDao.saveLease(laLease);
-	}
-	
-	@Override
-	//@Transactional
-	public LaSurrenderLease savesurrenderLease(LaSurrenderLease laLease) {
-		return lasurrenderleaseDao.savesurrenderLease(laLease);
-	}
-	
-	@Override
-	//@Transactional
-	public LaExtTransactionHistory saveTransactionHistory(LaExtTransactionHistory latranshist) {
-		return laexttransactionhistoryDao.saveTransactionHistory(latranshist);
-	}
+    @Override
+    public boolean updateSocialTenureRelationshipByPartytypeId(Long partyId, Long landid, int mutationTypeId,
+            String contractName, String contractNumber, Date contractDate, int ownershipTypeId) {
+        ClaimBasic su = spatialUnitDao.getClaimsBasicByLandId(landid).get(0);
+        Project project = projectDAO.findById(su.getProjectnameid(), false);
 
-	@Override
-	public Integer findSpatialUnitTempCount(String project, Integer startfrom) {
-		return registrationRecordsDao.findSpatialUnitTempCount(project, startfrom);
-	}
+        ParcelCount parcelCount = parcelCountDao.findParcelCountByTypeAndProjectName(ConstantUtil.APFR, project.getName());
+        if (parcelCount == null) {
+            parcelCount = new ParcelCount();
+            parcelCount.setCount(0);
+            parcelCount.setPname(project.getName());
+            parcelCount.setType(ConstantUtil.APFR);
+        }
 
-	@Override
-	public Integer searchCount(Long transactionid, Integer startfrom,String project,String communeId,String parcelId) {
-		return registrationRecordsDao.searchCount(transactionid, startfrom, project,communeId,parcelId);
-	}
+        long count = parcelCount.getCount() + 1;
+        parcelCount.setCount(count);
+        String countval = "";
 
-	
-	
-	@Override	
-	public boolean islandunderlease(Long landid) 
-	{
-		return laLeaseDao.islandunderlease(landid);
-		
-	}
+        if (count < 10) {
+            countval = "0000" + String.valueOf(count);
+        } else if (count >= 10 && count <= 99) {
+            countval = "000" + String.valueOf(count);
+        } else if (count >= 100 && count <= 999) {
+            countval = "00" + String.valueOf(count);
+        } else if (count >= 1000 && count <= 9999) {
+            countval = "0" + String.valueOf(count);
+        } else if (count >= 10000 && count <= 99999) {
+            countval = String.valueOf(count);
+        }
 
-	@Override
-	public SocialTenureRelationship getSocialTenureRelationshipByLandIdandTypeId(Long landId, Long processid, Integer persontype) {
-		
-	return	socialTenureRelationshipDao.getSocialTenureRelationshipByLandIdandTypeId(landId, processid, persontype);
-	}
-	
-	@Override
-	//@Transactional
-	public LaMortgage saveMortgage(LaMortgage laMortgage) {
-		return laMortgageDao.saveMortgage(laMortgage);
-	}
+        String villageCode = su.getLaSpatialunitgroupHierarchy5().getAreaCode() + "-";
+        String apfrNum = villageCode + countval;
 
-	@Override
-	public LaSurrenderMortgage saveSurrenderMortgage(
-			LaSurrenderMortgage laMortgage) { 
-		return laMortgageSurrenderDao.saveMortgage(laMortgage);
-		}
-	
-	@Override
-	@Transactional
-	public boolean disablelease(Long personid, Long landid) 
-	{
-		return laLeaseDao.disablelease(personid,landid);
-		
-	}
+        parcelCountDao.makePersistent(parcelCount);
+        return socialTenureRelationshipDao.updateSocialTenureRelationshipByPartytypeId(partyId, landid, mutationTypeId,
+                contractName, contractNumber, contractDate, apfrNum, ownershipTypeId);
+    }
 
-	@Override
-	@Transactional
-	public boolean disableMortagage(Long personid, Long landid) {
-		// TODO Auto-generated method stub
-		return laMortgageDao.disablelease(personid, landid);
-	}
+    @Override
+    public LaParty getLaPartyById(Long partyId) {
+        return laPartyDao.getPartyIdByID(partyId);
+    }
 
-	@Override
-	public List<SocialTenureRelationship> getSocialTenureRelationshipListForSellerByLandId(
-			Long landId) {
-		
-		return socialTenureRelationshipDao.getSocialTenureRelationshipListForSellerByLandId(landId);
-			
-	}
+    @Override
+    public LaExtTransactiondetail getLaExtTransactiondetail(Integer id) {
+        return transactionDao.getLaExtTransactiondetail(id);
+    }
 
-	@Override
-	public List<SocialTenureRelationship> getSocialTenureRelationshipListByLandIdForBuyer(
-			Long landId, Long processid) {
-		
-		return socialTenureRelationshipDao.getSocialTenureRelationshipListByLandIdForBuyer(landId,processid);
-			
-	}
+    @Override
+    //@Transactional
+    public SourceDocument saveUploadedDocuments(SourceDocument sourceDocument) {
+        return sourceDocumentsDao.saveUploadedDocuments(sourceDocument);
+    }
 
-	@Override
-	public List<LaPartyPerson> getAllPartyPersonDetailsByTransactionId(
-			Integer transid) {
-		return laPartyPersonDao.getAllPartyPersonDetailsByTransactionId(transid);
-		}
+    @Override
+    public List<LaExtFinancialagency> getFinancialagencyDetails() {
+        return registrationRecordsDao.getFinancialagencyDetails();
+    }
 
-	@Override
-	public List<LaPartyPerson> editPartyPersonDetailssurrenderlease(Integer landid, Integer transid) {
-		return laPartyPersonDao.editPartyPersonDetailssurrenderlease(landid, transid);
-		}
+    @Override
+    public LaExtFinancialagency getFinancialagencyByID(int financial_AgenciesID) {
+        return registrationRecordsDao.getFinancialagencyByID(financial_AgenciesID);
+    }
 
-	@Override
-	public SocialTenureRelationship getSocialTenureRelationshipByTransactionId(
-			Long transactionId) {
-		return socialTenureRelationshipDao.getSocialTenureRelationshipByTransactionId(transactionId);
-		}
+    @Override
+    public List<La_Month> getmonthofleaseDetails() {
+        return registrationRecordsDao.getmonthofleaseDetails();
+    }
 
-	@Override
-	public List<LaPartyPerson> getPartyPersonDetailssurrenderleaseList(
-			Integer landid) {
-		
-		return laPartyPersonDao.getPartyPersonDetailssurrenderleaseList(landid);
-			
-	}
+    @Override
+    public La_Month getLaMonthById(int no_Of_month_Lease) {
+        return registrationRecordsDao.getLaMonthById(no_Of_month_Lease);
+    }
 
-	@Override
-	public SocialTenureRelationship getAllSocialTenureRelationshipByTransactionId(
-			Long transactionId) {	
-		return socialTenureRelationshipDao.getAllSocialTenureRelationshipByTransactionId(transactionId);
-}
+    @Override
+    //@Transactional
+    public LaLease saveLease(LaLease laLease) {
+        return laLeaseDao.saveLease(laLease);
+    }
+
+    @Override
+    //@Transactional
+    public LaSurrenderLease savesurrenderLease(LaSurrenderLease laLease) {
+        return lasurrenderleaseDao.savesurrenderLease(laLease);
+    }
+
+    @Override
+    //@Transactional
+    public LaExtTransactionHistory saveTransactionHistory(LaExtTransactionHistory latranshist) {
+        return laexttransactionhistoryDao.saveTransactionHistory(latranshist);
+    }
+
+    @Override
+    public Integer findSpatialUnitTempCount(String project, Integer startfrom) {
+        return registrationRecordsDao.findSpatialUnitTempCount(project, startfrom);
+    }
+
+    @Override
+    public Integer searchCount(Long transactionid, Integer startfrom, String project, String villageId, String parcelId) {
+        return registrationRecordsDao.searchCount(transactionid, startfrom, project, villageId, parcelId);
+    }
+
+    @Override
+    public boolean checkForActiveLease(int landid, int processId) {
+        return laLeaseDao.checkForActiveLease(landid, processId);
+
+    }
+
+    @Override
+    public SocialTenureRelationship getSocialTenureRelationshipByLandIdandTypeId(Long landId, Long processid, Integer persontype) {
+
+        return socialTenureRelationshipDao.getSocialTenureRelationshipByLandIdandTypeId(landId, processid, persontype);
+    }
+
+    @Override
+    //@Transactional
+    public LaMortgage saveMortgage(LaMortgage laMortgage) {
+        return laMortgageDao.saveMortgage(laMortgage);
+    }
+
+    @Override
+    public LaSurrenderMortgage saveSurrenderMortgage(
+            LaSurrenderMortgage laMortgage) {
+        return laMortgageSurrenderDao.saveMortgage(laMortgage);
+    }
+
+    @Override
+    @Transactional
+    public boolean disablelease(int leaseId) {
+        return laLeaseDao.disablelease(leaseId);
+    }
+
+    @Override
+    @Transactional
+    public boolean disableMortagage(Long personid, Long landid) {
+        // TODO Auto-generated method stub
+        return laMortgageDao.disablelease(personid, landid);
+    }
+
+    @Override
+    public List<SocialTenureRelationship> getSocialTenureRelationshipListForSellerByLandId(
+            Long landId) {
+
+        return socialTenureRelationshipDao.getSocialTenureRelationshipListForSellerByLandId(landId);
+
+    }
+
+    @Override
+    public List<SocialTenureRelationship> getSocialTenureRelationshipListByLandIdForBuyer(
+            Long landId, Long processid) {
+
+        return socialTenureRelationshipDao.getSocialTenureRelationshipListByLandIdForBuyer(landId, processid);
+
+    }
+
+    @Override
+    public List<LaPartyPerson> getAllPartyPersonDetailsByTransactionId(
+            Integer transid) {
+        return laPartyPersonDao.getAllPartyPersonDetailsByTransactionId(transid);
+    }
+
+    @Override
+    public LaLease getLeaseByTransactionId(Integer transid) {
+        return laLeaseDao.getLeaseByTransactionId((long) transid);
+    }
+
+    @Override
+    public SocialTenureRelationship getSocialTenureRelationshipByTransactionId(Long transactionId) {
+        return socialTenureRelationshipDao.getSocialTenureRelationshipByTransactionId(transactionId);
+    }
+
+    @Override
+    public LaLease getLeaseByLandId(Integer landid) {
+        return laLeaseDao.getLeaseByLandId((long) landid);
+    }
+
+    @Override
+    public SocialTenureRelationship getAllSocialTenureRelationshipByTransactionId(
+            Long transactionId) {
+        return socialTenureRelationshipDao.getAllSocialTenureRelationshipByTransactionId(transactionId);
+    }
 }

@@ -1,5 +1,6 @@
 package com.rmsi.mast.studio.service.impl;
 
+import com.ibm.icu.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import com.rmsi.mast.studio.domain.Project;
 import com.rmsi.mast.studio.domain.WorkflowActionmapping;
 import com.rmsi.mast.studio.domain.WorkflowStatusHistory;
 import com.rmsi.mast.studio.domain.fetch.ClaimBasic;
+import com.rmsi.mast.studio.domain.fetch.RightBasic;
 import com.rmsi.mast.studio.mobile.dao.SpatialUnitDao;
 import com.rmsi.mast.studio.mobile.service.SpatialUnitService;
 import com.rmsi.mast.studio.service.ClaimBasicService;
@@ -194,7 +196,15 @@ public class WorkflowActionServiceImpl implements WorkflowActionService {
                     } else if (count >= 10000 && count <= 99999) {
                         countval = String.valueOf(count);
                     }
-                    su.setApfrNum(villageCode + countval);
+             
+                    if(su.getRights() != null && su.getRights().size() > 0){
+                        for (RightBasic right : su.getRights()) {
+                            if(right.getIsactive()){
+                                right.setCertNumber(villageCode + countval);
+                                right.setCertIssueDate(Calendar.getInstance().getTime());
+                            }
+                        }
+                    }
                     parcelCountDao.makePersistent(parcelCount);
                 }
                 

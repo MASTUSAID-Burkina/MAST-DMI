@@ -16,11 +16,12 @@ public interface LaLeaseDao extends GenericDAO<LaLease, Integer>{
 
 	LaLease saveLease(LaLease laLease);
 	LaLease getLeaseById(Integer leaseId);
-	boolean disablelease(Long personid, Long landid);
-	boolean islandunderlease(Long landid);
+	boolean disablelease(int leaseId);
+	boolean checkForActiveLease(int landid, int processId);
 	LaSurrenderLease getSurrenderLeaseById(Integer leaseId);
-	List<LaLease> getleaseeListByLandId(Long landId);
-	
+	LaLease getLeaseByLandId(Long landId);
+	LaLease getLeaseByTransactionId(Long transid);
+        
 	List<LaLease> getleaseeListByLandandPersonId(Long landId, Long personid);
 	LaLease getleaseobjbylandandprocessid(Long landId, Long processId);
 	List<LaLease> getleaseobjbylandandprocessidList(Long landId, Long processId);

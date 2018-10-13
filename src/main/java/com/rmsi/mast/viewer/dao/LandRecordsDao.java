@@ -126,7 +126,7 @@ public interface LandRecordsDao extends GenericDAO<SpatialUnitTable, Long> {
 
     List<MortageHistoryForFetch> getmortagagedetails(Long landid);
 
-    List<TransactionHistoryForFetch> gettransactiondetails(Long landid);
+    List<TransactionHistoryForFetch> gettransactiondetails(Long landid, String lang);
 
     List<LeaseHistoryForFetch> findleasedetailbylandid(Long transactionid, Long landid);
 

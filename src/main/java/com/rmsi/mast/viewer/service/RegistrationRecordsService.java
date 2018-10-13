@@ -31,143 +31,147 @@ import com.rmsi.mast.studio.domain.SourceDocument;
 import com.rmsi.mast.studio.domain.SpatialUnit;
 import com.rmsi.mast.studio.domain.Status;
 import com.rmsi.mast.studio.domain.fetch.ClaimBasicLand;
+import java.util.Date;
 
 public interface RegistrationRecordsService {
 
-	List<LaSpatialunitLand> findAllSpatialUnitTemp(String defaultProject, int startfrom);
-	
-	public LaExtPersonLandMapping getPersonLandMapDetails(Integer landid);
-	
-	
-	LaPartyPerson getPartyPersonDetails(Integer landid);
-	List<LaPartyPerson> getAllPartyPersonDetails(Integer landid);
-	
-	List<LaPartyPerson> getAllPartyPersonDetailsByTransactionId(Integer transid);
-	
-	
-	List<LaPartyPerson> fillAllPartyPersonDetails(Integer landid,Integer processid);
-	LaPartyPerson getPartyPersonDetailssurrenderlease(Integer landid);
-	
-	List<LaPartyPerson> getPartyPersonDetailssurrenderleaseList(Integer landid);
-	
-	List<LaPartyPerson> editPartyPersonDetailssurrenderlease(Integer landid, Integer transid);
-	
-	List<MaritalStatus> getMaritalStatusDetails();
-	List<Gender> getGenderDetails();
-	
-	List<IdType> getIDTypeDetails();
-	
-	List<SpatialUnit> getSpatialUnitLandMappingDetails(Long landid);
-	
-	List<LaSpatialunitLand> getLaSpatialunitLandDetails(Long landid);
-	
-	List<LaSpatialunitLand> getLaSpatialunitLandDetailsQ(Integer landid);
-	
-	boolean updateLaSpatialunitLand(LaSpatialunitLand laSpatialunitLand);
-	
-	boolean addLaSpatialunitLand(LaSpatialunitLand laSpatialunitLand);
-	
-	List<LandType> getAllLandType();
-	
-	List<ProjectRegion> getAllCountry();
-	
-	List<ProjectRegion> getAllRegion(Integer country_r_id);
-	
-	List<ShareType> getAlllandsharetype();
-	
-	List<ProjectRegion> getAllProvience(Integer region_r_id);
-	
-	List<LaExtProcess> getAllProcessDetails();
-	
-	Status getStatusById(int statusId);
-	
-	PersonType getPersonTypeById(int personTypeGid);
-	
-	MaritalStatus getMaritalStatusByID(Integer id);
-	
-	IdType getIDTypeDetailsByID(Integer id);
-	
-	@Transactional
-	LaExtTransactiondetail saveTransaction(LaExtTransactiondetail laExtTransactiondetail);
-	
-	
-	@Transactional
-	NaturalPerson saveNaturalPerson(NaturalPerson naturalPerson);
-	
-	@Transactional
-	LaParty saveParty(LaParty laParty);
-	
-	@Transactional
-	SocialTenureRelationship saveSocialTenureRelationship(SocialTenureRelationship socialTenureRelationship);
-	
-	@Transactional
-	boolean updateSocialTenureRelationshipByPartyId(Long partyId,Long landid);
-	
-	@Transactional
-	boolean updateSocialTenureRelationshipByPartytypeId(Long partyId,Long landid);
-	 
-	public LaSpatialunitgroup findLaSpatialunitgroupById(Integer id) ;
-	
-	ProjectRegion findProjectRegionById(Integer id);
-	
-	ClaimBasicLand getClaimBasicLandById(Long id);
-	
-	List<LaSpatialunitLand> search( Long transactionid,Integer startfrom,String project ,String communeId,String parcelId);
-	
-	SocialTenureRelationship getSocialTenureRelationshipByLandId(Long landId);
-	
-	SocialTenureRelationship getSocialTenureRelationshipByTransactionId(Long transactionId);
-	
-	SocialTenureRelationship getAllSocialTenureRelationshipByTransactionId(Long transactionId);
-	
-	LaParty getLaPartyById(Long partyId);
-	
-	LaExtTransactiondetail getLaExtTransactiondetail(Integer id);
-	
-	 @Transactional
-	 SourceDocument saveUploadedDocuments(SourceDocument sourceDocument);
-	 
-	 List<LaExtFinancialagency> getFinancialagencyDetails();
-	 
-	 LaExtFinancialagency  getFinancialagencyByID(int financial_AgenciesID);
-	 
-	 @Transactional
-	 LaMortgage saveMortgage(LaMortgage laMortgage);
-	 
-	 @Transactional
-	 LaSurrenderMortgage saveSurrenderMortgage(LaSurrenderMortgage laMortgage);
-	 
-	 List<La_Month> getmonthofleaseDetails();
-	 
-	 La_Month getLaMonthById(int no_Of_month_Lease);
-	 
-	 @Transactional
-	 LaLease saveLease(LaLease laLease);
-	 
-	 @Transactional
-	 LaSurrenderLease savesurrenderLease(LaSurrenderLease laLease);
-	 
-	 Integer findSpatialUnitTempCount(String project, Integer startfrom);
-	 Integer searchCount( Long transactionid,Integer startfrom,String project,String communeId,String parcelId);
+    List<LaSpatialunitLand> findAllSpatialUnitTemp(String defaultProject, int startfrom);
 
-	 boolean disablelease(Long personid, Long landid);
-	 
-	 boolean disableMortagage(Long personid, Long landid);
-	 
-	 boolean islandunderlease(Long landid);
+    public LaExtPersonLandMapping getPersonLandMapDetails(Integer landid);
 
-	SocialTenureRelationship getSocialTenureRelationshipByLandIdForBuyer(Long landId,Long processid);
-	
-	List<SocialTenureRelationship> getSocialTenureRelationshipListByLandIdForBuyer(Long landId,Long processid);
+    LaPartyPerson getPartyPersonDetails(Integer landid);
 
-	SocialTenureRelationship getSocialTenureRelationshipForSellerByLandId(Long landId);
-	
-	List<SocialTenureRelationship> getSocialTenureRelationshipListForSellerByLandId(Long landId);
-	
-	@Transactional
-	LaExtTransactionHistory saveTransactionHistory(LaExtTransactionHistory latranshist);
-	
-	SocialTenureRelationship getSocialTenureRelationshipByLandIdandTypeId(Long landId,Long processid,Integer persontype);
-	
+    List<LaPartyPerson> getAllPartyPersonDetails(Integer landid);
+
+    List<LaPartyPerson> getAllPartyPersonDetailsByTransactionId(Integer transid);
+
+    List<LaPartyPerson> fillAllPartyPersonDetails(Integer landid, Integer processid);
+
+    LaPartyPerson getPartyPersonDetailssurrenderlease(Integer landid);
+
+    LaLease getLeaseByLandId(Integer landid);
+
+    LaLease getLeaseByTransactionId(Integer transid);
+
+    List<MaritalStatus> getMaritalStatusDetails();
+
+    List<Gender> getGenderDetails();
+
+    List<IdType> getIDTypeDetails();
+
+    List<SpatialUnit> getSpatialUnitLandMappingDetails(Long landid);
+
+    LaSpatialunitLand getLaSpatialunitLandDetails(Long landid);
+
+    List<LaSpatialunitLand> getLaSpatialunitLandDetailsQ(Integer landid);
+
+    boolean updateLaSpatialunitLand(LaSpatialunitLand laSpatialunitLand);
+
+    boolean addLaSpatialunitLand(LaSpatialunitLand laSpatialunitLand);
+
+    List<LandType> getAllLandType();
+
+    List<ProjectRegion> getAllCountry();
+
+    List<ProjectRegion> getAllRegion(Integer country_r_id);
+
+    List<ShareType> getAlllandsharetype();
+
+    List<ProjectRegion> getAllProvience(Integer region_r_id);
+
+    List<LaExtProcess> getAllProcessDetails();
+
+    Status getStatusById(int statusId);
+
+    PersonType getPersonTypeById(int personTypeGid);
+
+    MaritalStatus getMaritalStatusByID(Integer id);
+
+    IdType getIDTypeDetailsByID(Integer id);
+
+    @Transactional
+    LaExtTransactiondetail saveTransaction(LaExtTransactiondetail laExtTransactiondetail);
+
+    @Transactional
+    boolean registerLease(LaLease lease);
+    
+    @Transactional
+    NaturalPerson saveNaturalPerson(NaturalPerson naturalPerson);
+
+    @Transactional
+    LaParty saveParty(LaParty laParty);
+
+    @Transactional
+    SocialTenureRelationship saveSocialTenureRelationship(SocialTenureRelationship socialTenureRelationship);
+
+    @Transactional
+    boolean updateSocialTenureRelationshipByPartyId(Long partyId, Long landid);
+
+    @Transactional
+    boolean updateSocialTenureRelationshipByPartytypeId(Long partyId, Long landid, int mutationTypeId, 
+            String contractName, String contractNumber, Date contractDate, int ownershipTypeId);
+
+    public LaSpatialunitgroup findLaSpatialunitgroupById(Integer id);
+
+    ProjectRegion findProjectRegionById(Integer id);
+
+    ClaimBasicLand getClaimBasicLandById(Long id);
+
+    List<LaSpatialunitLand> search(Long transactionid, Integer startfrom, String project, String villageId, String parcelId);
+
+    SocialTenureRelationship getSocialTenureRelationshipByLandId(Long landId);
+
+    SocialTenureRelationship getSocialTenureRelationshipByTransactionId(Long transactionId);
+
+    SocialTenureRelationship getAllSocialTenureRelationshipByTransactionId(Long transactionId);
+
+    LaParty getLaPartyById(Long partyId);
+
+    LaExtTransactiondetail getLaExtTransactiondetail(Integer id);
+
+    @Transactional
+    SourceDocument saveUploadedDocuments(SourceDocument sourceDocument);
+
+    List<LaExtFinancialagency> getFinancialagencyDetails();
+
+    LaExtFinancialagency getFinancialagencyByID(int financial_AgenciesID);
+
+    @Transactional
+    LaMortgage saveMortgage(LaMortgage laMortgage);
+
+    @Transactional
+    LaSurrenderMortgage saveSurrenderMortgage(LaSurrenderMortgage laMortgage);
+
+    List<La_Month> getmonthofleaseDetails();
+
+    La_Month getLaMonthById(int no_Of_month_Lease);
+
+    @Transactional
+    LaLease saveLease(LaLease laLease);
+
+    @Transactional
+    LaSurrenderLease savesurrenderLease(LaSurrenderLease laLease);
+
+    Integer findSpatialUnitTempCount(String project, Integer startfrom);
+
+    Integer searchCount(Long transactionid, Integer startfrom, String project, String villageId, String parcelId);
+
+    boolean disablelease(int leaseId);
+
+    boolean disableMortagage(Long personid, Long landid);
+
+    boolean checkForActiveLease(int landid, int processId);
+
+    SocialTenureRelationship getSocialTenureRelationshipByLandIdForBuyer(Long landId, Long processid);
+
+    List<SocialTenureRelationship> getSocialTenureRelationshipListByLandIdForBuyer(Long landId, Long processid);
+
+    SocialTenureRelationship getSocialTenureRelationshipForSellerByLandId(Long landId);
+
+    List<SocialTenureRelationship> getSocialTenureRelationshipListForSellerByLandId(Long landId);
+
+    @Transactional
+    LaExtTransactionHistory saveTransactionHistory(LaExtTransactionHistory latranshist);
+
+    SocialTenureRelationship getSocialTenureRelationshipByLandIdandTypeId(Long landId, Long processid, Integer persontype);
 }
-

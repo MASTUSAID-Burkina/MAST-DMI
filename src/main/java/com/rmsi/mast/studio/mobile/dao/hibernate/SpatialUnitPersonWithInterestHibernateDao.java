@@ -26,13 +26,13 @@ import javax.persistence.Query;
  *
  */
 @Repository
-public class SpatialUnitPersonWithInterestHibernateDao extends   GenericHibernateDAO<SpatialUnitPersonWithInterest, Long> implements   SpatialUnitPersonWithInterestDao {
+public class SpatialUnitPersonWithInterestHibernateDao extends GenericHibernateDAO<SpatialUnitPersonWithInterest, Long> implements SpatialUnitPersonWithInterestDao {
 
     private static final Logger logger = Logger
             .getLogger(PersonHiberanteDao.class);
-    
+
     @PersistenceContext
-    private EntityManager em; 
+    private EntityManager em;
 
     @Override
     public SpatialUnitPersonWithInterest addNextOfKin(
@@ -46,7 +46,7 @@ public class SpatialUnitPersonWithInterestHibernateDao extends   GenericHibernat
             while (nextOfKinIter.hasNext()) {
 
                 nextOfKin = nextOfKinIter.next();
-               // nextOfKin.setUsin(usin);
+                // nextOfKin.setUsin(usin);
 
                 makePersistent(nextOfKin);
 
@@ -61,77 +61,80 @@ public class SpatialUnitPersonWithInterestHibernateDao extends   GenericHibernat
     @Override
     public List<SpatialUnitPersonWithInterest> findByUsin(Long usin) {
         try {
-            Query query = getEntityManager().createQuery("Select sp from SpatialUnitPersonWithInterest sp where sp.landid = :usin and sp.isactive=true order by sp.id asc ");
-            List<SpatialUnitPersonWithInterest> personinterest = query.setParameter("usin", usin).getResultList();
+            Query q = getEntityManager().createNativeQuery("select transactionid from la_ext_personlandmapping where isactive and persontypeid = 1 and landid=:usin");
+            Integer tranId = (Integer)q.setParameter("usin", usin).getSingleResult();
 
-            if (personinterest.size() > 0) {
-                return personinterest;
-            } else {
-                return new ArrayList<SpatialUnitPersonWithInterest>();
+            if (tranId != null) {
+                Query query = getEntityManager().createQuery("Select sp from SpatialUnitPersonWithInterest sp where sp.landid = :usin and sp.isactive = true and sp.transactionid=:tranId order by sp.id asc ");
+                List<SpatialUnitPersonWithInterest> pois = query.setParameter("usin", usin).setParameter("tranId", tranId).getResultList();
+
+                if (pois.size() > 0) {
+                    return pois;
+                } 
             }
+            return new ArrayList<SpatialUnitPersonWithInterest>();
         } catch (Exception e) {
             logger.error(e);
             return new ArrayList<SpatialUnitPersonWithInterest>();
         }
     }
 
-	@Override
-	public SpatialUnitPersonWithInterest findSpatialUnitPersonWithInterestById(Long id) {
-		
-		 try {
-	            Query query = getEntityManager().createQuery("Select sp from SpatialUnitPersonWithInterest sp where sp.id = :usin order by sp.id asc ");
-	            SpatialUnitPersonWithInterest personinterest = (SpatialUnitPersonWithInterest)query.setParameter("usin", id).getSingleResult();
+    @Override
+    public SpatialUnitPersonWithInterest findSpatialUnitPersonWithInterestById(Long id) {
 
-	           return personinterest;
-	        } catch (Exception e) {
-	            logger.error(e);
-	            return null;
-	        }
-	}
+        try {
+            Query query = getEntityManager().createQuery("Select sp from SpatialUnitPersonWithInterest sp where sp.id = :usin order by sp.id asc ");
+            SpatialUnitPersonWithInterest personinterest = (SpatialUnitPersonWithInterest) query.setParameter("usin", id).getSingleResult();
 
-	@Override
-	@Transactional
-	public SpatialUnitPersonWithInterest findSpatialUnitPersonWithInterestByObj(
-			SpatialUnitPersonWithInterest obj, Long landId) {
-		SpatialUnitPersonWithInterest personinterest =null;
-		 try {
-	            Query query = getEntityManager().createQuery("Select sp from SpatialUnitPersonWithInterest sp where sp.id = :usin order by sp.id asc ");
-	             personinterest = (SpatialUnitPersonWithInterest)query.setParameter("usin", obj.getId()).getSingleResult();
-	            if(null ==personinterest){
-	            	personinterest = new SpatialUnitPersonWithInterest();
-	            	 personinterest.setFirstName(obj.getFirstName());
-	 	            personinterest.setMiddleName(obj.getMiddleName());
-	 	            personinterest.setLastName(obj.getLastName());
-	 	            personinterest.setDob(obj.getDob());
-	 	            personinterest.setGender(obj.getGender());
-	 	            personinterest.setRelation(obj.getRelation());
-	 	           personinterest.setLandid(landId);
-	 	          personinterest.setCreatedby(1);
-	 	         personinterest.setCreateddate(new Date());
-	 	        personinterest.setIsactive(true);
-	            }
-	            else{
-	            personinterest.setFirstName(obj.getFirstName());
-	            personinterest.setMiddleName(obj.getMiddleName());
-	            personinterest.setLastName(obj.getLastName());
-	            personinterest.setDob(obj.getDob());
-	            personinterest.setGender(obj.getGender());
-	            personinterest.setRelation(obj.getRelation());
-	            }
-	    		
-	            em.merge(personinterest);
-	    		  
-	           return obj;
-	        } catch (Exception e) {
-	            logger.error(e);
-	            return null;
-	        }
-		 
-	}
+            return personinterest;
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
 
-	@Override
-	public List<SpatialUnitPersonWithInterest> findByUsinandTransid(Long usin,
-			Long transid) {
+    @Override
+    @Transactional
+    public SpatialUnitPersonWithInterest findSpatialUnitPersonWithInterestByObj(
+            SpatialUnitPersonWithInterest obj, Long landId) {
+        SpatialUnitPersonWithInterest personinterest = null;
+        try {
+            Query query = getEntityManager().createQuery("Select sp from SpatialUnitPersonWithInterest sp where sp.id = :usin order by sp.id asc ");
+            personinterest = (SpatialUnitPersonWithInterest) query.setParameter("usin", obj.getId()).getSingleResult();
+            if (null == personinterest) {
+                personinterest = new SpatialUnitPersonWithInterest();
+                personinterest.setFirstName(obj.getFirstName());
+                personinterest.setMiddleName(obj.getMiddleName());
+                personinterest.setLastName(obj.getLastName());
+                personinterest.setDob(obj.getDob());
+                personinterest.setGender(obj.getGender());
+                personinterest.setRelation(obj.getRelation());
+                personinterest.setLandid(landId);
+                personinterest.setCreatedby(1);
+                personinterest.setCreateddate(new Date());
+                personinterest.setIsactive(true);
+            } else {
+                personinterest.setFirstName(obj.getFirstName());
+                personinterest.setMiddleName(obj.getMiddleName());
+                personinterest.setLastName(obj.getLastName());
+                personinterest.setDob(obj.getDob());
+                personinterest.setGender(obj.getGender());
+                personinterest.setRelation(obj.getRelation());
+            }
+
+            em.merge(personinterest);
+
+            return obj;
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+
+    }
+
+    @Override
+    public List<SpatialUnitPersonWithInterest> findByUsinandTransid(Long usin,
+            Long transid) {
         try {
             Query query = getEntityManager().createQuery("Select sp from SpatialUnitPersonWithInterest sp where sp.landid = :usin and sp.transactionid = :transid and sp.isactive=true order by sp.id asc ");
             List<SpatialUnitPersonWithInterest> personinterest = query.setParameter("usin", usin).setParameter("transid", transid.intValue()).getResultList();
@@ -147,7 +150,4 @@ public class SpatialUnitPersonWithInterestHibernateDao extends   GenericHibernat
         }
     }
 
-
-
-	
 }

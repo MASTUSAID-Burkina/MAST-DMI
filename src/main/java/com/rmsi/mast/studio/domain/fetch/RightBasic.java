@@ -56,7 +56,7 @@ public class RightBasic implements Serializable {
 
     @Column(name = "certificatetypeid")
     private Integer certTypeid;
-    
+
     //bi-directional many-to-one association to LaExtTransactiondetail
     @ManyToOne
     @JoinColumn(name = "transactionid")
@@ -67,11 +67,9 @@ public class RightBasic implements Serializable {
     @JoinColumn(name = "partyid", insertable = false, updatable = false)
     private LaParty laParty;
 
-    //bi-directional many-to-one association to LaPartygroupPersontype
-//	@ManyToOne
-//	@JoinColumn(name="persontypeid")
-//	private PersonTypeBasic laPartygroupPersontype;
-    //bi-directional many-to-one association to LaSpatialunitLand
+    @Column(name = "persontypeid")
+    private Integer persontypeId;
+
     @ManyToOne
     @JoinColumn(name = "landid", insertable = false, updatable = false)
     private ClaimBasic laSpatialunitLand;
@@ -80,6 +78,22 @@ public class RightBasic implements Serializable {
     @JoinColumn(name = "parentuid")
     private List<RightAttributeValue> attributes;
 
+    @Column(name = "mutation_id")
+    private Integer mutationId;
+
+    @Column(name = "transfer_contract_name")
+    private String transferContractName;
+
+    @Column(name = "transfer_contract_num")
+    private String transferContractNum;
+
+    @Column(name = "transfer_contract_date")
+    @Temporal(javax.persistence.TemporalType.DATE)
+    private Date transferContractDate;
+
+    @Column(name = "share_type_id")
+    private Integer shareTypeId;
+    
     public RightBasic() {
     }
 
@@ -180,13 +194,14 @@ public class RightBasic implements Serializable {
         this.laParty = laParty;
     }
 
-//	public PersonTypeBasic getLaPartygroupPersontype() {
-//		return laPartygroupPersontype;
-//	}
-//
-//	public void setLaPartygroupPersontype(PersonTypeBasic laPartygroupPersontype) {
-//		this.laPartygroupPersontype = laPartygroupPersontype;
-//	}
+    public Integer getPersontypeId() {
+        return persontypeId;
+    }
+
+    public void setPersontypeId(Integer persontypeId) {
+        this.persontypeId = persontypeId;
+    }
+
     @JsonIgnore
     public ClaimBasic getLaSpatialunitLand() {
         return laSpatialunitLand;
@@ -196,130 +211,43 @@ public class RightBasic implements Serializable {
         this.laSpatialunitLand = laSpatialunitLand;
     }
 
-//    @Id
-//    private Integer gid;
-//    
-//    @Column
-//    private Long usin;
-//
-//    @Column(name="tenureclass_id")
-//    private Integer rightTypeId;
-//
-//    @Column(name = "share")
-//    private Integer shareTypeId;
-//
-//    @Column(name="cert_number")
-//    private String certNumber;
-//    
-//    @Column(name = "ccro_issue_date")
-//    @Temporal(javax.persistence.TemporalType.DATE)
-//    private Date certDate;
-//    
-//    @Column(name = "juridical_area")
-//    private Double juridicalArea;
-//
-//    @Column(name = "relationship_type")
-//    private Integer relationshipTypeId;
-//
-//    @OneToOne(fetch=FetchType.EAGER)
-//    @JoinColumn(name="person_gid")
-//    PersonBasic person;
-//        
-//    @Column(name = "isactive")
-//    private Boolean active;
-//    
-//    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "parent_id")
-//    private List<RightAttributeValue> attributes;
-//    
-//    public RightBasic() {
-//    }
-//
-//    public Integer getGid() {
-//        return gid;
-//    }
-//
-//    public void setGid(Integer gid) {
-//        this.gid = gid;
-//    }
-//
-//    public Integer getRightTypeId() {
-//        return rightTypeId;
-//    }
-//
-//    public void setRightTypeId(Integer rightTypeId) {
-//        this.rightTypeId = rightTypeId;
-//    }
-//
-//    public Integer getShareTypeId() {
-//        return shareTypeId;
-//    }
-//
-//    public void setShareTypeId(Integer shareTypeId) {
-//        this.shareTypeId = shareTypeId;
-//    }
-//
-//    public String getCertNumber() {
-//        return certNumber;
-//    }
-//
-//    public void setCertNumber(String certNumber) {
-//        this.certNumber = certNumber;
-//    }
-//
-//    public Date getCertDate() {
-//        return certDate;
-//    }
-//
-//    public void setCertDate(Date certDate) {
-//        this.certDate = certDate;
-//    }
-//
-//    public Double getJuridicalArea() {
-//        return juridicalArea;
-//    }
-//
-//    public void setJuridicalArea(Double juridicalArea) {
-//        this.juridicalArea = juridicalArea;
-//    }
-//
-//    public Integer getRelationshipTypeId() {
-//        return relationshipTypeId;
-//    }
-//
-//    public void setRelationshipTypeId(Integer relationshipTypeId) {
-//        this.relationshipTypeId = relationshipTypeId;
-//    }
-//
-//    public Long getUsin() {
-//        return usin;
-//    }
-//
-//    public void setUsin(Long usin) {
-//        this.usin = usin;
-//    }
-//
-//    public PersonBasic getPerson() {
-//        return person;
-//    }
-//
-//    public void setPerson(PersonBasic person) {
-//        this.person = person;
-//    }
-//
-//    public Boolean getActive() {
-//        return active;
-//    }
-//
-//    public void setActive(Boolean active) {
-//        this.active = active;
-//    }
-//
-//    public List<RightAttributeValue> getAttributes() {
-//        return attributes;
-//    }
-//
-//    public void setAttributes(List<RightAttributeValue> attributes) {
-//        this.attributes = attributes;
-//    }
+    public Integer getMutationId() {
+        return mutationId;
+    }
+
+    public void setMutationId(Integer mutationId) {
+        this.mutationId = mutationId;
+    }
+
+    public String getTransferContractName() {
+        return transferContractName;
+    }
+
+    public void setTransferContractName(String transferContractName) {
+        this.transferContractName = transferContractName;
+    }
+
+    public String getTransferContractNum() {
+        return transferContractNum;
+    }
+
+    public void setTransferContractNum(String transferContractNum) {
+        this.transferContractNum = transferContractNum;
+    }
+
+    public Date getTransferContractDate() {
+        return transferContractDate;
+    }
+
+    public void setTransferContractDate(Date transferContractDate) {
+        this.transferContractDate = transferContractDate;
+    }
+
+    public Integer getShareTypeId() {
+        return shareTypeId;
+    }
+
+    public void setShareTypeId(Integer shareTypeId) {
+        this.shareTypeId = shareTypeId;
+    }
 }

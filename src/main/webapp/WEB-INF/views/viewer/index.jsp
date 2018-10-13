@@ -322,10 +322,10 @@
                     <ul>
                         <li><a href="#map-tab" id="tab1" data-i18n="viewer-map" onclick="javascript:closeDialog('taskMngrdiv')"></a></li>
                         <li><a href="#landrecords-div" id="tab2" data-i18n="viewer-land-records"></a></li>
-                        <%if(s.equalsIgnoreCase ("ROLE_ADMIN") || s.equalsIgnoreCase("ROLE_PM") || s.equalsIgnoreCase("ROLE_SFR")){%>
+                        <%if(s.equalsIgnoreCase("ROLE_ADMIN") || s.equalsIgnoreCase("ROLE_PM") || s.equalsIgnoreCase("ROLE_SFR")){%>
+                        <li><a href="#registryTab-div" id="tab5" data-i18n="viewer-reg"></a></li>
                         <li><a href="#landresource-div" id="tab6" data-i18n="viewer-res"> </a></li>
                         <li><a href="#tabReports" id="tab4" data-i18n="viewer-reports"></a></li>
-                        <li><a href="#registryTab-div" id="tab5" data-i18n="viewer-reg"></a></li>
                         <%}%>
                     </ul>
 

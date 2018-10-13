@@ -24,12 +24,8 @@ import javax.persistence.Transient;
 @Table(name = "la_ext_personlandmapping")
 public class SocialTenureRelationship implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
-//    private static final long serialVersionUID = 1L;
     @Id
     @SequenceGenerator(name = "pk_la_personlandmapping", sequenceName = "la_ext_personlandmapping_personlandid_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pk_la_personlandmapping")
@@ -82,6 +78,22 @@ public class SocialTenureRelationship implements Serializable {
 
     @Column
     private String sharepercentage;
+    
+    @Column(name = "mutation_id")
+    private Integer mutationId;
+
+    @Column(name = "transfer_contract_name")
+    private String transferContractName;
+
+    @Column(name = "transfer_contract_num")
+    private String transferContractNum;
+
+    @Column(name = "transfer_contract_date")
+    @Temporal(javax.persistence.TemporalType.DATE)
+    private Date transferContractDate;
+    
+    @Column(name = "share_type_id")
+    private Integer shareTypeId;
     
     public SocialTenureRelationship() {
         super();
@@ -208,6 +220,46 @@ public class SocialTenureRelationship implements Serializable {
 
     public void setSharepercentage(String sharepercentage) {
         this.sharepercentage = sharepercentage;
+    }
+
+    public Integer getMutationId() {
+        return mutationId;
+    }
+
+    public void setMutationId(Integer mutationId) {
+        this.mutationId = mutationId;
+    }
+
+    public String getTransferContractName() {
+        return transferContractName;
+    }
+
+    public void setTransferContractName(String transferContractName) {
+        this.transferContractName = transferContractName;
+    }
+
+    public String getTransferContractNum() {
+        return transferContractNum;
+    }
+
+    public void setTransferContractNum(String transferContractNum) {
+        this.transferContractNum = transferContractNum;
+    }
+
+    public Date getTransferContractDate() {
+        return transferContractDate;
+    }
+
+    public void setTransferContractDate(Date transferContractDate) {
+        this.transferContractDate = transferContractDate;
+    }
+
+    public Integer getShareTypeId() {
+        return shareTypeId;
+    }
+
+    public void setShareTypeId(Integer shareTypeId) {
+        this.shareTypeId = shareTypeId;
     }
 
 }

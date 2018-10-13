@@ -125,6 +125,7 @@ import com.rmsi.mast.studio.mobile.transferobjects.PersonOfInterest;
 import com.rmsi.mast.studio.mobile.transferobjects.ResourcePersonOfInterest;
 import com.rmsi.mast.studio.mobile.transferobjects.Property;
 import com.rmsi.mast.studio.mobile.transferobjects.Right;
+import com.rmsi.mast.studio.util.FileUtils;
 import com.rmsi.mast.studio.util.GeometryConversion;
 import com.rmsi.mast.studio.util.StringUtils;
 import com.rmsi.mast.viewer.dao.LaExtPersonLandMappingsDao;
@@ -418,11 +419,7 @@ public class UserDataServiceImpl implements UserDataService {
 
 //                spatialUnit.setTenureclassid(prop.getRight().getId().intValue());
                 su.setLandno(prop.getId().toString());
-                if (prop.getRight() != null) {
-                    ShareType sharetype = shareTypeDao.getTenureRelationshipTypeById(prop.getRight().getShareTypeId());
-                    su.setLaRightLandsharetype(sharetype);
-                }
-
+                
                 GeometryConversion geomConverter = new GeometryConversion();
                 su.setGeometrytype(prop.getGeomType());
 
@@ -570,7 +567,8 @@ public class UserDataServiceImpl implements UserDataService {
                         right.setLaPartygroupPersontype(person.getLaPartygroupPersontype());
                         right.setLaExtTransactiondetail(LaExtTransactionObj);
                         right.setIsactive(true);
-
+                        right.setShareTypeId(prop.getRight().getShareTypeId());
+                        
                         setRightAttributes(right, prop.getRight());
 
                         SocialTenureRelationship socialTenurerelationship = socialTenureDao.addSocialTenure(right);
@@ -1291,150 +1289,83 @@ public class UserDataServiceImpl implements UserDataService {
 
     @Override
     @Transactional(noRollbackFor = Exception.class)
-    public SourceDocument uploadMultimedia(SourceDocument sourceDocument, MultipartFile mpFile, File documentsDir) {
-
-        /**
-         * 1) Insert source document
-         */
-        sourceDocument = sourceDocumentDao.addSourceDocument(sourceDocument);
-
-        /**
-         * 2) Insert values in AttributeValues
-         */
+    public SourceDocument uploadMultimedia(SourceDocument doc, MultipartFile mpFile, String fileFolder) {
+        doc = sourceDocumentDao.addSourceDocument(doc);
+        
+        // Save again to set file location
+        String mediaFolder = "/multimedia";
+        String filePath = mediaFolder + File.separator + doc.getDocumentid().toString() + "." + FileUtils.getFileExtension(mpFile.getOriginalFilename());
+        doc.setDocumentlocation(filePath);
+        doc = sourceDocumentDao.addSourceDocument(doc);
+        
         AttributeValues attributeValues;
-
         List<AttributeValues> attributeValuesList = new ArrayList<AttributeValues>();
-//        String projectName = spatialUnitDao.getSpatialUnitByUsin(sourceDocument.getLaSpatialunitLand().getLandid()).getProjectnameid().getName();
 
-        if ((sourceDocument.getLaExtTransactiondetail().getRemarks() != null)) {
-
+        if ((doc.getLaExtTransactiondetail().getRemarks() != null)) {
             attributeValues = new AttributeValues();
-
             attributeValues.setParentuid(surveyProjectAttribute
-                    .getSurveyProjectAttributeId(10, spatialUnitDao
-                            .getSpatialUnitByUsin(sourceDocument.getLaSpatialunitLand())
-                            .getProjectnameid().toString()));
+                    .getSurveyProjectAttributeId(10, spatialUnitDao.getSpatialUnitByUsin(doc.getLaSpatialunitLand()).getProjectnameid().toString()));
 
             attributeValues.setLaExtAttributemaster(10);
-            attributeValues.setAttributevalue(sourceDocument.getRemarks());
+            attributeValues.setAttributevalue(doc.getRemarks());
             attributeValuesList.add(attributeValues);
         }
 
-        if ((sourceDocument.getDocumentname() != null)) {
+        if ((doc.getDocumentname() != null)) {
             attributeValues = new AttributeValues();
             attributeValues.setParentuid(surveyProjectAttribute
                     .getSurveyProjectAttributeId(11, spatialUnitDao
-                            .getSpatialUnitByUsin(sourceDocument.getLaSpatialunitLand())
+                            .getSpatialUnitByUsin(doc.getLaSpatialunitLand())
                             .getProjectnameid().toString()));
             attributeValues.setLaExtAttributemaster(10);
-            attributeValues.setAttributevalue(sourceDocument.getDocumentname());
+            attributeValues.setAttributevalue(doc.getDocumentname());
             attributeValuesList.add(attributeValues);
         }
 
-//        if ((sourceDocument.getDocumentType() != null)) {
-//            attributeValues = new AttributeValues();
-//            attributeValues.setUid(surveyProjectAttribute
-//                    .getSurveyProjectAttributeId(340, projectName));
-//
-//            attributeValues.setValue(attributeOptionsDao.getAttributeOptionsId(340, sourceDocument.getDocumentType().getCode().intValue()));
-//            attributeValuesList.add(attributeValues);
-//        }
-        attributeValuesDao.addAttributeValues(attributeValuesList, Long.valueOf(sourceDocument.getDocumentid()));
+        attributeValuesDao.addAttributeValues(attributeValuesList, Long.valueOf(doc.getDocumentid()));
 
-        /**
-         * 3) Save file on server *
-         */
         try {
             byte[] document = mpFile.getBytes();
 
-            if (sourceDocument.getDocumentid() != 0) {
-                /**
-                 * Create the file on Server + "." +
-                 * FileUtils.getFileExtension(sourceDocument.getDocumentname()
-                 */
-                /*String Docsextention= sourceDocument.getLaExtDocumentformat().getDocumentformatEn();
-            	String[] Docsextentionarray=Docsextention.split("/");*/
-                File serverFile = new File(documentsDir + File.separator
-                        + sourceDocument.getDocumentname());
+            if (doc.getDocumentid() != 0) {
+                File documentsDir = new File(fileFolder + mediaFolder);
+                if (!documentsDir.exists()) {
+                    documentsDir.mkdirs();
+                }
+
+                File serverFile = new File(fileFolder + filePath);
 
                 try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(serverFile))) {
                     outputStream.write(document);
                     outputStream.flush();
-                    outputStream.close();
                 }
             }
         } catch (MultipartException | IOException ex) {
             logger.error("Exception", ex);
         }
-        return sourceDocument;
+        return doc;
     }
 
     @Override
     @Transactional(noRollbackFor = Exception.class)
-    public ResourceSourceDocument uploadResourceMultimedia(ResourceSourceDocument sourceDocument, MultipartFile mpFile, File documentsDir) {
-
-        /**
-         * 1) Insert source document
-         */
+    public ResourceSourceDocument uploadResourceMultimedia(ResourceSourceDocument sourceDocument, MultipartFile mpFile, String fileFolder) {
         sourceDocument = resourceSourceDocumentdao.addResourceDocument(sourceDocument);
 
-        /**
-         * 2) Insert values in AttributeValues
-         */
-//        AttributeValues attributeValues;
-//
-//        List<AttributeValues> attributeValuesList = new ArrayList<AttributeValues>();
-////        String projectName = spatialUnitDao.getSpatialUnitByUsin(sourceDocument.getLaSpatialunitLand().getLandid()).getProjectnameid().getName();
-//
-//        if ((sourceDocument.getLaExtTransactiondetail().getRemarks() != null)) {
-//
-//            attributeValues = new AttributeValues();
-//
-//            attributeValues.setParentuid(surveyProjectAttribute
-//                    .getSurveyProjectAttributeId(10,spatialUnitDao
-//							.getSpatialUnitByUsin(sourceDocument.getLaSpatialunitLand())
-//							.getProjectnameid().toString()));
-//            
-//            attributeValues.setLaExtAttributemaster(10);
-//            attributeValues.setAttributevalue(sourceDocument.getRemarks());
-//            attributeValuesList.add(attributeValues);
-//        }
-//
-//        if ((sourceDocument.getDocumentname() != null)) {
-//            attributeValues = new AttributeValues();
-//            attributeValues.setParentuid(surveyProjectAttribute
-//                    .getSurveyProjectAttributeId(11,spatialUnitDao
-//							.getSpatialUnitByUsin(sourceDocument.getLaSpatialunitLand())
-//							.getProjectnameid().toString()));
-//            attributeValues.setLaExtAttributemaster(10);
-//            attributeValues.setAttributevalue(sourceDocument.getDocumentname());
-//            attributeValuesList.add(attributeValues);
-//        }
-//        if ((sourceDocument.getDocumentType() != null)) {
-//            attributeValues = new AttributeValues();
-//            attributeValues.setUid(surveyProjectAttribute
-//                    .getSurveyProjectAttributeId(340, projectName));
-//
-//            attributeValues.setValue(attributeOptionsDao.getAttributeOptionsId(340, sourceDocument.getDocumentType().getCode().intValue()));
-//            attributeValuesList.add(attributeValues);
-//        }
-//        attributeValuesDao.addAttributeValues(attributeValuesList, Long.valueOf(sourceDocument.getDocumentid()));
-        /**
-         * 3) Save file on server *
-         */
         try {
             byte[] document = mpFile.getBytes();
 
             if (sourceDocument.getDocumentid() != 0) {
-                /**
-                 * Create the file on Server + "." +
-                 * FileUtils.getFileExtension(sourceDocument.getDocumentname()
-                 */
-                File serverFile = new File(documentsDir + File.separator
-                        + sourceDocument.getDocumentname());
+                File documentsDir = new File(fileFolder + "/multimedia");
+                if (!documentsDir.exists()) {
+                    documentsDir.mkdirs();
+                }
+
+                File serverFile = new File(documentsDir + File.separator + sourceDocument.getDocumentid().toString());
 
                 try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(serverFile))) {
                     outputStream.write(document);
+                    outputStream.flush();
+                    outputStream.close();
                 }
             }
         } catch (MultipartException | IOException ex) {

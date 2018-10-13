@@ -1,10 +1,13 @@
 <html>
     <head>
+        <style>
+            #divForm52 span{font-weight: bold;}
+        </style>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>MAST</title>
     </head>
     <body>
-        <div class="PrintWrapperLandScape">
+        <div class="PrintWrapperLandScape" id="divForm52">
             <div class="personalDetails-wrap">
                 <div class="topInfo8">
                     <div class="row-fluid">
@@ -20,8 +23,6 @@
                                 <strong>Commune de : <span class="text-org commune8">
                                     </span></strong>
                             </p>
-
-
                         </div>
                         <div class="span4">
                             <div class="text-center commune_logo">
@@ -38,11 +39,11 @@
                             <p class="type1">Unité-Progrès-Justice</p>
                         </div>
                     </div>
-            
+                    
                     <div  class="print_footer2" >
                         <h2 >Attestation de possession foncière rurale à titre collectif</h2>
-                        <!--  <h2 >N° null-00047 du 29/05/2017</h2> -->
-                        <h2>
+                        (Suite à une mutation)
+                        <h2 style="padding-top:5px;">
                             <span> N° <span  id="apfrno_8"> </span> </span>
                             <span>du <span class="text-org apfrdate_8"></span></span>
                         </h2>
@@ -53,13 +54,9 @@
                             possession foncière rurale des particuliers)</p>
                     </div>	
                 </div>
-                <!-- <p style="display: none">
-                        (Art. 20 du Décret N°2010-402 PRES/PM/MAHRH/MRA/MECV/MEF/MATD/ MJ du
-                        29 juillet 2010 portant <br> procédure de constatation de
-                        possession foncière rurale des particuliers)
-                </p>
-                -->
-                <p><strong>1. Identification de la famille</strong></p>
+             
+                <p style="padding-bottom: 7px;">
+                    <strong>1. Identification de la famille</strong></p>
                 <p>
                     Nom :<span class="familyname8 form8space"></span>
                 </p>
@@ -67,7 +64,8 @@
                     Adresse :<span class="form8space" id="familyaddress8"></span>
                 </p>
 
-                <p><strong>2. Identification du mandataire</strong></p>
+                <p style="padding-top: 10px;padding-bottom: 7px;">
+                    <strong>2. Identification du mandataire</strong></p>
                 <p>
                     Nom :<span class="form8space person_lastname8"></span>
                 </p>
@@ -75,19 +73,15 @@
                     Prénom(s) :<span class="form8space person_firstname8"></span>
                 </p>
                 <p>
-                    Date et lieu de naissance :<span class="form8space" id="birthdate8"></span>&nbsp;à &nbsp; <span
-                        id="birthplace8"></span>
+                    Date et lieu de naissance :<span class="form8space" id="birthdate8"></span>&nbsp;à  
+                    <span id="birthplace8"></span>
                 </p>
                 <p>
                     Sexe :<span class="form8space" id="gender8"></span>
                 </p>
                 <p>
-                    Références de la pièce d’identité :<span class="form8space" id="refrenceId8"></span> du <span class="form8space" id="Idestablishmentdate8"></span>
+                    Références de la pièce d’identité :<span class="form8space" id="refrenceId8"></span> du <span id="Idestablishmentdate8"></span>
                 </p>
-                <!-- <p>
-                        Date et lieu de naissance :<span class="form8space" id="Idestablishmentdate8"></span>à
-                        <span id="IdestablishmentPlace8"></span>
-                </p> -->
                 <p>
                     Profession :<span class="form8space" id="person_profession8"></span>
                 </p>
@@ -95,12 +89,16 @@
                     Domicile :<span class="form8space village8" ></span>
                 </p>
 
-                <p >
-                    <strong>3. Reférences du mandat :</strong> Mandat du <span class="form8space" id="mandateDate" style="font-weight:bold;"></span> du Village de <span style="font-weight:bold;" class="form8space village8"></span>
+                <p style="padding-top: 10px;">
+                    <strong>3. Reférences du mandat :</strong> 
+                    Mandat du <span class="form8space" id="mandateDate" style="font-weight:bold;"></span> 
+                    du Village de <span style="font-weight:bold;" class="village8"></span>
                 </p>
-                <p style="font-weight: bold;">4. Description du terrain</p>
+
+                <p style="font-weight: bold;padding-top: 10px;padding-bottom: 7px;">
+                    4. Description du terrain:</p>
                 <p>
-                    Terrain sis à :<span class="form8space commune8"></span><!-- <span id="village8"></span> -->
+                    Terrain sis à :<span class="form8space commune8"></span>
                 </p>
 
                 <p>
@@ -121,26 +119,31 @@
                     o &nbsp; Ouest :<span class="form8space" id="neighbour_west8"></span>
                 </p>
 
-                <p style="font-weight: bold;">5. Utilisation actuelle du terrain
-                    :</p>
+                <p style="font-weight: bold;padding-top: 10px;padding-bottom: 7px;">
+                    5. Utilisation actuelle du terrain:</p>
                 <div id="existing_use8"></div>
                 <p>
                     o &nbsp; Autre (s) : <span class="form8space" id="other_use8"></span>
                 </p>
 
-                <br>
+                <p style="font-weight: bold;padding-top: 10px;padding-bottom: 7px;">
+                    6. Nature des droits détenus:</p>
                 <p>
-                    Nous soussigné (e)  <span class="form8space" id="mayor_name8"></span> Maire de la Commune de  <span class="commune8 form8space"></span> ,<br> 
-                    Vu la demande n° <span id="applicationno8" class="form8space"></span> en date du <span
-                        class="applicationdate8 form8space">&nbsp;</span> et le procès-verbal de constatation
-                    contradictoire de possession foncière rurale n°
-                    <span id="pvnumber8" class="form8space"></span> en date du <span id="rightsDate8 form8space"></span>
-                    Délivrons la présente attestation au nom de la famille <span
-                        class="person_lastname8 form8space"></span> <span
-                        class="person_firstname8 form8space"></span>  à  M./Mme <span
-                        class="person_lastname8 form8space"></span><span
-                        class="person_firstname8 form8space"></span> dûment mandaté(e) pour servir et
-                    valoir ce que de droit.
+                    Modes d’acquisition : <span id="transferType52" class="form8space"></span>
+                </p>
+                <br>
+                <p style="text-align:justify;">
+                    Nous soussigné (e) : <span id="mayor_name8" class="form8space"></span>
+                    <br>
+                    Maire de la Commune de : <span class="commune8 form8space"></span>, 
+                    <br>
+                    Vu l’attestation de possession foncière rurale n° <span id="prev_apfrno52"></span> en date du
+                    <span id="prev_apfrdate52"></span>
+                    <br>
+                    et l’acte  de <span id="contract_name52"></span>  n ° 
+                    <span id="contract_num52"></span> en date du 
+                    <span id="contract_date52"></span>
+                    délivrons la présente attestation pour servir et valoir ce que de droit.
                 </p>
                 <p style="font-weight: bold; font-style: italic;">
                     <u>Liste des membres de la famille paraphée et annexée </u>
@@ -148,15 +151,12 @@
                 <p style="float: right;">
                     Fait à <span  class="form8space"  id="apfr_commune"></span> le <span class="form8space apfrdate8"></span>
                 </p>
-                <br> <br> <br><br> 
+                
+                <br> <br> <br> 
 
                 <p style="float: right; font-weight: bold;">
                     <span id="mayor_lastname"></span> <span id="mayor_firstname"></span>
-
                 </p>
-
-
-
 
             </div>
 
@@ -173,25 +173,15 @@
                     <th>Adresse</th>
                     <th>Signature ou empreinte digitale</th>
                 </tr>
-
-
                 <tbody id="APFRTableRowData">
                 </tbody>
 
             </table>
-
-
-
             <br>		 
             <button class="print_form" class="btn v-top-20" style="float: right"
                     onclick="printForm();">Print</button>
 
         </div>
-
-
-
-
-
 
         <script id="APFR_template" type="text/x-jquery-tmpl">
             <tr>                                                                        

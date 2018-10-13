@@ -79,7 +79,7 @@ ResourceCustomAttributesDAO{
 			
 		
 
-		String query = "Select AM.fieldname, RA.attributemasterid, RA.groupid "+
+		String query = "Select AM.fieldname, RA.attributemasterid, RA.groupid, AM.fieldaliasname "+
 						"from la_ext_resourcepoiattributevalue RA,la_ext_resourcepoiattributemaster AM "+
 						"Where RA.attributemasterid=AM.poiattributemasterid "+
 						"and RA.projectid =" +projectId +" And RA.LandID="+Id+" order by AM.listing";

@@ -71,7 +71,7 @@ public class LandUseTypeHibernateDao extends
     public List<LandUseType> findEntriesById(String existingUse) {
         try {
             String query = "Select * from la_baunit_landusetype where landusetypeid in (" + existingUse + ")";
-            Query executeQuery = getEntityManager().createNativeQuery(query);
+            Query executeQuery = getEntityManager().createNativeQuery(query, LandUseType.class);
             @SuppressWarnings("unchecked")
             List<LandUseType> landtypeList = executeQuery.getResultList();
 

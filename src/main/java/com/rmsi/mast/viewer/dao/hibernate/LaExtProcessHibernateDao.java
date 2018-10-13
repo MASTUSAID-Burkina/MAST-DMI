@@ -13,34 +13,30 @@ import com.rmsi.mast.viewer.dao.LaExtProcessDao;
 
 @Repository
 public class LaExtProcessHibernateDao extends GenericHibernateDAO<LaExtProcess, Integer>
-implements LaExtProcessDao{
+        implements LaExtProcessDao {
 
-	Logger logger = Logger.getLogger(LaExtProcessHibernateDao.class);
-	
-	@Override
-	public LaExtProcess makePersistent(LaExtProcess entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    Logger logger = Logger.getLogger(LaExtProcessHibernateDao.class);
 
-	@Override
-	public void makeTransient(LaExtProcess entity) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public LaExtProcess makePersistent(LaExtProcess entity) {
+        return null;
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<LaExtProcess> getAllProcessDetails() {
-	
-		try {
+    @Override
+    public void makeTransient(LaExtProcess entity) {
 
-			Query query = getEntityManager().createQuery("Select lp from LaExtProcess lp where lp.isactive = true");
-			List<LaExtProcess> lstExtProcesses = query.getResultList();
-			return lstExtProcesses;
-		} catch (Exception e) {
-		}
-		return null;
-	}
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<LaExtProcess> getAllProcessDetails() {
+        try {
+            Query query = getEntityManager().createQuery("Select lp from LaExtProcess lp where lp.isactive = true order by lp.processname");
+            List<LaExtProcess> lstExtProcesses = query.getResultList();
+            return lstExtProcesses;
+        } catch (Exception e) {
+        }
+        return null;
+    }
 
 }

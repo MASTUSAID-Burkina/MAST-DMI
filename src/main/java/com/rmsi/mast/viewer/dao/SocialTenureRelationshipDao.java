@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.rmsi.mast.studio.dao.GenericDAO;
 import com.rmsi.mast.studio.domain.SocialTenureRelationship;
+import java.util.Date;
 
 public interface SocialTenureRelationshipDao extends GenericDAO<SocialTenureRelationship, Long>{
 
@@ -23,7 +24,8 @@ public interface SocialTenureRelationshipDao extends GenericDAO<SocialTenureRela
 	SocialTenureRelationship getSocialTenureRelationshipByLandIdPartyIdandPersonTypeID(Long landId, Long partyid,Integer persontypeid);
 	
 	boolean updateSocialTenureRelationshipByPartyId(Long partyId, Long landid);
-	boolean updateSocialTenureRelationshipByPartytypeId(Long partyId,Long landid);
+	boolean updateSocialTenureRelationshipByPartytypeId(Long partyId,Long landid, int mutationTypeId, String contractName, 
+                String contractNumber, Date contractDate, String apfrNum, int ownershipTypeId);
 	List<SocialTenureRelationship> getSocialTenureRelationshipBylandID(Long landId);
 	
 	List<SocialTenureRelationship>getSocialTenureRelationshipBylandIDAndPartyID(Long landId);

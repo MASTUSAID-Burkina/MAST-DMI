@@ -205,7 +205,7 @@
                                             <th class="no-sort" data-i18n="reg-app-number"></th>
                                             <th class="no-sort" data-i18n="reg-pv-number"></th>
                                             <th class="no-sort" data-i18n="reg-land-occupant"></th>
-                                            <th class="no-sort" data-i18n="res-tenure-type"></th>
+                                            <th class="no-sort" data-i18n="reg-app-type"></th>
                                             <th class="no-sort" data-i18n="reg-workflow-stage"></th>
                                             <th class="no-sort" data-i18n="reg-app-status"></th>
 
@@ -266,7 +266,7 @@
                         </td>     						
 
                         <td>
-                        ${shareType}
+                        ${rightShareType}
                         </td>
 
                         <td>
@@ -280,7 +280,7 @@
                         <td>
 
                         <div class="single-drop-down"> 
-                        <div class="topnav"> <a href="#" onclick="Actionfill(${landid},${workflowstatusid},${transactionid}, '${landnostrwithzero}','${claimtypeid}', ${landsharetypeid});" class="signin"><span key="Action" class="langchange" data-i18n="gen-action"></span></a> 
+                        <div class="topnav"> <a href="#" onclick="Actionfill(${landid},${workflowstatusid},${transactionid}, '${landnostrwithzero}','${claimtypeid}', ${rightShareTypeId});" class="signin"><span key="Action" class="langchange" data-i18n="gen-action"></span></a> 
                         <input type="hidden" id="hSection${landid}" value="${section}" />
                         <input type="hidden" id="hParcelInSection${landid}" value="${parcelNoInSection}" />
                         <div class="containerDiv" id='${landid}_land' > 
@@ -299,7 +299,7 @@
                 <form class="cmxform" id="addAttributeformID" action="" onsubmit="return false;">
                     <fieldset>
                         <input type="hidden" name="primeryky" id="primeryky" value="">
-                        <table style="width: 100%" id="" class="landrecords22 ">
+                        <table style="width: 100%" class="landrecords22 ">
                             <tr>
                                 <td>
                                     <label data-i18n="reg-country"></label>
@@ -486,13 +486,13 @@
                                             </td>
                                         </tr>
 
-                                        <tr>
+                                        <tr id="trExitingTitleHeader">
                                             <td class="borderedBottom" colspan="4">
                                                 <h3><label data-i18n="reg-existing-title"></label></h3>
                                             </td>
                                         </tr>
 
-                                        <tr>
+                                        <tr id="trExitingTitleData">
                                             <td>
                                                 <label data-i18n="reg-title-number"></label> 
                                                 <input type="text" name="txtTitleNumber" id="txtTitleNumber" class="text ui-widget-content ui-corner-all justread">

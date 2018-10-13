@@ -13,64 +13,44 @@ public class Form5Dto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String region;
-
     private String province;
-
     private String commune;
-
     private String village;
-
     private String village_no;
-
     private Date application_date;
-
     private String application_no;
-
     private String first_name;
-
     private String last_name;
-
     private String birthplace;
-
     private Date dob;
-
     private String sex;
-
     private String refrence_id_card;
-
+    private Date idDate;
     private String profession;
-
     private String address;
-
     private String location;
-
     private String lot;
-
     private int section;
-
     private long parcel_no;
-
     private String area;
-
     private String neighbour_north;
     private String neighbour_east;
     private String neighbour_west;
     private String neighbour_south;
-
     private List<LandUseType> existing_use;
-
     private String mayor_name;
-
     private String pv_no;
-
     private Date date_recognition_right;
-
     private Date apfr_date;
-
     private String apfrno;
-
     private String other_use;
-
+    private String mutationType = "";
+    private String contractName = "";
+    private Date contractDate;
+    private String contractNum = "";
+    private String previousApfr = "";
+    private Date previousApfrDate;
+    
     public String getRegion() {
         return region;
     }
@@ -321,6 +301,62 @@ public class Form5Dto implements Serializable {
 
     public void setApfrno(String apfrno) {
         this.apfrno = apfrno;
+    }
+
+    public String getMutationType() {
+        return mutationType;
+    }
+
+    public void setMutationType(String mutationType) {
+        this.mutationType = mutationType;
+    }
+
+    public String getContractName() {
+        return contractName;
+    }
+
+    public void setContractName(String contractName) {
+        this.contractName = contractName;
+    }
+
+    public Date getContractDate() {
+        return contractDate;
+    }
+
+    public void setContractDate(Date contractDate) {
+        this.contractDate = contractDate;
+    }
+
+    public String getContractNum() {
+        return contractNum;
+    }
+
+    public void setContractNum(String contractNum) {
+        this.contractNum = contractNum;
+    }
+
+    public String getPreviousApfr() {
+        return previousApfr;
+    }
+
+    public void setPreviousApfr(String previousApfr) {
+        this.previousApfr = previousApfr;
+    }
+
+    public Date getPreviousApfrDate() {
+        return previousApfrDate;
+    }
+
+    public void setPreviousApfrDate(Date previousApfrDate) {
+        this.previousApfrDate = previousApfrDate;
+    }
+
+    public Date getIdDate() {
+        return idDate;
+    }
+
+    public void setIdDate(Date idDate) {
+        this.idDate = idDate;
     }
 
 }

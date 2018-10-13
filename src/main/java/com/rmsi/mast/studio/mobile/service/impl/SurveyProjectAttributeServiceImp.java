@@ -196,8 +196,8 @@ public class SurveyProjectAttributeServiceImp implements
                                 if (right.getCertIssueDate() != null) {
                                     propRight.setCertDate(dfDate.format(right.getCertIssueDate()));
                                 }
-                                if(claim.getLaRightLandsharetype() != null){
-                                    propRight.setShareTypeId(claim.getLaRightLandsharetype().getLandsharetypeid());
+                                if(right.getShareTypeId() != null){
+                                    propRight.setShareTypeId(right.getShareTypeId());
                                 }
                                 propRight.setCertNumber(StringUtils.empty(right.getCertNumber()));
                                 propRight.setCertTypeId(right.getCertTypeid());

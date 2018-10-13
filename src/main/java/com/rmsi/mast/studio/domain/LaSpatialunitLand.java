@@ -35,11 +35,10 @@ public class LaSpatialunitLand implements Serializable {
     private Integer spatialunitgroupid6;
     private Integer hierarchyid6;
     private Integer landtypeid;
-    private Integer landusetypeid;
+    private String landusetypeid;
     private Integer landsoilqualityid;
     private Integer acquisitiontypeid;
     private Integer claimtypeid;
-    private Integer landsharetypeid;
     private Integer tenureclassid;
     private Integer slopevalueid;
     private Integer unitid;
@@ -54,8 +53,6 @@ public class LaSpatialunitLand implements Serializable {
 
     private Integer proposedused;
 
-    @Column(name = "geometry", columnDefinition = "Geometry")
-    private Geometry geometry;
     private boolean isactive;
     private Integer createdby;
     @Temporal(javax.persistence.TemporalType.DATE)
@@ -69,9 +66,6 @@ public class LaSpatialunitLand implements Serializable {
 
     @Column(name = "pv_no")
     private String pvNum;
-
-    @Column(name = "apfr_no")
-    private String apfrNum;
     
     @Column
     private Integer section;
@@ -121,9 +115,6 @@ public class LaSpatialunitLand implements Serializable {
     private String tenancyType;
 
     @Transient
-    private String shareType;
-
-    @Transient
     private String claimtype_en;
 
     @Transient
@@ -136,20 +127,25 @@ public class LaSpatialunitLand implements Serializable {
     private String address;
 
     @Transient
+    private String apfrNum;
+    
+    @Transient
     private String landusetype_en;
 
     @Transient
     private String landnostrwithzero;
 
     @Transient
+    private String rightShareType;
+    
+    @Transient
+    private Integer rightShareTypeId;
+    
+    @Transient
     private String registrationNo;
 
     private String other_use;
 
-//  @ManyToOne
-//	@JoinColumn(name="tenureclassid")
-//	private TenureClass laRightTenureclass;
-//  
     public String getOther_use() {
         return other_use;
     }
@@ -286,11 +282,11 @@ public class LaSpatialunitLand implements Serializable {
         this.landtypeid = landtypeid;
     }
 
-    public Integer getLandusetypeid() {
+    public String getLandusetypeid() {
         return landusetypeid;
     }
 
-    public void setLandusetypeid(Integer landusetypeid) {
+    public void setLandusetypeid(String landusetypeid) {
         this.landusetypeid = landusetypeid;
     }
 
@@ -316,14 +312,6 @@ public class LaSpatialunitLand implements Serializable {
 
     public void setClaimtypeid(Integer claimtypeid) {
         this.claimtypeid = claimtypeid;
-    }
-
-    public Integer getLandsharetypeid() {
-        return landsharetypeid;
-    }
-
-    public void setLandsharetypeid(Integer landsharetypeid) {
-        this.landsharetypeid = landsharetypeid;
     }
 
     public Integer getTenureclassid() {
@@ -404,16 +392,7 @@ public class LaSpatialunitLand implements Serializable {
     }
 
     public void setGeometrytype(String geometrytype) {
-        geometry.setSRID(4326);
         this.geometrytype = geometrytype;
-    }
-
-    public Geometry getGeometry() {
-        return geometry;
-    }
-
-    public void setGeometry(Geometry geometry) {
-        this.geometry = geometry;
     }
 
     public boolean isIsactive() {
@@ -553,14 +532,6 @@ public class LaSpatialunitLand implements Serializable {
         this.registrationNo = registrationNo;
     }
 
-    public String getShareType() {
-        return shareType;
-    }
-
-    public void setShareType(String shareType) {
-        this.shareType = shareType;
-    }
-
     public Integer getProposedused() {
         return proposedused;
     }
@@ -591,14 +562,6 @@ public class LaSpatialunitLand implements Serializable {
 
     public void setPvNum(String pvNum) {
         this.pvNum = pvNum;
-    }
-
-    public String getApfrNum() {
-        return apfrNum;
-    }
-
-    public void setApfrNum(String apfrNum) {
-        this.apfrNum = apfrNum;
     }
 
     public Integer getSection() {
@@ -671,6 +634,30 @@ public class LaSpatialunitLand implements Serializable {
 
     public void setRegistrationNum(String registrationNum) {
         this.registrationNum = registrationNum;
+    }
+
+    public String getApfrNum() {
+        return apfrNum;
+    }
+
+    public void setApfrNum(String apfrNum) {
+        this.apfrNum = apfrNum;
+    }
+
+    public String getRightShareType() {
+        return rightShareType;
+    }
+
+    public void setRightShareType(String rightShareType) {
+        this.rightShareType = rightShareType;
+    }
+
+    public Integer getRightShareTypeId() {
+        return rightShareTypeId;
+    }
+
+    public void setRightShareTypeId(Integer rightShareTypeId) {
+        this.rightShareTypeId = rightShareTypeId;
     }
 
 }

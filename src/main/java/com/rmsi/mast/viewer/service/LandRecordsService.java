@@ -23,6 +23,7 @@ import com.rmsi.mast.studio.domain.LaSpatialunitLand;
 import com.rmsi.mast.studio.domain.LandType;
 import com.rmsi.mast.studio.domain.LandUseType;
 import com.rmsi.mast.studio.domain.MaritalStatus;
+import com.rmsi.mast.studio.domain.MutationType;
 import com.rmsi.mast.studio.domain.NaturalPerson;
 import com.rmsi.mast.studio.domain.NatureOfPower;
 import com.rmsi.mast.studio.domain.NonNaturalPerson;
@@ -888,7 +889,7 @@ public interface LandRecordsService {
 
     List<MortageHistoryForFetch> getmortagagedetails(Long landid);
 
-    List<TransactionHistoryForFetch> gettransactiondetails(Long landid);
+    List<TransactionHistoryForFetch> gettransactiondetails(Long landid, String lang);
 
     List<LeaseHistoryForFetch> findleasedetailbylandid(Long transactionid, Long landid);
 
@@ -935,4 +936,8 @@ public interface LandRecordsService {
     List<Object> findparcelcountbygender(int project,String tag, Integer villageId);
     
     List<Object> findRegistrytable(int project, String tag, Integer villageId);
+    
+    List<MutationType> getMutationTypes();
+    
+    MutationType getMutationType(int id);
 }

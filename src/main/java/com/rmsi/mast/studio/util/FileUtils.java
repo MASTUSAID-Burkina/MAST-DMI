@@ -25,6 +25,6 @@ public class FileUtils {
         if(fileName == null || fileName.equals("") || !fileName.contains(".")){
             return "";
         }
-        return fileName.substring(fileName.indexOf(".") + 1, fileName.length()).toLowerCase();
+        return fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length()).toLowerCase();
     }
 }

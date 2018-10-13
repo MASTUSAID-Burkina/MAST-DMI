@@ -22,6 +22,7 @@ import com.rmsi.mast.studio.dao.GroupTypeDAO;
 import com.rmsi.mast.studio.dao.IdTypeDao;
 import com.rmsi.mast.studio.dao.LandTypeDAO;
 import com.rmsi.mast.studio.dao.MaritalStatusDAO;
+import com.rmsi.mast.studio.dao.MutationTypeDao;
 import com.rmsi.mast.studio.dao.OccupancyDAO;
 import com.rmsi.mast.studio.dao.PaymentInfoDAO;
 import com.rmsi.mast.studio.dao.PersonDAO;
@@ -58,6 +59,7 @@ import com.rmsi.mast.studio.domain.LaSpatialunitLand;
 import com.rmsi.mast.studio.domain.LandType;
 import com.rmsi.mast.studio.domain.LandUseType;
 import com.rmsi.mast.studio.domain.MaritalStatus;
+import com.rmsi.mast.studio.domain.MutationType;
 import com.rmsi.mast.studio.domain.NaturalPerson;
 import com.rmsi.mast.studio.domain.NatureOfPower;
 import com.rmsi.mast.studio.domain.NonNaturalPerson;
@@ -296,6 +298,9 @@ public class LandRecordsServiceImpl implements LandRecordsService {
     @Autowired
     private PaymentInfoDAO paymentInfoDAO;
     
+    @Autowired
+    private MutationTypeDao mutationDao;
+    
     @Override
     public List<SpatialUnitTable> findAllSpatialUnit(String defaultProject) {
         return landRecordsDao.findallspatialUnit(defaultProject);
@@ -412,7 +417,7 @@ public class LandRecordsServiceImpl implements LandRecordsService {
 
     @Override
     public List<Gender> findAllGenders() {
-        return genderDAO.findAll();
+        return genderDAO.getAllGender();
     }
 
     @Override
@@ -1407,6 +1412,16 @@ public class LandRecordsServiceImpl implements LandRecordsService {
     }
 
     @Override
+    public List<MutationType> getMutationTypes(){
+        return mutationDao.findAll();
+    }
+    
+    @Override
+    public MutationType getMutationType(int id){
+        return mutationDao.getTypeById(id);
+    }
+    
+    @Override
     public List<OwnerHistoryForFetch> getownerhistorydetails(Long landid) {
         return landRecordsDao.getownerhistorydetails(landid);
     }
@@ -1427,8 +1442,8 @@ public class LandRecordsServiceImpl implements LandRecordsService {
     }
 
     @Override
-    public List<TransactionHistoryForFetch> gettransactiondetails(Long landid) {
-        return landRecordsDao.gettransactiondetails(landid);
+    public List<TransactionHistoryForFetch> gettransactiondetails(Long landid, String lang) {
+        return landRecordsDao.gettransactiondetails(landid, lang);
     }
 
     @Override

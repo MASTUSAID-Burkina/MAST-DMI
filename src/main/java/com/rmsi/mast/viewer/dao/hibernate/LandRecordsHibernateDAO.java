@@ -795,7 +795,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
         }
 
         if (!StringUtils.isEmpty(apfrNum)) {
-            strWhere = strWhere + " and coalesce(LD.apfr_no, '') like :apfrNum";
+            strWhere = strWhere + " and coalesce(PL.certificateno, '') like :apfrNum";
         }
 
         if (!StringUtils.isEmpty(firstName)) {
@@ -803,24 +803,24 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
         }
 
         if (appType > 0) {
-            strWhere = strWhere + " and LD.landsharetypeid = " + appType;
+            strWhere = strWhere + " and PL.share_type_id = " + appType;
         }
 
         sql = "select LD.landid, LD.landno, LC.claimtypeid, (case when :lang = 'en' then LC.claimtype_en else LC.claimtype end) as claimtype, LD.area, "
                 + "  (case when :lang = 'en' then la.applicationstatus_en else la.applicationstatus end) as applicationstatus,"
                 + "  LP.firstname||' '|| LP.lastname as fullname, LP.address,la.applicationstatusid ,LD.workflowstatusid,"
                 + "  (case when :lang = 'en' then lf.workflow_en else lf.workflow end) as workflow_status,"
-                + "  TR.transactionid, (case when :lang = 'en' then ST.landsharetype_en else ST.landsharetype end) as apptype, LD.landsharetypeid as apptypeid,"
-                + "  LD.application_no, LD.pv_no, LD.apfr_no, LD.section, LD.parcel_no_in_section "
+                + "  TR.transactionid, (case when :lang = 'en' then ST.landsharetype_en else ST.landsharetype end) as apptype, PL.share_type_id as apptypeid,"
+                + "  LD.application_no, LD.pv_no, PL.certificateno, LD.section, LD.parcel_no_in_section "
                 + "from la_spatialunit_land LD"
                 + "  inner join la_ext_personlandmapping PL on LD.landid = PL.landid"
                 + "  inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid"
                 + "  inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid"
                 + "  inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid"
-                + "  inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid"
+                + "  inner Join la_right_landsharetype ST on PL.share_type_id =  ST.landsharetypeid"
                 + "  inner Join  la_party_person LP on PL.partyid = LP.personid"
                 + "  inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "
-                + "where Pl.isactive=true and LD.isactive=true and LD.projectnameid = :projectId"
+                + "where PL.isactive=true and PL.persontypeid=1 and LD.isactive=true and LD.projectnameid = :projectId"
                 + strWhere
                 + " order by LD.landid desc";
 
@@ -879,8 +879,8 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                 laSpatialunitLand.setWorkflowstatus(object[10].toString());
                 laSpatialunitLand.setTransactionid(Integer.valueOf(object[11].toString()));
                 laSpatialunitLand.setLandnostrwithzero(addZeroinLandNo((String) object[0].toString()));
-                laSpatialunitLand.setShareType(object[12].toString());
-                laSpatialunitLand.setLandsharetypeid(Integer.valueOf(object[13].toString()));
+                laSpatialunitLand.setRightShareType(object[12].toString());
+                laSpatialunitLand.setRightShareTypeId(Integer.valueOf(object[13].toString()));
                 if (object[14] != null) {
                     laSpatialunitLand.setAppNum(object[14].toString());
                 }
@@ -924,7 +924,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                     + " inner join la_Party_person ps on ps.personid=plm.partyid"
                     + " inner join la_ext_projectarea parea on parea.projectnameid= ld.projectnameid"
                     + " left join la_baunit_landusetype lut on lut.landusetypeid=ld.landusetypeid"
-                    + " left join la_right_landsharetype lst on lst.landsharetypeid=ld.landsharetypeid"
+                    + " left join la_right_landsharetype lst on lst.landsharetypeid=plm.share_type_id"
                     + " left join la_partygroup_gender g on g.genderid=ps.genderid"
                     + " left join la_partygroup_maritalstatus ms on ms.maritalstatusid=ps.maritalstatusid"
                     + " left join la_partygroup_identitytype id on id.identitytypeid=ps.identitytypeid"
@@ -968,7 +968,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                     + " inner join la_Party_person ps on ps.personid=plm.partyid"
                     + " inner join la_ext_projectarea parea on parea.projectnameid= ld.projectnameid"
                     + " left join la_baunit_landusetype lut on lut.landusetypeid=ld.landusetypeid"
-                    + " left join la_right_landsharetype lst on lst.landsharetypeid=ld.landsharetypeid"
+                    + " left join la_right_landsharetype lst on lst.landsharetypeid=plm.share_type_id"
                     + " left join la_partygroup_gender g on g.genderid=ps.genderid"
                     + " left join la_partygroup_maritalstatus ms on ms.maritalstatusid=ps.maritalstatusid"
                     + " left join la_partygroup_identitytype id on id.identitytypeid=ps.identitytypeid"
@@ -1034,7 +1034,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
             String query = "select lst.landsharetype_en Tenure_Type,gd.gender_en,count(*) parcels, "
                     + " round(((count(*)*100)/(select count(*) from la_spatialunit_land where isactive='1' and projectnameid= :projectnameid)\\:\\:numeric),2) as total_percentage,"
                     + " sum(ld.area) Total_Area_Mapped, sum(ld.area)/count(*) Parcel_Average_Size, (select count(*) from la_spatialunit_land where applicationstatusid=2 and isactive='1') APFR_Issued"
-                    + " from la_spatialunit_land ld inner join la_right_landsharetype lst on lst.landsharetypeid=ld.landsharetypeid inner join la_ext_personlandmapping plm on plm.landid=ld.landid"
+                    + " from la_spatialunit_land ld inner join la_ext_personlandmapping plm on plm.landid=ld.landid inner join la_right_landsharetype lst on lst.landsharetypeid=plm.share_type_id"
                     + " inner join la_party_person ps on ps.personid=plm.partyid inner join la_partygroup_gender gd on gd.genderid=ps.genderid "
                     + " where plm.persontypeid=1 and plm.isactive='1' and ld.isactive='1' and lst.isactive='1' and ld.projectnameid= :projectnameid group by lst.landsharetype_en,gd.gender_en;";
 
@@ -1137,7 +1137,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
 
             String query = "select ld.landno,Concat(ps.firstname,' ',ps.middlename,' ',ps.lastname) AS name,g.gender,lst.landsharetype_en as landsharetype,EXTRACT(YEAR from AGE(CURRENT_DATE, ps.dateofbirth)) as age"
                     + " from la_spatialunit_land ld inner join la_ext_personlandmapping plm on plm.landid=ld.landid inner join la_Party_person ps on ps.personid=plm.partyid"
-                    + " left join la_right_landsharetype lst on lst.landsharetypeid=ld.landsharetypeid left join la_partygroup_gender g on g.genderid=ps.genderid"
+                    + " left join la_right_landsharetype lst on lst.landsharetypeid=plm.share_type_id left join la_partygroup_gender g on g.genderid=ps.genderid"
                     + " where ld.projectnameid=" + projectnameid;
 
             Query executeQuery = getEntityManager().createNativeQuery(query);
@@ -1214,7 +1214,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
             String query = "select lst.landsharetype_en Tenure_Type,gd.gender_en,hr.name Commune_Name,count(*) parcels,"
                     + " round(((count(*)*100)/(select count(*) from la_spatialunit_land where isactive='1' and hierarchyid= :hierarchyid)\\:\\:numeric),2) as total_percentage,"
                     + " sum(ld.area) Total_Area_Mapped, sum(ld.area)/count(*) Parcel_Average_Size, (select count(*) from la_spatialunit_land where applicationstatusid=2 and isactive='1') APFR_Issued from la_spatialunit_land ld"
-                    + " inner join la_right_landsharetype lst on lst.landsharetypeid=ld.landsharetypeid inner join la_ext_personlandmapping plm on plm.landid=ld.landid"
+                    + " inner join la_ext_personlandmapping plm on plm.landid=ld.landid inner join la_right_landsharetype lst on lst.landsharetypeid=plm.share_type_id "
                     + " inner join la_party_person ps on ps.personid=plm.partyid inner join la_partygroup_gender gd on gd.genderid=ps.genderid "
                     + " inner join la_spatialunitgroup_hierarchy hr on hr.hierarchyid=ld.hierarchyid4 "
                     + " where plm.persontypeid=1 and plm.isactive='1' and ld.isactive='1' and lst.isactive='1' and hr.isactive='1' and hr.hierarchyid= :hierarchyid"
@@ -1252,10 +1252,10 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                     + "    inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid"
                     + "    inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid"
                     + "    inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid"
-                    + "    inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid"
+                    + "    inner Join la_right_landsharetype ST on PL.share_type_id =  ST.landsharetypeid"
                     + "    inner Join  la_party_person LP on PL.partyid = LP.personid"
                     + "    inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid"
-                    + "  where Pl.isactive=true and LD.isactive=true and LD.projectnameid = "
+                    + "  where PL.isactive=true and PL.persontypeid=1 and LD.isactive=true and LD.projectnameid = "
                     + project + strWhere + ") as t1";
 
             List<BigInteger> arrObject = getEntityManager().createNativeQuery(sql).getResultList();
@@ -1315,7 +1315,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
         }
 
         if (!StringUtils.isEmpty(apfrNum)) {
-            strWhere = strWhere + " and coalesce(LD.apfr_no, '') like :apfrNum";
+            strWhere = strWhere + " and coalesce(PL.certificateno, '') like :apfrNum";
         }
 
         if (!StringUtils.isEmpty(firstName)) {
@@ -1323,7 +1323,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
         }
 
         if (appType > 0) {
-            strWhere = strWhere + " and LD.landsharetypeid = " + appType;
+            strWhere = strWhere + " and PL.share_type_id = " + appType;
         }
 
         sql = "select count(*) from "
@@ -1334,10 +1334,10 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                 + "    inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid"
                 + "    inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid"
                 + "    inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid"
-                + "    inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid"
+                + "    inner Join la_right_landsharetype ST on PL.share_type_id =  ST.landsharetypeid"
                 + "    inner Join  la_party_person LP on PL.partyid = LP.personid"
                 + "    inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid"
-                + "  where Pl.isactive=true and LD.isactive=true and LD.projectnameid = :projectId"
+                + "  where PL.isactive=true and PL.persontypeid=1 and LD.isactive=true and LD.projectnameid = :projectId"
                 + strWhere + ") as t1";
 
         try {
@@ -1396,10 +1396,10 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                 + "  inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid"
                 + "  inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid"
                 + "  inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid"
-                + "  inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid"
+                + "  inner Join la_right_landsharetype ST on PL.share_type_id =  ST.landsharetypeid"
                 + "  inner Join  la_party_person LP on PL.partyid = LP.personid"
                 + "  inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "
-                + "where Pl.isactive=true and LD.isactive=true and LD.projectnameid = :projectId "
+                + "where PL.isactive=true and PL.persontypeid=1 and LD.isactive=true and LD.projectnameid = :projectId "
                 + strWhereCls;
 
         try {
@@ -1442,17 +1442,17 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                     + "  (case when :lang = 'en' then la.applicationstatus_en else la.applicationstatus end) as applicationstatus,"
                     + "  LP.firstname||' '|| LP.lastname as fullname, LP.address,la.applicationstatusid ,LD.workflowstatusid,"
                     + "  (case when :lang = 'en' then lf.workflow_en else lf.workflow end) as workflow_status,"
-                    + "  TR.transactionid, (case when :lang = 'en' then ST.landsharetype_en else ST.landsharetype end) as apptype, LD.landsharetypeid as apptypeid,"
-                    + "  LD.application_no, LD.pv_no, LD.apfr_no, LD.section, LD.parcel_no_in_section "
+                    + "  TR.transactionid, (case when :lang = 'en' then ST.landsharetype_en else ST.landsharetype end) as apptype, PL.share_type_id as apptypeid,"
+                    + "  LD.application_no, LD.pv_no, PL.certificateno, LD.section, LD.parcel_no_in_section "
                     + "from la_spatialunit_land LD"
                     + "  inner join la_ext_personlandmapping PL on LD.landid = PL.landid"
                     + "  inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid"
                     + "  inner Join la_ext_applicationstatus la on la.applicationstatusid =  LD.applicationstatusid"
                     + "  inner Join la_ext_workflow lf on lf.workflowid =  LD.workflowstatusid"
-                    + "  inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid"
+                    + "  inner Join la_right_landsharetype ST on PL.share_type_id = ST.landsharetypeid"
                     + "  inner Join  la_party_person LP on PL.partyid = LP.personid"
                     + "  inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "
-                    + "where Pl.isactive=true and LD.isactive=true and LD.projectnameid = :projectId "
+                    + "where PL.isactive=true and PL.persontypeid=1 and LD.isactive=true and LD.projectnameid = :projectId "
                     + strWhereCls
                     + " order by LD.landid desc";
 
@@ -1494,8 +1494,8 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                 laSpatialunitLand.setWorkflowstatus(object[10].toString());
                 laSpatialunitLand.setTransactionid(Integer.valueOf(object[11].toString()));
                 laSpatialunitLand.setLandnostrwithzero(addZeroinLandNo((String) object[0].toString()));
-                laSpatialunitLand.setShareType(object[12].toString());
-                laSpatialunitLand.setLandsharetypeid(Integer.valueOf(object[13].toString()));
+                laSpatialunitLand.setRightShareType(object[12].toString());
+                laSpatialunitLand.setRightShareTypeId(Integer.valueOf(object[13].toString()));
 
                 if (object[14] != null) {
                     laSpatialunitLand.setAppNum(object[14].toString());
@@ -1553,15 +1553,14 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
 
     @Override
     public List<LeaseHistoryForFetch> getleasehistorydetails(Long landid) {
-
         String sql = null;
-
         try {
-            sql = " select row_number() OVER () as rnum,ld.landid,ps.firstname,ps.middlename,ps.lastname,ps.address,ps.identityno,lea.leaseyear, (lea.leaseyear *12 + lea.monthid) as monthid,lea.leaseamount,lea.createddate,lea.leasestartdate, lea.leaseenddate"
-                    + " from la_lease lea inner join la_spatialunit_land ld on ld.landid=lea.landid "
-                    + " inner join la_Party_person ps on ps.personid=lea.personid "
-                    + " where ld.landid=" + landid + "order by lea.createddate desc;";
-
+            sql = "select row_number() OVER () as rnum, lea.landid, ps.firstname,ps.middlename,ps.lastname,ps.address,ps.identityno, "
+                    + "lea.years, lea.months,lea.leaseamount,lea.createddate,lea.leasestartdate, lea.leaseenddate, lea.conditions "
+                    + " from la_lease lea inner join la_Party_person ps on ps.personid=lea.personid "
+                    + " left join la_ext_transactiondetails td on td.moduletransid=lea.leaseid "
+                    + " where lea.landid=" + landid + " order by lea.createddate desc;";
+            
             Query query = getEntityManager().createNativeQuery(sql, LeaseHistoryForFetch.class);
             List<LeaseHistoryForFetch> attribValues = query.getResultList();
 
@@ -1575,7 +1574,6 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
             logger.error(e);
             return null;
         }
-
     }
 
     @Override
@@ -1584,11 +1582,11 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
         String sql = null;
 
         try {
-            sql = " select row_number() OVER () as rnum,ld.landid,ps.firstname,ps.middlename,ps.lastname,ps.address,ps.identityno,lea.leaseyear, (lea.leaseyear *12 + lea.monthid) as monthid,lea.leaseamount,lea.createddate,lea.leasestartdate, lea.leaseenddate"
-                    + " from la_lease lea inner join la_spatialunit_land ld on ld.landid=lea.landid "
-                    + " inner join la_Party_person ps on ps.personid=lea.personid "
-                    + " left join la_ext_transactiondetails td on td.moduletransid=lea.leaseid"
-                    + " where ld.landid=" + landid + "and td.transactionid=" + transactionid;
+            sql = "select row_number() OVER () as rnum, lea.landid, ps.firstname,ps.middlename,ps.lastname,ps.address,ps.identityno, "
+                    + "lea.years, lea.months,lea.leaseamount,lea.createddate,lea.leasestartdate, lea.leaseenddate, lea.conditions "
+                    + " from la_lease lea inner join la_Party_person ps on ps.personid=lea.personid "
+                    + " left join la_ext_transactiondetails td on td.moduletransid=lea.leaseid "
+                    + " where lea.landid=" + landid + " and td.transactionid=" + transactionid;
 
             Query query = getEntityManager().createNativeQuery(sql, LeaseHistoryForFetch.class);
             List<LeaseHistoryForFetch> attribValues = query.getResultList();
@@ -1608,15 +1606,14 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
 
     @Override
     public List<LeaseHistoryForFetch> findsurrenderleasedetailbylandid(Long transactionid, Long landid) {
-
         String sql = null;
-
         try {
-            sql = " select row_number() OVER () as rnum,ld.landid,ps.firstname,ps.middlename,ps.lastname,ps.address,ps.identityno,lea.leaseyear, (lea.leaseyear *12 + lea.monthid) as monthid,lea.leaseamount,lea.createddate,lea.leasestartdate, lea.leaseenddate"
-                    + " from la_surrenderlease lea inner join la_spatialunit_land ld on ld.landid=lea.landid "
-                    + " inner join la_Party_person ps on ps.personid=lea.personid "
-                    + " left join la_ext_transactiondetails td on td.moduletransid=lea.leaseid"
-                    + " where ld.landid=" + landid + "and td.transactionid=" + transactionid;
+            sql = " select row_number() OVER () as rnum,lea.landid,ps.firstname,ps.middlename,ps.lastname,"
+                    + "ps.address,ps.identityno,lea.years, lea.months,lea.leaseamount,lea.createddate,lea.leasestartdate, "
+                    + "lea.leaseenddate, '' as conditions "
+                    + " from la_surrenderlease lea inner join la_Party_person ps on ps.personid=lea.personid "
+                    + " left join la_ext_transactiondetails td on td.moduletransid=lea.leaseid "
+                    + " where lea.landid=" + landid + " and td.transactionid=" + transactionid;
 
             Query query = getEntityManager().createNativeQuery(sql, LeaseHistoryForFetch.class);
             List<LeaseHistoryForFetch> attribValues = query.getResultList();
@@ -1631,7 +1628,6 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
             logger.error(e);
             return null;
         }
-
     }
 
     @Override
@@ -1746,23 +1742,26 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
     }
 
     @Override
-    public List<TransactionHistoryForFetch> gettransactiondetails(Long landid) {
+    public List<TransactionHistoryForFetch> gettransactiondetails(Long landid, String lang) {
 
         String sql = null;
 
         try {
-            sql = " select row_number() OVER () as rnum,transactiontype,landid,applicantname,ownername,createddate,transactionid,personid from "
-                    + "( select distinct on (lea.personid) 'Lease' as transactiontype, ld.landid,ps1.firstname||' '||ps1.middlename||' '||ps1.lastname as applicantname,ps2.firstname||' '||ps2.middlename||' '||ps2.lastname as ownername,"
-                    + " lea.createddate,td.transactionid,lea.personid"
-                    + " from la_lease lea inner join la_spatialunit_land ld on ld.landid=lea.landid"
-                    + " left join la_Party_person ps1 on ps1.personid=lea.personid "
-                    + " left join la_ext_personlandmapping plm on plm.landid=ld.landid"
-                    + " left join la_ext_transactiondetails td on td.moduletransid=lea.leaseid "
-                    + " left join la_Party_person ps2 on ps2.personid=lea.ownerid"
-                    + " where ld.landid=" + landid + " and td.processid=1 and td.isactive=true "
+            sql = " select row_number() OVER () as rnum,transactiontype,landid,applicantname,ownername,createddate,"
+                    + "transactionid,personid, processid, certificateno, sharetype from "
+                    + "(select distinct on (lea.personid) (case when '" + lang + "' = 'en' then p.processname_en else p.processname end) as transactiontype, ld.landid,ps1.firstname||' '||coalesce(ps1.middlename, '')||' '||ps1.lastname as applicantname,ps2.firstname||' '||coalesce(ps2.middlename, '')||' '||ps2.lastname as ownername,"
+                    + "lea.createddate,td.transactionid,lea.personid, td.processid, plm.certificateno, (case when '" + lang + "' = 'en' then lsh.landsharetype_en else lsh.landsharetype end) as sharetype "
+                    + "from la_lease lea inner join la_spatialunit_land ld on ld.landid=lea.landid "
+                    + "left join la_Party_person ps1 on ps1.personid=lea.personid "
+                    + "left join la_ext_personlandmapping plm on plm.landid=ld.landid "
+                    + "inner join la_right_landsharetype lsh on plm.share_type_id = lsh.landsharetypeid "
+                    + "left join la_ext_transactiondetails td on td.moduletransid=lea.leaseid "
+                    + "inner join la_ext_process p on td.processid = p.processid "
+                    + "left join la_Party_person ps2 on ps2.personid=lea.ownerid "
+                    + "where ld.landid=" + landid + " and td.processid in (1,10) and td.isactive=true "
                     + "	Union"
-                    + "	select distinct on (personid) 'Mortgage' as transactiontype,ld.landid,fin.financialagency as applicantname,ps2.firstname||' '||ps2.middlename||' '||ps2.lastname as ownername,mor.createddate,td.transactionid,"
-                    + " mor.financialagencyid as personid"
+                    + "	select distinct on (personid) 'Mortgage' as transactiontype,ld.landid,fin.financialagency as applicantname,ps2.firstname||' '||coalesce(ps2.middlename, '')||' '||ps2.lastname as ownername,mor.createddate,td.transactionid,"
+                    + " mor.financialagencyid as personid, td.processid, '' as certificateno, '' as sharetype"
                     + "	from la_mortgage mor left join la_spatialunit_land ld on ld.landid=mor.landid"
                     + " left join la_ext_financialagency fin on fin.financialagencyid=mor.financialagencyid"
                     + " left join la_ext_personlandmapping plm on plm.landid=ld.landid"
@@ -1770,8 +1769,8 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                     + " left join la_Party_person ps2 on ps2.personid=mor.ownerid "
                     + "	where ld.landid=" + landid + " and td.processid=3"
                     + " Union"
-                    + "	select distinct on (personid) 'Surrender Mortgage' as transactiontype,ld.landid,fin.financialagency as applicantname,ps2.firstname||' '||ps2.middlename||' '||ps2.lastname as ownername,mor.createddate,td.transactionid,"
-                    + " mor.financialagencyid as personid"
+                    + "	select distinct on (personid) 'Surrender Mortgage' as transactiontype,ld.landid,fin.financialagency as applicantname,ps2.firstname||' '||coalesce(ps2.middlename, '')||' '||ps2.lastname as ownername,mor.createddate,td.transactionid,"
+                    + " mor.financialagencyid as personid, td.processid, '' as certificateno, '' as sharetype"
                     + "	from la_surrendermortgage mor left join la_spatialunit_land ld on ld.landid=mor.landid"
                     + " left join la_ext_financialagency fin on fin.financialagencyid=mor.financialagencyid"
                     + " left join la_ext_personlandmapping plm on plm.landid=ld.landid"
@@ -1779,88 +1778,42 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                     + " left join la_Party_person ps2 on ps2.personid=mor.ownerid "
                     + "	where ld.landid=" + landid + " and td.processid=9"
                     + " Union"
-                    + " (select transactiontype,landid,string_agg(applicantname,' ' order by applicantname)as applicantname,string_agg(ownename,' ' order by ownename)as ownename,"
-                    + " createddate,transactionid,null as personid from("
-                    + " select distinct 'Sale' as transactiontype, th.landid,null as applicantname,"
+                    + " (select string_agg(transactiontype, '') as transactiontype, landid,string_agg(applicantname,' ' order by applicantname)as applicantname,string_agg(ownename,' ' order by ownename)as ownename,"
+                    + "createddate,transactionid,null as personid, processid, string_agg(certificateno, '') as certificateno, string_agg(sharetype, '') as sharetype "
+                    + "from ("
+                    + " select distinct '' as transactiontype, th.landid,null as applicantname,"
                     + " string_agg(ps.firstname||' '||ps.lastname,' / ' order by ps.ownertype)as ownename,"
-                    + " th.createddate,th.transactionid,null as personid"
+                    + " th.createddate,th.transactionid,null as personid, td.processid, pm.certificateno, "
+                    + "(case when '" + lang + "' = 'en' then lsh.landsharetype_en else lsh.landsharetype end) as sharetype"
                     + " from la_ext_transactionhistory th"
-                    + " inner join la_Party_person ps on cast(ps.personid as character varying) in (SELECT  regexp_split_to_table(th.oldownerid, E','))"
+                    + " inner join (la_Party_person ps inner join la_ext_personlandmapping pm on ps.personid = pm.partyid inner join la_right_landsharetype lsh on pm.share_type_id = lsh.landsharetypeid) "
+                    + "  on cast(ps.personid as character varying) in (SELECT  regexp_split_to_table(th.oldownerid, E','))"
                     + " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
-                    + " where th.landid=" + landid + "  and td.processid=2 group by th.landid,th.createddate,th.transactionid"
+                    + " where th.landid= " + landid + "  and td.processid=2 "
+                    + " group by th.landid,th.createddate,th.transactionid, td.processid, pm.certificateno, lsh.landsharetypeid"
                     + " union"
-                    + " select distinct 'Sale' as transactiontype, th.landid,"
+                    + " select distinct (case when '" + lang + "' = 'en' then m.name_en else m.name end) as transactiontype, th.landid,"
                     + " string_agg(ps2.firstname||' '||ps2.lastname,' / ' order by ps2.ownertype)as applicantname, null as ownename,"
-                    + " th.createddate,th.transactionid,null as personid"
+                    + " th.createddate,th.transactionid,null as personid, td.processid, '' as certificateno, '' as sharetype"
                     + " from la_ext_transactionhistory th"
-                    + " inner join la_Party_person ps2 on cast(ps2.personid as character varying) in (SELECT  regexp_split_to_table(th.newownerid, E','))"
+                    + " inner join (la_Party_person ps2 inner join la_ext_personlandmapping pm on ps2.personid = pm.partyid left join mutation_type m on pm.mutation_id = m.id) "
+                    + " on cast(ps2.personid as character varying) in (SELECT  regexp_split_to_table(th.newownerid, E','))"
                     + " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
-                    + " where th.landid=" + landid + "  and td.processid=2 group by th.landid,th.createddate,th.transactionid) as temp"
-                    + " group by transactiontype,landid,createddate,transactionid,personid)"
+                    + " where th.landid= " + landid + " and td.processid=2 "
+                    + " group by th.landid,th.createddate,th.transactionid, m.id, td.processid"
+                    + ") as tmp "
+                    + "group by landid,createddate,transactionid,personid, processid)"
                     + " Union "
-                    + " (select transactiontype,landid,string_agg(applicantname,' ' order by applicantname)as applicantname,string_agg(ownename,' ' order by ownename)as ownename,"
-                    + " createddate,transactionid,null as personid from("
-                    + " select distinct 'Change of Owner' as transactiontype, th.landid,null as applicantname,"
-                    + " string_agg(ps.firstname||' '||ps.lastname,' / ' order by ps.ownertype)as ownename,"
-                    + " th.createddate,th.transactionid,null as personid"
-                    + " from la_ext_transactionhistory th"
-                    + " inner join la_Party_person ps on cast(ps.personid as character varying) in (SELECT  regexp_split_to_table(th.oldownerid, E','))"
-                    + " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
-                    + " where th.landid=" + landid + "  and td.processid=4 group by th.landid,th.createddate,th.transactionid"
-                    + " union"
-                    + " select distinct 'Change of Owner' as transactiontype, th.landid,"
-                    + " string_agg(ps2.firstname||' '||ps2.lastname,' / ' order by ps2.ownertype)as applicantname, null as ownename,"
-                    + " th.createddate,th.transactionid,null as personid"
-                    + " from la_ext_transactionhistory th"
-                    + " inner join la_Party_person ps2 on cast(ps2.personid as character varying) in (SELECT  regexp_split_to_table(th.newownerid, E','))"
-                    + " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
-                    + " where th.landid=" + landid + "  and td.processid=4 group by th.landid,th.createddate,th.transactionid) as temp"
-                    + " group by transactiontype,landid,createddate,transactionid,personid)"
-                    + " Union "
-                    + " (select transactiontype,landid,string_agg(applicantname,' ' order by applicantname)as applicantname,string_agg(ownename,' ' order by ownename)as ownename,"
-                    + " createddate,transactionid,null as personid from("
-                    + " select distinct 'Change of Joint Owner' as transactiontype, th.landid,null as applicantname,"
-                    + " string_agg(ps.firstname||' '||ps.lastname,' / ' order by ps.ownertype)as ownename,"
-                    + " th.createddate,th.transactionid,null as personid"
-                    + " from la_ext_transactionhistory th"
-                    + " inner join la_Party_person ps on cast(ps.personid as character varying) in (SELECT  regexp_split_to_table(th.oldownerid, E','))"
-                    + " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
-                    + " where th.landid=" + landid + "  and td.processid=7 group by th.landid,th.createddate,th.transactionid"
-                    + " union"
-                    + " select distinct 'Change of Joint Owner' as transactiontype, th.landid,"
-                    + " string_agg(ps2.firstname||' '||ps2.lastname,' / ' order by ps2.ownertype)as applicantname, null as ownename,"
-                    + " th.createddate,th.transactionid,null as personid"
-                    + " from la_ext_transactionhistory th"
-                    + " inner join la_Party_person ps2 on cast(ps2.personid as character varying) in (SELECT  regexp_split_to_table(th.newownerid, E','))"
-                    + " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
-                    + " where th.landid=" + landid + "  and td.processid=7 group by th.landid,th.createddate,th.transactionid) as temp"
-                    + " group by transactiontype,landid,createddate,transactionid,personid)"
-                    + " Union "
-                    + " (select transactiontype,landid,string_agg(applicantname,' ' order by applicantname)as applicantname,string_agg(ownename,' ' order by ownename)as ownename,"
-                    + " createddate,transactionid,null as personid from("
-                    + " select distinct 'Gift/Inheritance' as transactiontype, th.landid,null as applicantname,"
-                    + " string_agg(ps.firstname||' '||ps.lastname,' / ' order by ps.firstname,ps.lastname)as ownename,"
-                    + " th.createddate,th.transactionid,null as personid"
-                    + " from la_ext_transactionhistory th"
-                    + " inner join la_Party_person ps on cast(ps.personid as character varying) in (SELECT  regexp_split_to_table(th.oldownerid, E','))"
-                    + " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
-                    + " where th.landid=" + landid + "  and td.processid=6 group by th.landid,th.createddate,th.transactionid"
-                    + " union"
-                    + " select distinct 'Gift/Inheritance' as transactiontype, th.landid,"
-                    + " string_agg(ps2.firstname||' '||ps2.lastname,' / ' order by ps2.ownertype)as applicantname, null as ownename,"
-                    + " th.createddate,th.transactionid,null as personid"
-                    + " from la_ext_transactionhistory th"
-                    + " inner join la_Party_person ps2 on cast(ps2.personid as character varying) in (SELECT  regexp_split_to_table(th.newownerid, E','))"
-                    + " inner join la_ext_transactiondetails td on td.transactionid=th.transactionid"
-                    + " where th.landid=" + landid + "  and td.processid=6 group by th.landid,th.createddate,th.transactionid) as temp"
-                    + " group by transactiontype,landid,createddate,transactionid,personid)"
-                    + " Union "
-                    + " Select distinct on (lea.personid) 'Surrender Lease' as transactiontype, ld.landid,ps1.firstname||' '||ps1.middlename||' '||ps1.lastname as applicantname,ps2.firstname||' '||ps2.middlename||' '||ps2.lastname as ownername,"
-                    + " lea.createddate,td.transactionid,lea.personid 	from la_surrenderlease lea inner join la_spatialunit_land ld on ld.landid=lea.landid"
+                    + " Select distinct on (lea.personid) (case when '" + lang + "' = 'en' then p.processname_en else p.processname end) as transactiontype, ld.landid,ps1.firstname||' '||coalesce(ps1.middlename, '')||' '||ps1.lastname as applicantname,ps2.firstname||' '||coalesce(ps2.middlename, '')||' '||ps2.lastname as ownername,"
+                    + " lea.createddate,td.transactionid,lea.personid, td.processid, plm.certificateno, (case when '" + lang + "' = 'en' then lsh.landsharetype_en else lsh.landsharetype end) as sharetype "
+                    + " from la_surrenderlease lea inner join la_spatialunit_land ld on ld.landid=lea.landid "
                     + " left join la_Party_person ps1 on ps1.personid=lea.personid "
                     + " left join la_ext_personlandmapping plm on plm.landid=ld.landid "
-                    + " left join la_ext_transactiondetails td on td.moduletransid=lea.leaseid"
-                    + " left join la_Party_person ps2 on ps2.personid=lea.ownerid"
+                    + " inner join la_right_landsharetype lsh on plm.share_type_id = lsh.landsharetypeid "
+                    + " left join la_ext_transactiondetails td "
+                    + " inner join la_ext_process p on td.processid = p.processid "
+                    + " on td.moduletransid=lea.leaseid "
+                    + " left join la_Party_person ps2 on ps2.personid=lea.ownerid "
                     + " where ld.landid=" + landid + " and td.processid=5)t order by transactionid desc;";
 
             Query query = getEntityManager().createNativeQuery(sql, TransactionHistoryForFetch.class);
@@ -1952,7 +1905,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                     + " hie1.name as  county , hie2.name as region,hie3.name as province,hie4.name as commune,hie5.name as place, PL.partyid, case when LD.other_use  is null then ' ' else LD.other_use  end as other_use from la_spatialunit_land LD"
                     + " Inner join la_ext_personlandmapping PL on LD.landid = PL.landid"
                     + " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid "
-                    + " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "
+                    + " inner Join la_right_landsharetype ST on PL.share_type_id =  ST.landsharetypeid "
                     + " inner join la_baunit_landusetype LT on LD.landusetypeid=LT.landusetypeid"
                     + " inner join la_baunit_landusetype PU on LD.proposedused=PU.landusetypeid"
                     + " inner join la_baunit_landtype LU on LD.landtypeid=LU.landtypeid"
@@ -2052,54 +2005,6 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
     public List<FarmReport> getFarmReportByLandId(Long landId) {
 
         try {
-
-            /*String sql = Select distinct on (srl.landid) srl.landid,cast(srl.createddate as date),u.username,h1.name as county,h2.name as District,h3.name as Clanname,h4.name as community,h5.name as town,area, 
-						cav1.attributevalue as EnterpriseGroupname, cav2.attributevalue as primarycrop, cav3.attributevalue as primarycropdate,cav4.attributevalue as primarycropduration,
-						 cav5.attributevalue as seccrop, cav6.attributevalue as seccropdate,cav7.attributevalue as seccropduration,
-						  case when rav1.attributevalue is null then ' ' else rav1.attributevalue end  as Ethnicity,rav7.attributevalue||' '||rav8.attributevalue||' '||rav2.attributevalue as Name,
-						  case when rav3.attributevalue is null then ' ' else rav3.attributevalue end as Gender,case when rav4.attributevalue is null then ' ' else rav4.attributevalue end  as MaritalStatus,
-						  case when rav5.attributevalue is null then ' ' else rav5.attributevalue end  as Resident,case when rav6.attributevalue is null then ' ' else rav6.attributevalue end  as DOB,
-						 rav9.attributevalue as MobileNo, rc.classificationname,rsc.subclassificationname, case when rpav.attributevalue is null then 'N' else 'Y' end as ispoi,
-						  case when rpav.attributevalue is null then ' ' else rpav.attributevalue end as relationship, ac.categoryname, case when ac.attributecategoryid in (10,17) then 'Natural' 
-						 when ac.attributecategoryid in (14,18) then 'Non-Natural' end as persontype, prj.projectname as project 
-						
-						from la_spatialunit_resource_land srl 
-						inner join la_ext_user u on u.userid=srl.createdby 
-						inner join la_spatialunitgroup_hierarchy h1 on h1.hierarchyid=srl.hierarchyid1 and h1.spatialunitgroupid=1 
-						inner join la_spatialunitgroup_hierarchy h2 on h2.hierarchyid=srl.hierarchyid2 and h2.spatialunitgroupid=2 
-						inner join la_spatialunitgroup_hierarchy h3 on h3.hierarchyid=srl.hierarchyid3 and h3.spatialunitgroupid=3  
-						inner join la_spatialunitgroup_hierarchy h4 on h4.hierarchyid=srl.hierarchyid4 and h4.spatialunitgroupid=4 
-						inner join la_spatialunitgroup_hierarchy h5 on h5.hierarchyid=srl.hierarchyid5 and h5.spatialunitgroupid=5 
-			
-						inner join la_ext_resource_custom_attributevalue cav1 on cav1.landid=srl.landid and cav1.attributeoptionsid in (100,121,130,139,148,157) 
-						inner join la_ext_resource_custom_attributevalue cav2 on cav2.landid=srl.landid and cav2.attributeoptionsid in (103,122,131,140,149,158) 
-						inner join la_ext_resource_custom_attributevalue cav3 on cav3.landid=srl.landid and cav3.attributeoptionsid in (104,123,132,141,150,159) 
-						inner join la_ext_resource_custom_attributevalue cav4 on cav4.landid=srl.landid and cav4.attributeoptionsid in (105,124,133,142,151,160) 
-						inner join la_ext_resource_custom_attributevalue cav5 on cav5.landid=srl.landid and cav5.attributeoptionsid in (116,125,134,143,152,161) 
-						inner join la_ext_resource_custom_attributevalue cav6 on cav6.landid=srl.landid and cav6.attributeoptionsid in (117,126,135,144,153,162) 
-						inner join la_ext_resource_custom_attributevalue cav7 on cav7.landid=srl.landid and cav7.attributeoptionsid in (118,127,136,145,154,163) 
-			
-						inner join la_ext_resourceattributevalue rav1 on rav1.landid=srl.landid and rav1.attributemasterid in (1024,1059,1070,1122) 
-						inner join la_ext_resourceattributevalue rav7 on rav7.landid=srl.landid and rav7.attributemasterid in (1063,1017,1035,1079,1088,1097,1108) 
-						inner join la_ext_resourceattributevalue rav8 on rav8.landid=srl.landid and rav8.attributemasterid in (1065,1018,1036,1080,1089,1109,1098) 
-						inner join la_ext_resourceattributevalue rav2 on rav2.landid=srl.landid and rav2.attributemasterid in (1066,1019,1037,1081,1090,1099,1110) 
-						inner join la_ext_resourceattributevalue rav3 on rav3.landid=srl.landid and rav3.attributemasterid in (4,1020,1067,1119) 
-						inner join la_ext_resourceattributevalue rav4 on rav4.landid=srl.landid and rav4.attributemasterid in (1022,1064,1116,22)  
-						inner join la_ext_resourceattributevalue rav5 on rav5.landid=srl.landid and rav5.attributemasterid in (43,1025,1071,1123) 
-						inner join la_ext_resourceattributevalue rav6 on rav6.landid=srl.landid and rav6.attributemasterid in (1021,1068,1120,1129)  
-						inner join la_ext_resourceattributevalue rav9 on rav9.landid=srl.landid and rav9.attributemasterid in (1086,1095,1105,1030,1042,1073) 
-			
-						inner join la_ext_resourcelandclassificationmapping rlcm on rlcm.landid=srl.landid 
-						inner join la_ext_resourceclassification rc on rc.classificationid=rlcm.classificationid 
-						inner join la_ext_resourcesubclassification rsc on rsc.subclassificationid=rlcm.subclassificationid 
-			
-						left join la_ext_resourcepoiattributevalue rpav on rpav.landid=srl.landid and rpav.attributemasterid=5 
-						left join la_ext_resourceattributevalue rav on rav.landid=srl.landid 
-						inner join la_ext_attributemaster am on am.attributemasterid=rav.attributemasterid 
-						inner join la_ext_attributecategory ac on ac.attributecategoryid=am.attributecategoryid 
-						inner join la_spatialsource_projectname prj on rlcm.projectid=prj.projectnameid 
-			
-						where srl.landid =12;*/
             String sql = "Select Distinct on (RA.landID) RA.landID,cast(srl.createddate as date),u.username, (Select attributevalue from la_ext_resource_custom_attributevalue where landid=RA.landID "
                     + " and attributeoptionsid in (100,121,130,139,148,157)) as EnterpriseGroupname, h1.name as county,h2.name as District,h3.name as Clanname,h4.name as community,h5.name as town,"
                     + "rc.classificationname,rsc.subclassificationname,area,ac.categoryname, case when ac.attributecategoryid in (10,17,11,12) then 'Natural' when ac.attributecategoryid "
@@ -2154,18 +2059,6 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
     public List<DataCorrectionReport> getBatchDataCorrectionReport(
             Long transactionid) {
 
-        /*Long startid=transactionidstart;
-			
-			Long endid=transactionidend;
-			
-			Long transiddiffr = transactionidend - transactionidstart;
-			String ids= startid+",";
-			for(int i=0; i<transiddiffr; i++){
-				transactionidstart =transactionidstart+1;
-				ids=ids+transactionidstart+",";
-			}
-			
-			ids=ids.substring(0, ids.length()-1);*/
         String sql = null;
 
         try {
@@ -2174,7 +2067,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                     + " hie1.name as  county , hie2.name as region,hie3.name as province,hie4.name as commune,hie5.name as place, PL.partyid from la_spatialunit_land LD"
                     + " Inner join la_ext_personlandmapping PL on LD.landid = PL.landid"
                     + " inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid "
-                    + " inner Join la_right_landsharetype ST on LD.landsharetypeid =  ST.landsharetypeid "
+                    + " inner Join la_right_landsharetype ST on PL.share_type_id =  ST.landsharetypeid "
                     + " inner join la_baunit_landusetype LT on LD.landusetypeid=LT.landusetypeid"
                     + " inner join la_baunit_landusetype PU on LD.proposedused=PU.landusetypeid"
                     + " inner join la_baunit_landtype LU on LD.landtypeid=LU.landtypeid"
@@ -2207,18 +2100,6 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
     public List<PoiReport> getBatchDataCorrectionReportPOI(
             Long transactionid) {
 
-        /*	Long startid=transactionidstart;
-			
-			Long endid=transactionidend;
-			
-			Long transiddiffr = transactionidend - transactionidstart;
-			String ids= startid+",";
-			for(int i=0; i<transiddiffr; i++){
-				transactionidstart =transactionidstart+1;
-				ids=ids+transactionidstart+",";
-			}
-			
-			ids=ids.substring(0, ids.length()-1);*/
         String sql = null;
         try {
 
@@ -2311,9 +2192,9 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
             }
 
             String sql = "select count(sp.landid) as count, pt.claimtype, st.landsharetype\n "
-                    + "from la_spatialunit_land sp inner join la_right_claimtype pt on sp.claimtypeid=pt.claimtypeid\n "
-                    + "  inner join la_right_landsharetype st on sp.landsharetypeid = st.landsharetypeid\n "
-                    + "where sp.projectnameid = :project_name_id and sp.isactive=true and "
+                    + "from la_spatialunit_land sp inner join la_ext_personlandmapping pl on sp.landid = pl.landid inner join la_right_claimtype pt on sp.claimtypeid=pt.claimtypeid\n "
+                    + "  inner join la_right_landsharetype st on pl.share_type_id = st.landsharetypeid\n "
+                    + "where sp.projectnameid = :project_name_id and sp.isactive and pl.isactive and "
                     + "((sp.workflowstatusid >= :newworkflow and sp.workflowstatusid < 10) or sp.workflowstatusid >= :existingworkflow)\n "
                     + " and sp.applicationstatusid != 5 and sp.hierarchyid5 = :villageId \n "
                     + "group by pt.claimtypeid, st.landsharetypeid \n "

@@ -250,7 +250,7 @@ function generateform3(usin) {
 
                     if (form3obj.existing_use !== null) {
                         for (var i = 0; i < form3obj.existing_use.length; i++) {
-                            jQuery("#existing_use-div").append("o " + form3obj.existing_use[i][1] + "<br>");
+                            jQuery("#existing_use_div").append("o " + form3obj.existing_use[i].landusetype + "<br>");
                         }
                     }
                     var printWindow = window.open('form3', 'popUpWindow', 'height=900,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no,status=no, location=no');
@@ -269,7 +269,7 @@ function generateform3(usin) {
             });
 }
 
-function generateform8(usin) {
+function generateform8(usin, dto) {
     var formImage = getFormImage();
 
     jQuery.ajax(
@@ -282,8 +282,12 @@ function generateform8(usin) {
                     jQuery("#printDiv div").empty();
                     jQuery("#printDiv").append(data1);
 
-                    var fromTmp = new generateForms();
-                    var form8obj = fromTmp.Form8(usin);
+                    var form8obj = dto;
+                    
+                    if(isEmpty(dto)){
+                        var fromTmp = new generateForms();
+                        form8obj = fromTmp.Form8(usin);
+                    }
                     removeNulls(form8obj);
 
                     $('.commune_logo').append("<img width='125' height='100' src='" + formImage + "'>");
@@ -330,7 +334,7 @@ function generateform8(usin) {
 
                     if (form8obj.existing_use !== null) {
                         for (var i = 0; i < form8obj.existing_use.length; i++) {
-                            jQuery("#existing_use8").append("o " + form8obj.existing_use[i][1] + "<br>");
+                            jQuery("#existing_use8").append("o " + form8obj.existing_use[i].landusetype + "<br>");
                         }
                     }
 
@@ -345,6 +349,112 @@ function generateform8(usin) {
                             tempArray["name"] = form8obj.poiLst[i - 1].firstName + " " + form8obj.poiLst[i - 1].lastName;
                             tempArray["idcardref"] = form8obj.poiLst[i - 1].idNumber;
                             tempArray["address"] = form8obj.poiLst[i - 1].address;
+                            APFRpoiList.push(tempArray);
+                        }
+                        jQuery("#APFR_template").tmpl(APFRpoiList).appendTo("#APFRTableRowData");
+                    }
+
+                    var printWindow = window.open('form8', 'popUpWindow', 'height=900,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no,status=no, location=no');
+
+                    var html = $("#printDiv").html();
+                    printWindow.document.write('<html><head><title>MAST</title>' + ' <link rel="stylesheet" href="../resources/styles/viewer/form.css" type="text/css" />' + ' <link rel="stylesheet" href="../resources/styles/viewer/style-new.css" type="text/css" />' +
+                            '<script src="../resources/scripts/cloudburst/viewer/Form.js"></script>' +
+                            '<script src="../resources/scripts/jquery-1.7.1/jquery-1.7.1.min.js"></script>' +
+                            '</head><body> ' + html + '<input type="hidden" id="usin_primerykey" value=' + usin + '></body></html>');
+
+                    printWindow.document.close();
+                    printWindow.focus();
+                }
+            });
+}
+
+function generateform52(usin, dto) {
+    var formImage = getFormImage();
+
+    jQuery.ajax(
+            {
+                type: 'GET',
+                url: 'resources/templates/forms/form52.html',
+                dataType: 'html',
+                success: function (data1)
+                {
+                    jQuery("#printDiv div").empty();
+                    jQuery("#printDiv").append(data1);
+
+                    var form52obj = dto;
+                    
+                    if(isEmpty(dto)){
+                        var fromTmp = new generateForms();
+                        form52obj = fromTmp.Form8(usin);
+                    }
+                    removeNulls(form52obj);
+
+                    $('.commune_logo').append("<img width='125' height='100' src='" + formImage + "'>");
+                    $('#region8').text(form52obj.region);
+                    $('#province8').text(form52obj.province);
+                    $('.commune8').text(form52obj.commune);
+                    $('.village8').text(form52obj.village);
+                    $('.village_no8').text(form52obj.village_no);
+                    $('#apfrno8').text(form52obj.apfrno);
+                    $('#apfrno_8').text(form52obj.apfrno);
+                    $('.apfrdate8').text(form52obj.apfr_date);
+                    $('.apfrdate_8').text(form52obj.apfr_date);  // kamal
+                    $('.applicationdate8').text(form52obj.application_date);
+                    $('.familyname8').text(form52obj.familyname);
+                    $('#familyaddress8').text(form52obj.address);
+                    $('.person_lastname8').text(form52obj.last_name);
+                    $('.person_firstname8').text(form52obj.first_name);
+                    $('#birthdate8').text(form52obj.dob);
+                    $('#birthplace8').text(form52obj.birthplace);
+                    $('#gender8').text(form52obj.sex);
+                    $('#refrenceId8').text(form52obj.refrence_id_card);
+                    $('#Idestablishmentdate8').text(form52obj.idcardEstbDate);
+                    $('#IdestablishmentPlace8').text(" ");//to be updated
+                    $('#person_profession8').text(form52obj.profession);
+                    $('#person_address8').text(form52obj.address);
+                    $('#village8').text(form52obj.village);
+                    $('#area8').text(((form52obj.area) * area_constant).toFixed(2));
+                    $('#neighnour_north8').text(form52obj.neighbour_north);
+                    $('#neighbour_east8').text(form52obj.neighbour_east);
+                    $('#neighbour_south8').text(form52obj.neighbour_south);
+                    $('#neighbour_west8').text(form52obj.neighbour_west);
+                    $('#mayor_name8').text(form52obj.mayor_name);
+                    $('#pvnumber8').text(form52obj.pv_no);
+                    $('#rightsDate8').text(form52obj.date_recognition_right);
+                    $('#apfr_commune').text(form52obj.commune);
+                    $('#mandateDate').text(form52obj.mandateDate);
+                    $('#applicationno8').text(form52obj.application_no);
+                    $('#mayor_firstname').text(form52obj.mayor_name);
+                    $("#transferType52").text(form52obj.mutationType);
+                    $("#prev_apfrno52").text(form52obj.previousApfr);
+                    $("#prev_apfrdate52").text(form52obj.previousApfrDate);
+                    $("#contract_name52").text(form52obj.contractName);
+                    $("#contract_num52").text(form52obj.contractNum);
+                    $("#contract_date52").text(form52obj.contractDate);
+                    
+                    if (form52obj.other_use === "0" || form52obj.other_use === null || form52obj.other_use === "" || form52obj.other_use === 0) {
+                        $('#other_use8').text("");
+                    } else {
+                        $('#other_use8').text(form52obj.other_use);
+                    }
+
+                    if (form52obj.existing_use !== null) {
+                        for (var i = 0; i < form52obj.existing_use.length; i++) {
+                            jQuery("#existing_use8").append("o " + form52obj.existing_use[i].landusetype + "<br>");
+                        }
+                    }
+
+                    jQuery("#APFRTableRowData").empty();
+
+                    APFRpoiList = [];
+                    if (form52obj.poiLst !== null)
+                    {
+                        for (var i = 1; i <= form52obj.poiLst.length; i++) {
+                            var tempArray = [];
+                            tempArray["sno"] = i;
+                            tempArray["name"] = form52obj.poiLst[i - 1].firstName + " " + form52obj.poiLst[i - 1].lastName;
+                            tempArray["idcardref"] = form52obj.poiLst[i - 1].idNumber;
+                            tempArray["address"] = form52obj.poiLst[i - 1].address;
                             APFRpoiList.push(tempArray);
                         }
                         jQuery("#APFR_template").tmpl(APFRpoiList).appendTo("#APFRTableRowData");
@@ -496,7 +606,7 @@ function generateform7(usin) {
             });
 }
 
-function generateform5(usin) {
+function generateform5(usin, dto) {
 
     var formImage = getFormImage();
 
@@ -510,8 +620,12 @@ function generateform5(usin) {
                     jQuery("#printDiv div").empty();
                     jQuery("#printDiv").append(data5);
 
-                    var fromTmp = new generateForms();
-                    var form5Obj = fromTmp.Form5(usin);
+                    var form5Obj = dto;
+                    
+                    if(isEmpty(dto)){
+                        var fromTmp = new generateForms();
+                        form5Obj = fromTmp.Form5(usin);
+                    }
                     removeNulls(form5Obj);
                     
                     $('.commune_logo').append("<img width='125' height='100' src='" + formImage + "'>");
@@ -523,12 +637,13 @@ function generateform5(usin) {
                     $('.villageno_5').text(form5Obj.village_no);
                     $('.application_date5').text(form5Obj.application_date);
                     $('.apfrno5').text(form5Obj.application_no);
-                    $('.apfrno_5').text(form5Obj.apfrno);  //kamal
+                    $('.apfrno_5').text(form5Obj.apfrno);  
 
                     $('#lastname_5').text(form5Obj.last_name);
                     $('#firstname_5').text(form5Obj.first_name);
                     $('#gender_5').text(form5Obj.sex);
                     $('#idcard5').text(form5Obj.refrence_id_card);
+                    $("#idDate5").text(form5Obj.idDate);
                     $('#birthdate5').text(form5Obj.dob);
                     $('#birthplace5').text(form5Obj.birthplace);
                     $('#profession5').text(form5Obj.profession);
@@ -562,7 +677,103 @@ function generateform5(usin) {
 
                     if (form5Obj.existing_use !== null) {
                         for (var i = 0; i < form5Obj.existing_use.length; i++) {
-                            jQuery("#existing_use_div5").append("o " + form5Obj.existing_use[i][1] + "<br>");
+                            jQuery("#existing_use_div5").append("o " + form5Obj.existing_use[i].landusetype + "<br>");
+                        }
+                    }
+
+                    var printWindow = window.open('', 'form5' + usin, 'height=900,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no,status=no, location=no');
+
+                    var html = $("#printDiv").html();
+                    printWindow.document.write('<html><head><title>MAST</title>' + ' <link rel="stylesheet" href="../resources/styles/viewer/form.css" type="text/css" />' + ' <link rel="stylesheet" href="../resources/styles/viewer/style-new.css" type="text/css" />' +
+                            '<script src="../resources/scripts/cloudburst/viewer/Form.js"></script>' +
+                            '<script src="../resources/scripts/cloudburst/viewer/LandRecordTemp.js"></script>' +
+                            '<script src="../resources/scripts/jquery-1.7.1/jquery-1.7.1.min.js"></script>' +
+                            '</head><body> ' + html + '<input type="hidden" id="usin_primerykey" value=' + usin + '></body></html>');
+
+                    printWindow.document.close();
+                    printWindow.focus();
+                }
+            });
+}
+
+function generateform51(usin, dto) {
+
+    var formImage = getFormImage();
+
+    jQuery.ajax(
+            {
+                type: 'GET',
+                url: 'resources/templates/forms/form51.html',
+                dataType: 'html',
+                success: function (data51)
+                {
+                    jQuery("#printDiv div").empty();
+                    jQuery("#printDiv").append(data51);
+
+                    var form51Obj = dto;
+                    
+                    if(isEmpty(dto)){
+                        var fromTmp = new generateForms();
+                        form51Obj = fromTmp.Form5(usin);
+                    }
+                    removeNulls(form51Obj);
+                    
+                    $('.commune_logo').append("<img width='125' height='100' src='" + formImage + "'>");
+
+                    $('#region_5').text(form51Obj.region);
+                    $('#province_5').text(form51Obj.province);
+                    $('.commune_5').text(form51Obj.commune);
+                    $('.village_5').text(form51Obj.address);
+                    $('.villageno_5').text(form51Obj.village_no);
+                    $('.application_date5').text(form51Obj.application_date);
+                    $('.apfrno5').text(form51Obj.application_no);
+                    $('.apfrno_5').text(form51Obj.apfrno);  
+
+                    $('#lastname_5').text(form51Obj.last_name);
+                    $('#firstname_5').text(form51Obj.first_name);
+                    $('#gender_5').text(form51Obj.sex);
+                    $('#idcard5').text(form51Obj.refrence_id_card);
+                    $("#idDate51").text(form51Obj.idDate);
+                    $('#birthdate5').text(form51Obj.dob);
+                    $('#profession5').text(form51Obj.profession);
+                    $('#address_5').text(form51Obj.address);
+                    $("#birth_place51").text(form51Obj.birthplace);
+                    $('#location5').text(form51Obj.location);
+                    $('#section5').text(form51Obj.section);
+                    $('#lot5').text(form51Obj.lot);
+                    $('#parcel_no5').text(form51Obj.parcel_no);
+                    $('#area5').text(((form51Obj.area) * area_constant).toFixed(2));
+                    $('#nr-north5').text(form51Obj.neighbour_north);
+                    $('#nr-east5').text(form51Obj.neighbour_east);
+                    $('#nr-south5').text(form51Obj.neighbour_south);
+                    $('#nr-west5').text(form51Obj.neighbour_west);
+                    $('.mayor5').text(form51Obj.mayor_name);
+                    $('#pv_no5').text(form51Obj.pv_no);
+                    $('#recognition_date5').text(form51Obj.date_recognition_right);
+                    $("#transferType51").text(form51Obj.mutationType);
+                    $("#prev_apfrno51").text(form51Obj.previousApfr);
+                    $("#prev_apfrdate51").text(form51Obj.previousApfrDate);
+                    $("#contract_name51").text(form51Obj.contractName);
+                    $("#contract_num51").text(form51Obj.contractNum);
+                    $("#contract_date51").text(form51Obj.contractDate);
+                    
+                    if (form51Obj.apfr_date === null) {
+                        var generateForm = new generateForms();
+                        $('#apfrdate5').text(generateForm.getCurrentDate());
+                        $('#apfrdate_5').text(generateForm.getCurrentDate());  // kamal
+                    } else {
+                        $('#apfrdate5').text(form51Obj.apfr_date);
+                        $('#apfrdate_5').text(form51Obj.apfr_date); // kamal
+                    }
+                    if (form51Obj.other_use === "0" || form51Obj.other_use === null || form51Obj.other_use === "" || form51Obj.other_use === 0) {
+                        $('#other_use5').text("");
+                    } else {
+                        $('#other_use5').text(form51Obj.other_use);
+                    }
+
+                    if (form51Obj.existing_use !== null) {
+                        for (var i = 0; i < form51Obj.existing_use.length; i++) {
+                            jQuery("#existing_use_div5").append("o " + form51Obj.existing_use[i].landusetype + "<br>");
                         }
                     }
 

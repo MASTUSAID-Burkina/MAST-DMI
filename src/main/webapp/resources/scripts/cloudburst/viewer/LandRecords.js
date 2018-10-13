@@ -469,6 +469,7 @@ function editAttribute(id, editable) {
             }
 
             jQuery("#area").val(((data[0].area) * area_constant).toFixed(2));
+            $("#lblApfrNum").text("--");
 
             jQuery("#existing_use").empty();
             jQuery.each(landUserList, function (i, landuseobj) {
@@ -479,28 +480,29 @@ function editAttribute(id, editable) {
                 jQuery("#existing_use").append(jQuery("<option></option>").attr("value", landuseobj.landusetypeid).text(displayName));
             });
 
-            if (data[0].laRightLandsharetype !== null) {
-                jQuery("#tenure_type").val(data[0].laRightLandsharetype.landsharetypeid);
-                if (data[0].laRightLandsharetype.landsharetypeid === 8) {
-                    $("#pnlPoi").show();
-                }
-            }
-
             if (data[0].noaId !== null) {
                 jQuery("#cbxAppNature").val(data[0].noaId);
             }
 
             if (data[0].rights !== null && data[0].rights.length > 0) {
-                var landRight = data[0].rights[0];
-                if (landRight.certTypeid !== null) {
-                    jQuery("#cbxTitleType").val(landRight.certTypeid);
-                }
-                if (landRight.certTypeid !== null) {
-                    jQuery("#txtTitleRegDate").val(landRight.certIssueDate);
-                }
-                if (landRight.certTypeid !== null) {
-                    jQuery("#txtTitleNumber").val(landRight.certNumber);
-                }
+                $.each(data[0].rights, function (i, landRight) {
+                    if (landRight.isactive && landRight.persontypeId === 1) {
+                        if (landRight.certTypeid !== null) {
+                            jQuery("#cbxTitleType").val(landRight.certTypeid);
+                        }
+                        if (landRight.certIssueDate !== null) {
+                            jQuery("#txtTitleRegDate").val(landRight.certIssueDate);
+                        }
+                        if (landRight.certNumber !== null) {
+                            jQuery("#txtTitleNumber").val(landRight.certNumber);
+                            $("#lblApfrNum").text(landRight.certNumber);
+                        }
+                        jQuery("#tenure_type").val(landRight.shareTypeId);
+                        if (landRight.shareTypeId === 8) {
+                            $("#pnlPoi").show();
+                        }
+                    }
+                });
             }
 
             if (data[0].registrationNum !== null) {
@@ -522,28 +524,36 @@ function editAttribute(id, editable) {
 
             if (data[0].landusetypeid !== null) {
                 jQuery("#existing_use").val(data[0].landusetypeid.split(","));
+            } else {
+                jQuery("#existing_use").val("");
             }
-
-            $('select[multiple]').multiselect({
+            
+            $('#existing_use').multiselect({
                 columns: 1,
                 placeholder: $.i18n("gen-please-select")
             });
+            
+            $('#existing_use').multiselect('reload');
 
             $("#spatialid").text(_parcelNumber);
 
             $("#claimType").text(getDisplayName(claimTypes, data[0].claimtypeid, "code", "name", "nameOtherLang"));
             $("#lblAppNum").text("--");
             $("#lblPvNum").text("--");
-            $("#lblApfrNum").text("--");
+
+            if (data[0].claimtypeid === 2) {
+                $("#trExitingTitleHeader").show();
+                $("#trExitingTitleData").show();
+            } else {
+                $("#trExitingTitleHeader").hide();
+                $("#trExitingTitleData").hide();
+            }
 
             if (!isEmpty(data[0].appNum)) {
                 $("#lblAppNum").text(data[0].appNum);
             }
             if (!isEmpty(data[0].pvNum)) {
                 $("#lblPvNum").text(data[0].pvNum);
-            }
-            if (!isEmpty(data[0].apfrNum)) {
-                $("#lblApfrNum").text(data[0].apfrNum);
             }
         }
     });
@@ -699,7 +709,11 @@ function updateattributes() {
         selected_use += $(this).val() + ",";
     });
 
-    $("#existing_hidden").val(selected_use.substring(0, selected_use.length - 1));
+    if (selected_use.length > 0) {
+        $("#existing_hidden").val(selected_use.substring(0, selected_use.length - 1));
+    } else {
+        $("#existing_hidden").val("");
+    }
     jQuery.ajax({
         type: "POST",
         url: "landrecords/updateattributes",
@@ -805,8 +819,6 @@ function search() {
 
     spatialSearch(records_from);
 }
-
-
 
 function updateAttributeNaturalPerson(newPerson) {
     $("#editNaturalPersonformID").validate({
@@ -2223,7 +2235,6 @@ function CustomAction(refrence, landid, workflowid, transactionid, parcelnum, cl
         $("#liDisputes").show();
     } else {
         $("#liDisputes").hide();
-
     }
     _transactionid = transactionid;
     $('#commentsStatusWorkflow').val("");
@@ -2931,7 +2942,7 @@ function reportByGenderApfrReg() {
     reportsObj.ParcelCountByGender("APFR", villageId);
 }
 
-function reportByAppProcess(){
+function reportByAppProcess() {
     var villageId = $("#cbxVillagesByAppProccess").val();
     if (isEmpty(villageId) || villageId < 1) {
         alert($.i18n("err-select-village"));
@@ -2941,7 +2952,7 @@ function reportByAppProcess(){
     reportsObj.RegistryParcel("PROCESSEDAPPLICATION", villageId);
 }
 
-function reportByAppPublish(){
+function reportByAppPublish() {
     var villageId = $("#cbxVillagesByAppPublish").val();
     if (isEmpty(villageId) || villageId < 1) {
         alert($.i18n("err-select-village"));
@@ -2951,7 +2962,7 @@ function reportByAppPublish(){
     reportsObj.RegistryParcel("PUBLISHEDAPPLICATION", villageId);
 }
 
-function reportByAppApfr(){
+function reportByAppApfr() {
     var villageId = $("#cbxVillagesByAppApfr").val();
     if (isEmpty(villageId) || villageId < 1) {
         alert($.i18n("err-select-village"));

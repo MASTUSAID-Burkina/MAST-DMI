@@ -81,7 +81,13 @@ public class Form8Dto implements Serializable {
 
     private Date mandateDate;
     private Date idcardEstbDate;
-
+    private String mutationType = "";
+    private String contractName = "";
+    private Date contractDate;
+    private String contractNum = "";
+    private String previousApfr = "";
+    private Date previousApfrDate;
+    
     public String getRegion() {
         return region;
     }
@@ -382,6 +388,54 @@ public class Form8Dto implements Serializable {
 
     public void setIdcardEstbDate(Date idcardEstbDate) {
         this.idcardEstbDate = idcardEstbDate;
+    }
+
+    public String getMutationType() {
+        return mutationType;
+    }
+
+    public void setMutationType(String mutationType) {
+        this.mutationType = mutationType;
+    }
+
+    public String getContractName() {
+        return contractName;
+    }
+
+    public void setContractName(String contractName) {
+        this.contractName = contractName;
+    }
+
+    public Date getContractDate() {
+        return contractDate;
+    }
+
+    public void setContractDate(Date contractDate) {
+        this.contractDate = contractDate;
+    }
+
+    public String getContractNum() {
+        return contractNum;
+    }
+
+    public void setContractNum(String contractNum) {
+        this.contractNum = contractNum;
+    }
+
+    public String getPreviousApfr() {
+        return previousApfr;
+    }
+
+    public void setPreviousApfr(String previousApfr) {
+        this.previousApfr = previousApfr;
+    }
+
+    public Date getPreviousApfrDate() {
+        return previousApfrDate;
+    }
+
+    public void setPreviousApfrDate(Date previousApfrDate) {
+        this.previousApfrDate = previousApfrDate;
     }
 
 }

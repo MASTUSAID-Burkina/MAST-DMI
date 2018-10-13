@@ -12,7 +12,7 @@ import com.rmsi.mast.studio.domain.LaSpatialunitLand;
 
 public interface LaSpatialunitLandDao extends GenericDAO<LaSpatialunitLand, Integer>{
 
-	List<LaSpatialunitLand> getLaSpatialunitLandDetails(Long landid);
+	LaSpatialunitLand getLaSpatialunitLandDetails(Long landid);
 	
 	List<LaSpatialunitLand> getLaSpatialunitLandDetailsQ(Integer landid);
 	

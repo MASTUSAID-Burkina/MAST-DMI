@@ -196,7 +196,7 @@ public class WorkflowController {
 
             LaExtRegistrationLandShareType objLaExtRegistrationLandShareType = new LaExtRegistrationLandShareType();
             objLaExtRegistrationLandShareType.setLandid(spatialUnit.getLandid());
-            objLaExtRegistrationLandShareType.setLandsharetypeid((long) spatialUnit.getLaRightLandsharetype().getLandsharetypeid());
+            objLaExtRegistrationLandShareType.setLandsharetypeid((long) spatialUnit.getRights().get(0).getShareTypeId());
             objLaExtRegistrationLandShareType.setIsactive(true);
             objLaExtRegistrationLandShareType.setCreateddate(new Date());
             objLaExtRegistrationLandShareType.setCreatedby(userid.intValue());

@@ -102,6 +102,7 @@ import com.rmsi.mast.studio.domain.LaSpatialunitLand;
 import com.rmsi.mast.studio.domain.LandType;
 import com.rmsi.mast.studio.domain.LandUseType;
 import com.rmsi.mast.studio.domain.MaritalStatus;
+import com.rmsi.mast.studio.domain.MutationType;
 import com.rmsi.mast.studio.domain.NaturalPerson;
 import com.rmsi.mast.studio.domain.NatureOfPower;
 import com.rmsi.mast.studio.domain.NonNaturalPerson;
@@ -340,7 +341,7 @@ public class LandRecordsController {
 
     @Autowired
     private ProjectRegionService projRegionService;
-    
+
     public static final String RESPONSE_OK = "OK";
 
     @RequestMapping(value = "/viewer/landrecords/allprojects/", method = RequestMethod.GET)
@@ -575,11 +576,6 @@ public class LandRecordsController {
 
             ClaimBasic su = spatialUnitService.getClaimsBasicByLandId(Usin).get(0);
 
-            if (tenureType > 0) {
-                ShareType objShareType = ShareTypeDao.getShareTypeById(tenureType);
-                su.setLaRightLandsharetype(objShareType);
-            }
-
             if (appNature > 0) {
                 su.setNoaId(appNature);
             } else {
@@ -637,6 +633,9 @@ public class LandRecordsController {
                     su.getRights().get(0).setCertIssueDate(df.parse(titleDate));
                 } else {
                     su.getRights().get(0).setCertIssueDate(null);
+                }
+                if (tenureType > 0) {
+                    su.getRights().get(0).setShareTypeId(tenureType);
                 }
             }
 
@@ -3492,7 +3491,7 @@ public class LandRecordsController {
     @RequestMapping(value = "/viewer/landrecords/personwithinterest/{usin}/{transid}", method = RequestMethod.GET)
     @ResponseBody
     public List<SpatialUnitPersonWithInterest> nxtTokin(@PathVariable Long usin, @PathVariable Long transid) {
-        List<SpatialUnitPersonWithInterest> obj = spatialunitpersonwithinterestdao.findByUsinandTransid(usin, transid.longValue());
+        List<SpatialUnitPersonWithInterest> obj = spatialunitpersonwithinterestdao.findByUsinandTransid(usin, transid);
         if (obj.size() > 0) {
             return obj;
         } else {
@@ -4200,6 +4199,7 @@ public class LandRecordsController {
         }
 
     }
+
     @RequestMapping(value = "/viewer/landrecords/parcelcountbytenure/{projectName}/{tag}/{villageId}", method = RequestMethod.GET)
     @ResponseBody
     public void report1(HttpServletRequest request, HttpServletResponse response, @PathVariable String projectName, @PathVariable String tag, @PathVariable Integer villageId)
@@ -4207,7 +4207,7 @@ public class LandRecordsController {
 
         Workbook wb = new HSSFWorkbook();
         Project project = projectDAO.findByName(projectName);
-        
+
         String filename = "";
         if (tag.equalsIgnoreCase("NEW")) {
             filename = "Report_By_Tenure_Map_register.xls";
@@ -4239,11 +4239,11 @@ public class LandRecordsController {
                     columnCount = 0;
 
                     Object[] rec = (Object[]) records.get(i);
-                    
+
                     String claimType = (String) rec[1];
                     Cell cell = row.createCell(columnCount++);
                     cell.setCellValue(claimType);
-                    
+
                     String shareType = (String) rec[2];
                     cell = row.createCell(columnCount++);
                     cell.setCellValue(shareType);
@@ -4264,7 +4264,7 @@ public class LandRecordsController {
             out.flush();
         }
     }
-    
+
     @RequestMapping(value = "/viewer/landrecords/parcelcountbygender/{projectName}/{tag}/{villageId}", method = RequestMethod.GET)
     @ResponseBody
     public void report2(HttpServletRequest request, HttpServletResponse response, @PathVariable String projectName, @PathVariable String tag, @PathVariable Integer villageId)
@@ -4272,7 +4272,7 @@ public class LandRecordsController {
 
         Workbook wb = new HSSFWorkbook();
         Project project = projectDAO.findByName(projectName);
-        
+
         // Create a blank sheet
         Sheet sheet = wb.createSheet("new sheet");
         String filename = "";
@@ -4333,7 +4333,7 @@ public class LandRecordsController {
 
         Workbook wb = new HSSFWorkbook();
         Project project = projectDAO.findByName(projectName);
-        
+
         // Create a blank sheet
         Sheet sheet = wb.createSheet("new sheet");
 
@@ -4385,7 +4385,7 @@ public class LandRecordsController {
             out.flush();
         }
     }
-    
+
     @RequestMapping(value = "/viewer/landrecords/projectdetailedsummaryreport/{project}/{tag}/{villageId}", method = RequestMethod.GET)
     @ResponseBody
     public void report2(HttpServletRequest request, HttpServletResponse response, @PathVariable String project, @PathVariable String tag) throws FileNotFoundException, IOException {
@@ -5126,9 +5126,9 @@ public class LandRecordsController {
         out.close();
     }
 
-    @RequestMapping(value = "/viewer/landrecords/parcelhistory/{landid}", method = RequestMethod.GET)
+    @RequestMapping(value = "/viewer/landrecords/parcelhistory/{lang}/{landid}", method = RequestMethod.GET)
     @ResponseBody
-    public List<Object> getParcelHistorybylandid(@PathVariable Long landid) {
+    public List<Object> getParcelHistorybylandid(@PathVariable String lang, @PathVariable Long landid) {
         List<Object> object = new ArrayList<Object>();
         Object objsaledetails = null;
         Object objleasedetails = null;
@@ -5139,41 +5139,13 @@ public class LandRecordsController {
             objsaledetails = landRecordsService.getownerhistorydetails(landid);
             objleasedetails = landRecordsService.getleasehistorydetails(landid);
             objmortagedetails = landRecordsService.getmortagagedetails(landid);
-            objtransactiondetails = landRecordsService.gettransactiondetails(landid);
-
-//	   		List<OwnerHistoryForFetch> ownersaledetails= landRecordsService.getownerhistorydetails(landid);
-//	   	 for(OwnerHistoryForFetch obj: ownersaledetails){
-//	   		
-//	   			
-//	   			
-//	   			LaExtTransactiondetail transactionObj= laExtTransactiondetailDao.getLaExtTransactiondetail(obj.getTransactionid());
-//	   			if(transactionObj.getProcessid() == 1){
-//	   				objleasedetails = transactionObj;
-//	   				object.add(objleasedetails);
-//	   				}
-//	   			else if(transactionObj.getProcessid() == 2){
-//	   				objsaledetails = transactionObj;
-//	   				object.add(objsaledetails);
-//	   				}
-//	   			else if(transactionObj.getProcessid() == 3){
-//	   				objmortagedetails = transactionObj;
-//	   				object.add(objmortagedetails);
-//	   				}
-//	   	 }
-//	   		 
-//	   		
-//	   		 
-//	   	 
-////			objleasedetails= landRecordsService.getownerhistorydetails(landid);
-////			objmortagedetails= landRecordsService.getownerhistorydetails(landid);
-//			
+            objtransactiondetails = landRecordsService.gettransactiondetails(landid, lang);
             object.add(objsaledetails);
             object.add(objleasedetails);
             object.add(objmortagedetails);
             object.add(objtransactiondetails);
             return object;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return null;
         }
@@ -5862,7 +5834,7 @@ public class LandRecordsController {
                 // entry for landShareType in 
                 LaExtRegistrationLandShareType objLaExtRegistrationLandShareType = new LaExtRegistrationLandShareType();
                 objLaExtRegistrationLandShareType.setLandid(objClaimBasic.getLandid());
-                objLaExtRegistrationLandShareType.setLandsharetypeid((long) objClaimBasic.getLaRightLandsharetype().getLandsharetypeid());
+                objLaExtRegistrationLandShareType.setLandsharetypeid((long) objClaimBasic.getRights().get(0).getShareTypeId());
                 objLaExtRegistrationLandShareType.setIsactive(true);
                 objLaExtRegistrationLandShareType.setCreateddate(new Date());
                 objLaExtRegistrationLandShareType.setCreatedby(user_id.intValue());
@@ -5930,23 +5902,7 @@ public class LandRecordsController {
     @RequestMapping(value = "/viewer/landrecords/checkShareType/{id}", method = RequestMethod.GET)
     @ResponseBody
     public String landsharetype(@PathVariable Long id) {
-
-        String data = "true";
-        List<ClaimBasic> claimBasicobj = spatialUnitService.getClaimsBasicByLandId(id);
-        List<SocialTenureRelationship> socialtenureobj = socialTenureRelationshipDao.getSocialTenureRelationshipBylandID(claimBasicobj.get(0).getLandid());
-        if (socialtenureobj.size() <= 1 && claimBasicobj.get(0).getLaRightLandsharetype().getLandsharetypeid() == 6) {
-            data = "You cant't add more than 1-person for Single Tenancy";
-            return "You cant't add more than 1-person for single Tenancy";
-        } else if (socialtenureobj.size() >= 2 && claimBasicobj.get(0).getLaRightLandsharetype().getLandsharetypeid() == 7) {
-            data = "You cant't add more than 2-person for Joint Tenancy";
-            return "You cant't add more than 2-person for Joint Tenancy";
-        } else if (socialtenureobj.size() >= 0 && claimBasicobj.get(0).getLaRightLandsharetype().getLandsharetypeid() == 8) {
-            return "true";
-        } else if (socialtenureobj.size() >= 0 && socialtenureobj.size() < 1 && claimBasicobj.get(0).getLaRightLandsharetype().getLandsharetypeid() == 9) {
-            return "true";
-        } else {
-            return data;
-        }
+        return "true";
     }
 
     @RequestMapping(value = "/viewer/landrecords/aquisitiontype/", method = RequestMethod.GET)
@@ -6037,7 +5993,6 @@ public class LandRecordsController {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
         return object;
     }
 
@@ -6045,15 +6000,12 @@ public class LandRecordsController {
     @ResponseBody
     public List<SpatialUnitPersonWithInterest> getPOI(@PathVariable Long transid, @PathVariable Long usin, HttpServletRequest request, HttpServletResponse response, Principal principal) {
         List<SpatialUnitPersonWithInterest> obj = null;
-
         obj = spatialunitpersonwithinterestdao.findByUsinandTransid(usin, transid.longValue());
         if (null != obj) {
             return obj;
         } else {
             return null;
-
         }
-
     }
 
     @RequestMapping(value = "/viewer/landrecords/farmreport/{usin}/{projectId}", method = RequestMethod.GET)
@@ -6326,92 +6278,68 @@ public class LandRecordsController {
     @ResponseBody
     public SpatialUnitPersonWithInterest saveRegPersonOfInterestForEditing(HttpServletRequest request, @PathVariable Long landId, @PathVariable Long processid, Principal principal) {
 
-        SpatialUnitPersonWithInterest personinterest = null;
+        SpatialUnitPersonWithInterest poi = null;
         Date date1 = null;
         try {
-            Integer PoiId = 0;
-            Integer genderid = 0;
-            Integer realtionid = 0;
-            String dateofbirth = "";
-            String firstname = "";
-            String middlename = "";
-            String lastname = "";
-            SocialTenureRelationship socialTenureRelationshipBuyerDetails = null;
+            Integer poiId;
+            Integer genderid;
+            String dateofbirth;
+            String firstname;
+            String middlename;
+            String lastname;
+            SocialTenureRelationship buyerRight = null;
 
-            try {
-                firstname = ServletRequestUtils.getRequiredStringParameter(request, "firstname_sale_poi");
-            } catch (Exception e) {
-            }
-            try {
-                middlename = ServletRequestUtils.getRequiredStringParameter(request, "middlename_sale_poi");
-            } catch (Exception e) {
-            }
-            try {
-                lastname = ServletRequestUtils.getRequiredStringParameter(request, "lastname_sale_poi");
-            } catch (Exception e) {
-            }
-            try {
-                genderid = ServletRequestUtils.getRequiredIntParameter(request, "gender_sale_POI");
-            } catch (Exception e) {
-            }
-            try {
-                realtionid = ServletRequestUtils.getRequiredIntParameter(request, "Relationship_sale_POI");
-            } catch (Exception e) {
-            }
-            try {
-                dateofbirth = ServletRequestUtils.getRequiredStringParameter(request, "date_Of_birthPOI_sale");
-            } catch (Exception e) {
-            }
-            try {
-                PoiId = ServletRequestUtils.getRequiredIntParameter(request, "leaseepoiid");
-            } catch (Exception e) {
-            }
+            poiId = ServletRequestUtils.getIntParameter(request, "leaseepoiid", 0);
+            firstname = ServletRequestUtils.getStringParameter(request, "firstname_sale_poi", "");
+            middlename = ServletRequestUtils.getStringParameter(request, "middlename_sale_poi", "");
+            lastname = ServletRequestUtils.getStringParameter(request, "lastname_sale_poi", "");
+            dateofbirth = ServletRequestUtils.getStringParameter(request, "date_Of_birthPOI_sale", null);
+            String address = ServletRequestUtils.getStringParameter(request, "address_sale_poi", "");
+            String idNumber = ServletRequestUtils.getStringParameter(request, "poi_id_number_sale", "");
+            genderid = ServletRequestUtils.getIntParameter(request, "gender_sale_POI", 0);
             Integer editflag = ServletRequestUtils.getRequiredIntParameter(request, "editflag");
-            if (dateofbirth != "") {
 
-                date1 = new SimpleDateFormat("YYYY-MM-DD").parse(dateofbirth);
-
-//		 date1=new SimpleDateFormat("yyyy-MM-dd").parse(finaldob);
+            if (dateofbirth != null && !"".equals(dateofbirth)) {
+                date1 = new SimpleDateFormat("yyyy-MM-dd").parse(dateofbirth);
             }
             if (editflag == 0) {
-                socialTenureRelationshipBuyerDetails = registrationRecordsService.getSocialTenureRelationshipByLandIdForBuyer(landId, processid);
+                buyerRight = registrationRecordsService.getSocialTenureRelationshipByLandIdForBuyer(landId, processid);
             } else if (editflag == 1) {
-                socialTenureRelationshipBuyerDetails = registrationRecordsService.getAllSocialTenureRelationshipByTransactionId(processid);
-
+                buyerRight = registrationRecordsService.getAllSocialTenureRelationshipByTransactionId(processid);
             }
 
-            if (null != socialTenureRelationshipBuyerDetails) {
-                personinterest = spatialUnitPersonWithInterestService.findSpatialUnitPersonWithInterestById(PoiId.longValue());
-
-                if (null == personinterest) {
-                    personinterest = new SpatialUnitPersonWithInterest();
-                    personinterest.setFirstName(firstname);
-                    personinterest.setMiddleName(middlename);
-                    personinterest.setLastName(lastname);
-                    personinterest.setDob(date1);
-                    personinterest.setGender(genderid);
-                    personinterest.setRelation(realtionid);
-                    personinterest.setLandid(landId);
-                    personinterest.setCreatedby(1);
-                    personinterest.setCreateddate(new Date());
-                    personinterest.setIsactive(true);
-                    personinterest.setTransactionid(socialTenureRelationshipBuyerDetails.getLaExtTransactiondetail().getTransactionid());
-                } else {
-                    personinterest.setFirstName(firstname);
-                    personinterest.setMiddleName(middlename);
-                    personinterest.setLastName(lastname);
-                    personinterest.setDob(date1);
-                    personinterest.setGender(genderid);
-                    personinterest.setRelation(realtionid);
-                    personinterest.setTransactionid(socialTenureRelationshipBuyerDetails.getLaExtTransactiondetail().getTransactionid());
-
+            if (null != buyerRight) {
+                if (poiId > 0) {
+                    poi = spatialUnitPersonWithInterestService.findSpatialUnitPersonWithInterestById(poiId.longValue());
                 }
 
-                spatialUnitPersonWithInterestService.save(personinterest);
+                String username = principal.getName();
+                User user = userService.findByUniqueName(username);
+                Long userid = user.getId();
 
+                if (null == poi) {
+                    poi = new SpatialUnitPersonWithInterest();
+                    poi.setLandid(landId);
+                    poi.setCreatedby(userid.intValue());
+                    poi.setCreateddate(new Date());
+                    poi.setIsactive(true);
+                } else {
+                    poi.setModifiedby(userid.intValue());
+                    poi.setModifieddate(new Date());
+                }
+                poi.setFirstName(firstname);
+                poi.setMiddleName(middlename);
+                poi.setLastName(lastname);
+                poi.setDob(date1);
+                poi.setGender(genderid);
+                poi.setTransactionid(buyerRight.getLaExtTransactiondetail().getTransactionid());
+                poi.setAddress(address);
+                poi.setIdentityno(idNumber);
+
+                spatialUnitPersonWithInterestService.save(poi);
             }
 
-            return personinterest;
+            return poi;
         } catch (Exception e) {
             logger.error(e);
             return null;
@@ -6661,22 +6589,18 @@ public class LandRecordsController {
 
         if (doc == null) {
             response.setContentLength(data.length);
-            /* if(null!=doc.getLaExtDocumentformat()){
-	    		  format=doc.getLaExtDocumentformat().getDocumentformatEn().split("/");
-	    		 }*/
+            return;
         }
-        String filepath = FileUtils.getFielsFolder(request) + doc.getDocumentlocation()
-                + "/" + doc.getDocumentname();
+        String filepath = FileUtils.getFielsFolder(request) + doc.getDocumentlocation();
         filepath = filepath.replace("\\mast\\..", "");
         Path path = Paths.get(filepath);
         try {
             data = Files.readAllBytes(path);
             response.setContentLength(data.length);
-            OutputStream out = response.getOutputStream();
-            out.write(data);
-            out.flush();
-            out.close();
-
+            try (OutputStream out = response.getOutputStream()) {
+                out.write(data);
+                out.flush();
+            }
         } catch (Exception e) {
             logger.error(e);
         }
@@ -6704,15 +6628,11 @@ public class LandRecordsController {
         try {
 
             String userId[] = null;
-            String project = "";
             String username = principal.getName();
             User userObj = userService.findByUniqueName(username);
-            SourceDocument doc = null;
             byte[] document = null;
-            SourceDocument objDocument = new SourceDocument();
 
             Long created_by = userObj.getId();
-            Long modifiedby = created_by;// As discussed with rajendra sir modified by also same as created by
 
             Iterator<String> file = request.getFileNames();
 
@@ -6724,198 +6644,80 @@ public class LandRecordsController {
 
             Long landid = 0L;
             landid = ServletRequestUtils.getRequiredLongParameter(request, "landid");
+            String mediaFolder = "/multimedia";
+            String baseFolder = FileUtils.getFielsFolder(request);
+
+            String folderPath = (baseFolder + mediaFolder).replace("\\mast\\..", "");
+            File existingdr = new File(folderPath);
+
+            if (!existingdr.exists()) {
+                (new File(folderPath)).mkdirs();
+            }
 
             if (null != docid) {
-                doc = sourcedocdao.findDocumentByDocumentId(docid.longValue());
+                SourceDocument doc = sourcedocdao.findDocumentByDocumentId(docid.longValue());
 
                 while (file.hasNext()) {
                     String fileName = file.next();
-                    String projName = "";
                     MultipartFile mpFile = request.getFile(fileName);
-                    long size = mpFile.getSize();
                     String originalFileName = mpFile.getOriginalFilename();
-//							
 
                     if (originalFileName != "") {
                         document = mpFile.getBytes();
                     }
-                    String filepath = FileUtils.getFielsFolder(request) + doc.getDocumentlocation();
-                    filepath = filepath.replace("\\mast\\..", "");
-                    Path path = Paths.get(filepath);
-                    File existingdr = new File(filepath);
+                    String filePath = FileUtils.getFielsFolder(request) + doc.getDocumentlocation();
 
-                    boolean exist = existingdr.exists();
-                    if (!exist) {
-
-                        boolean success = (new File(filepath)).mkdirs();
-
+                    // Delete if ile exists
+                    File existingFile = new File(filePath);
+                    if (existingFile.exists()) {
+                        existingFile.delete();
                     }
 
                     try {
-                        File serverFile = new File(existingdr + File.separator
-                                + originalFileName);
-
-                        FileOutputStream uploadfile = new FileOutputStream(serverFile, false);
-                        uploadfile.write(document);
-                        uploadfile.flush();
-                        uploadfile.close();
-
+                        File serverFile = new File(filePath);
+                        try (FileOutputStream uploadfile = new FileOutputStream(serverFile, false)) {
+                            uploadfile.write(document);
+                            uploadfile.flush();
+                        }
                     } catch (Exception e) {
                         logger.error(e);
                     }
-                    doc.setDocumentname(originalFileName);
+                }
+            } else {
+                while (file.hasNext()) {
+                    String fileName = file.next();
+                    MultipartFile mpFile = request.getFile(fileName);
+                    String originalName = mpFile.getOriginalFilename();
 
+                    SourceDocument doc = new SourceDocument();
+                    Outputformat outputformat = Outputformatdao.findByName("image" + "/" + FileUtils.getFileExtension(originalName));
+                    doc.setLaExtDocumentformat(outputformat);
+                    doc.setCreatedby(created_by.intValue());
+                    doc.setCreateddate(new Date());
+                    doc.setModifiedby(created_by.intValue());
+                    doc.setModifieddate(new Date());
+                    doc.setRecordationdate(new Date());
+                    doc.setRemarks("");
+                    doc.setDocumentlocation(mediaFolder);
+                    doc.setIsactive(true);
+                    doc.setLaSpatialunitLand(landid);
+                    doc.setLaExtTransactiondetail(laExtTransactiondetailDao.getLaExtTransactiondetail(transid));
+                    doc.setDocumentname(mpFile.getOriginalFilename());
+
+                    doc = sourceDocumentsDao.saveUploadedDocuments(doc);
+
+                    // Save again to set file location
+                    String filePath = mediaFolder + File.separator + doc.getDocumentid().toString() + "." + FileUtils.getFileExtension(originalName);
+                    doc.setDocumentlocation(filePath);
                     sourceDocumentsDao.saveUploadedDocuments(doc);
 
-                }
-                /*byte[] document = null;
-					while(file.hasNext()) 
-					{
-						String fileName = file.next();
-						String projName="";
-						MultipartFile mpFile = request.getFile(fileName);
-						long size = mpFile.getSize();
-						String originalFileName = mpFile.getOriginalFilename();
-						SourceDocument objDocument = new SourceDocument();
-						
-						
+                    document = mpFile.getBytes();
 
-						if (originalFileName != "") {
-							document = mpFile.getBytes();
-						}
-				    	 doc =  sourcedocdao.findDocumentByDocumentId(docid.longValue());
-				    	if(doc==null){
-				    		//String filepath = "/storage/emulated/0/MAST/multimedia/" +originalFileName;
-				    		String filepath = FileUtils.getFielsFolder(request) +"/storage/emulated/0/MAST/multimedia/Parcel_Media";
-					        filepath =  filepath.replace("\\mast\\..", "");
-					        Path path = Paths.get(filepath);
-					        File existingdr =new File(filepath);
-					        boolean exist = existingdr.exists();
-							if (!exist) {
-								
-								boolean success = (new File(filepath)).mkdirs();
-								
-							}
-							
-					        try {
-					        	File serverFile = new File(existingdr + File.separator
-				                        + originalFileName);
-					            
-					            FileOutputStream uploadfile = new FileOutputStream(serverFile, false);
-								uploadfile.write(document);
-								uploadfile.flush();
-								uploadfile.close();
-
-					        } catch (Exception e) {
-					            logger.error(e);
-					        }
-					        Outputformat outputformat = Outputformatdao.findByName("image"+"/" +FileUtils.getFileExtension(originalFileName));
-					        objDocument.setLaExtDocumentformat(outputformat);
-					        objDocument.setCreatedby(created_by.intValue());
-					        objDocument.setCreateddate(new Date());
-					        objDocument.setModifiedby(created_by.intValue());
-					        objDocument.setModifieddate(new Date());
-					        objDocument.setRecordationdate(new Date());
-					        objDocument.setRemarks("");
-					        objDocument.setDocumentlocation("/storage/emulated/0/MAST/multimedia/Parcel_Media");
-					        objDocument.setIsactive(true);
-					        objDocument.setLaSpatialunitLand(landid);
-					        objDocument.setLaParty(laPartyDao.getPartyListIdByID(partyid.longValue()).get(0));       
-					        objDocument.setLaExtTransactiondetail( laExtTransactiondetailDao.getLaExtTransactiondetail(transid));
-					        if(transid==0){
-					        	SocialTenureRelationship socialtenureobj =socialTenureRelationshipDAO.getSocialTenureObj(partyid.longValue(), landid);
-						        objDocument.setLaExtTransactiondetail(socialtenureobj.getLaExtTransactiondetail());
-
-					        }
-					        objDocument.setDocumentname(originalFileName);
-					        sourceDocumentsDao.saveUploadedDocuments(objDocument);
-							
-
-				    	}
-				        String filepath = FileUtils.getFielsFolder(request) + doc.getDocumentlocation();
-				        filepath =  filepath.replace("\\mast\\..", "");
-				        Path path = Paths.get(filepath);
-				        File existingdr =new File(filepath);
-
-				        
-				        boolean exist = existingdr.exists();
-						if (!exist) {
-							
-							boolean success = (new File(filepath)).mkdirs();
-							
-						}
-						
-						
-				        try {
-				        	File serverFile = new File(existingdr + File.separator
-			                        + originalFileName);
-				            
-				            FileOutputStream uploadfile = new FileOutputStream(serverFile, false);
-							uploadfile.write(document);
-							uploadfile.flush();
-							uploadfile.close();
-
-				        } catch (Exception e) {
-				            logger.error(e);
-				        }
-				    
-				        objDocument= doc;
-				        objDocument.setDocumentname(originalFileName);
-				        sourceDocumentsDao.saveUploadedDocuments(objDocument);
-                 */
-
-                System.out.println("true");
-
-            } else {
-
-                while (file.hasNext()) {
-                    String fileName = file.next();
-                    String projName = "";
-                    MultipartFile mpFile = request.getFile(fileName);
-                    long size = mpFile.getSize();
-                    String originalFileName = mpFile.getOriginalFilename();
-
-                    if (originalFileName != "") {
-                        document = mpFile.getBytes();
-                    }
-
-                    String filepath = FileUtils.getFielsFolder(request) + "/storage/emulated/0/MAST/multimedia/Parcel_Media";
-                    filepath = filepath.replace("\\mast\\..", "");
-                    Path path = Paths.get(filepath);
-                    File existingdr = new File(filepath);
-                    boolean exist = existingdr.exists();
-                    if (!exist) {
-
-                        boolean success = (new File(filepath)).mkdirs();
-
-                    }
-
-                    try {
-                        File serverFile = new File(existingdr + File.separator
-                                + originalFileName);
-
-                        FileOutputStream uploadfile = new FileOutputStream(serverFile, false);
+                    File serverFile = new File(baseFolder + filePath);
+                    try (FileOutputStream uploadfile = new FileOutputStream(serverFile, false)) {
                         uploadfile.write(document);
                         uploadfile.flush();
-                        uploadfile.close();
-
-                    } catch (Exception e) {
-                        logger.error(e);
                     }
-                    Outputformat outputformat = Outputformatdao.findByName("image" + "/" + FileUtils.getFileExtension(originalFileName));
-                    objDocument.setLaExtDocumentformat(outputformat);
-                    objDocument.setCreatedby(created_by.intValue());
-                    objDocument.setCreateddate(new Date());
-                    objDocument.setModifiedby(created_by.intValue());
-                    objDocument.setModifieddate(new Date());
-                    objDocument.setRecordationdate(new Date());
-                    objDocument.setRemarks("");
-                    objDocument.setDocumentlocation("/storage/emulated/0/MAST/multimedia/Parcel_Media");
-                    objDocument.setIsactive(true);
-                    objDocument.setLaSpatialunitLand(landid);
-                    objDocument.setLaExtTransactiondetail(laExtTransactiondetailDao.getLaExtTransactiondetail(transid));
-                    objDocument.setDocumentname(originalFileName);
-                    sourceDocumentsDao.saveUploadedDocuments(objDocument);
                 }
             }
 
@@ -7052,7 +6854,7 @@ public class LandRecordsController {
 
         try {
             ClaimBasic su = spatialUnitService.getClaimsBasicByLandId(id).get(0);
-            RightBasic right = su.getRights().get(0);
+            RightBasic right = getOwnershipRight(su);
             NaturalPerson person = (NaturalPerson) right.getLaParty();
 
             List<String> neighborList = new ArrayList<String>();
@@ -7127,7 +6929,7 @@ public class LandRecordsController {
 
         try {
             ClaimBasic su = spatialUnitService.getClaimsBasicByLandId(usin).get(0);
-            RightBasic right = su.getRights().get(0);
+            RightBasic right = getOwnershipRight(su);
             NaturalPerson person = (NaturalPerson) right.getLaParty();
 
             dto.setAddress(StringUtils.empty(person.getAddress()));
@@ -7174,10 +6976,9 @@ public class LandRecordsController {
 
             dto.setReferenceofId(StringUtils.empty(person.getIdentityno()));
 
-            if (su.getLaRightLandsharetype() != null) {
-                dto.setTypeoftenancy(su.getLaRightLandsharetype().getLandsharetype());
-            }
-            dto.setTenancyId(su.getLaRightLandsharetype().getLandsharetypeid());
+            ShareType shareType = landRecordsService.findTenureType((long) right.getShareTypeId());
+            dto.setTypeoftenancy(shareType.getLandsharetype());
+            dto.setTenancyId(right.getShareTypeId());
 
             dto.setLocation(dto.getCommune() + " " + dto.getVillage());
             dto.setIdcardestablishment_date(person.getIdCardDate());
@@ -7197,10 +6998,10 @@ public class LandRecordsController {
         Form2Dto dto = new Form2Dto();
         try {
             ClaimBasic su = spatialUnitService.getClaimsBasicByLandId(usin).get(0);
-            RightBasic right = su.getRights().get(0);
+            RightBasic right = getOwnershipRight(su);
             NaturalPerson person = (NaturalPerson) right.getLaParty();
 
-            List<SpatialunitPersonwithinterest> poiLst = landRecordsService.findpersonInterestByUsin(usin);
+            List<SpatialunitPersonwithinterest> poiLst = getPropertyPois(usin, right.getLaExtTransactiondetail().getTransactionid());
 
             dto.setAddress(person.getAddress());
 
@@ -7242,7 +7043,7 @@ public class LandRecordsController {
         Form3Dto dto = new Form3Dto();
         try {
             ClaimBasic su = spatialUnitService.getClaimsBasicByLandId(usin).get(0);
-            RightBasic right = su.getRights().get(0);
+            RightBasic right = getOwnershipRight(su);
             NaturalPerson person = (NaturalPerson) right.getLaParty();
             SpatialUnitExtension suExt = null;
             if (su.getParcelExtensions() != null && su.getParcelExtensions().size() > 0) {
@@ -7269,10 +7070,9 @@ public class LandRecordsController {
             dto.setAddress(person.getAddress());
             dto.setDob(person.getDateofbirth());
             dto.setBirthplace(person.getBirthPlace());
-            if (su.getLaRightLandsharetype() != null) {
-                dto.setShare(su.getLaRightLandsharetype().getLandsharetype());
-            }
-            dto.setTennancytypeID(su.getLaRightLandsharetype().getLandsharetypeid());
+            ShareType shareType = landRecordsService.findTenureType((long) right.getShareTypeId());
+            dto.setShare(shareType.getLandsharetype());
+            dto.setTennancytypeID(right.getShareTypeId());
 
             List<LandUseType> existingList = landRecordsService.getExistingUseName(su.getLandusetypeid());
 
@@ -7310,14 +7110,14 @@ public class LandRecordsController {
         Form7Dto dto = new Form7Dto();
         try {
             ClaimBasic su = spatialUnitService.getClaimsBasicByLandId(usin).get(0);
-            RightBasic right = su.getRights().get(0);
+            RightBasic right = getOwnershipRight(su);
             NaturalPerson person = (NaturalPerson) right.getLaParty();
             SpatialUnitExtension suExt = null;
             if (su.getParcelExtensions() != null && su.getParcelExtensions().size() > 0) {
                 suExt = su.getParcelExtensions().get(0);
             }
 
-            List<SpatialunitPersonwithinterest> poiLst = landRecordsService.findpersonInterestByUsin(usin);
+            List<SpatialunitPersonwithinterest> poiLst = getPropertyPois(usin, right.getLaExtTransactiondetail().getTransactionid());
 
             if (su.getLaSpatialunitgroupHierarchy5() != null) {
                 dto.setVillage(su.getLaSpatialunitgroupHierarchy5().getName());
@@ -7401,15 +7201,16 @@ public class LandRecordsController {
             dto.setProfession(person.getProfession());
             dto.setPublic_issuansedate(su.getPublicNoticeStartDate());
 
-            if (su.getLaRightLandsharetype().getLandsharetypeid() == 7 && person.getGenderid() == 1) {
+            if (right.getShareTypeId() == 7 && person.getGenderid() == 1) {
                 dto.setName("M " + person.getLastname() + " " + person.getFirstname());
-            } else if (su.getLaRightLandsharetype().getLandsharetypeid() == 7 && person.getGenderid() == 2) {
+            } else if (right.getShareTypeId() == 7 && person.getGenderid() == 2) {
                 dto.setName("Mme " + person.getLastname() + " " + person.getFirstname());
-            } else if (su.getLaRightLandsharetype().getLandsharetypeid() == 8) {
+            } else if (right.getShareTypeId() == 8) {
                 dto.setName("famille " + person.getLastname() + " " + person.getFirstname());
             }
 
-            dto.setApplication_type(su.getLaRightLandsharetype().getLandsharetype());
+            ShareType shareType = landRecordsService.findTenureType((long) right.getShareTypeId());
+            dto.setApplication_type(shareType.getLandsharetype());
             dto.setPv_no(su.getPvNum());
 
         } catch (Exception e) {
@@ -7495,7 +7296,7 @@ public class LandRecordsController {
         Form5Dto dto = new Form5Dto();
         try {
             ClaimBasic su = spatialUnitService.getClaimsBasicByLandId(usin).get(0);
-            RightBasic right = su.getRights().get(0);
+            RightBasic right = getOwnershipRight(su);
             NaturalPerson person = (NaturalPerson) right.getLaParty();
             Project project = projectService.findProjectById(su.getProjectnameid());
 
@@ -7516,7 +7317,6 @@ public class LandRecordsController {
             dto.setApplication_date(su.getApplicationdate());
             dto.setApplication_no(su.getAppNum());
             dto.setArea(Double.toString(su.getArea()));
-            dto.setApfr_date(su.getApfrDate());
             dto.setBirthplace(person.getBirthPlace());
             dto.setDob(person.getDateofbirth());
 
@@ -7540,14 +7340,41 @@ public class LandRecordsController {
             dto.setProfession(person.getProfession());
             dto.setPv_no(su.getPvNum());
             dto.setRefrence_id_card(person.getIdentityno());
-
+            dto.setIdDate(person.getIdCardDate());
+            
             if (person.getGenderid() != null && person.getGenderid() > 0) {
                 dto.setSex(Genderdao.getGenderById(person.getGenderid()).getGender());
             }
 
             dto.setOther_use(su.getOther_use());
-            dto.setApfrno(su.getApfrNum());
-
+            dto.setApfrno(right.getCertNumber());
+            dto.setApfr_date(right.getCreateddate());
+            
+            if (right.getMutationId() != null) {
+                MutationType mt = landRecordsService.getMutationType(right.getMutationId());
+                dto.setMutationType(mt.getName());
+                
+                // Search for previous APFR number
+                int tranId = 0;
+                RightBasic previousRight = null;
+                for (RightBasic r : su.getRights()) {
+                    if(r.getPersonlandid().compareTo(right.getPersonlandid()) != 0 && 
+                            r.getLaExtTransactiondetail().getTransactionid() < right.getLaExtTransactiondetail().getTransactionid() &&
+                            r.getLaExtTransactiondetail().getTransactionid() > tranId){
+                        tranId = r.getLaExtTransactiondetail().getTransactionid();
+                        previousRight = r;
+                    }
+                }
+                if(previousRight != null){
+                    dto.setPreviousApfr(previousRight.getCertNumber());
+                    dto.setPreviousApfrDate(previousRight.getCertIssueDate());
+                }
+            }
+            
+            dto.setContractName(right.getTransferContractName());
+            dto.setContractDate(right.getTransferContractDate());
+            dto.setContractNum(right.getTransferContractNum());
+            
             // Added for date pv+47
             if (su.getPublicNoticeStartDate() != null) {
                 Calendar c = Calendar.getInstance();
@@ -7568,12 +7395,13 @@ public class LandRecordsController {
         Form8Dto dto = new Form8Dto();
         try {
             ClaimBasic su = spatialUnitService.getClaimsBasicByLandId(usin).get(0);
-            RightBasic right = su.getRights().get(0);
+            RightBasic right = getOwnershipRight(su);
             NaturalPerson person = (NaturalPerson) right.getLaParty();
             Project project = projectService.findProjectById(su.getProjectnameid());
 
             String mayorname = project.getProjectArea().iterator().next().getMayorname();
-            List<SpatialunitPersonwithinterest> poiLst = landRecordsService.findpersonInterestByUsin(usin);
+            List<SpatialunitPersonwithinterest> poiLst = getPropertyPois(usin, right.getLaExtTransactiondetail().getTransactionid());
+
             SpatialUnitExtension suExt = null;
             if (su.getParcelExtensions() != null && su.getParcelExtensions().size() > 0) {
                 suExt = su.getParcelExtensions().get(0);
@@ -7596,7 +7424,6 @@ public class LandRecordsController {
             dto.setApplication_date(su.getApplicationdate());
             dto.setApplication_no(su.getAppNum());
             dto.setArea(Double.toString(su.getArea()));
-            dto.setApfr_date(su.getApfrDate()); //change to apfr date
             dto.setBirthplace(person.getBirthPlace());
             if (suExt != null) {
                 dto.setDate_recognition_right(suExt.getRecognition_rights_date());
@@ -7627,10 +7454,36 @@ public class LandRecordsController {
             if (person.getNopId() != null) {
                 dto.setRefrenceof_mandate(natureOfPowerDao.findById(person.getNopId(), false).getName());
             }
+            dto.setApfrno(right.getCertNumber());
+            dto.setApfr_date(right.getCreateddate());
             dto.setPoiLst(poiLst);
             dto.setOther_use(su.getOther_use());
 
-            dto.setApfrno(su.getApfrNum());
+            if (right.getMutationId() != null) {
+                MutationType mt = landRecordsService.getMutationType(right.getMutationId());
+                dto.setMutationType(mt.getName());
+                
+                // Search for previous APFR number
+                int tranId = 0;
+                RightBasic previousRight = null;
+                for (RightBasic r : su.getRights()) {
+                    if(r.getPersonlandid().compareTo(right.getPersonlandid()) != 0 && 
+                            r.getLaExtTransactiondetail().getTransactionid() < right.getLaExtTransactiondetail().getTransactionid() &&
+                            r.getLaExtTransactiondetail().getTransactionid() > tranId){
+                        tranId = r.getLaExtTransactiondetail().getTransactionid();
+                        previousRight = r;
+                    }
+                }
+                if(previousRight != null){
+                    dto.setPreviousApfr(previousRight.getCertNumber());
+                    dto.setPreviousApfrDate(previousRight.getCertIssueDate());
+                }
+            }
+            
+            dto.setContractName(right.getTransferContractName());
+            dto.setContractDate(right.getTransferContractDate());
+            dto.setContractNum(right.getTransferContractNum());
+            
             dto.setMandateDate(person.getMandateDate());
 
         } catch (Exception e) {
@@ -7740,7 +7593,7 @@ public class LandRecordsController {
         }
         return null;
     }
-    
+
     @RequestMapping(value = "/viewer/village/getbyproject/{projectname}", method = RequestMethod.GET)
     @ResponseBody
     public List<ProjectRegion> getVillagesByProject(HttpServletRequest request, HttpServletResponse response, @PathVariable String projectname) {
@@ -7750,5 +7603,35 @@ public class LandRecordsController {
             logger.error(e);
             return null;
         }
+    }
+
+    private RightBasic getOwnershipRight(ClaimBasic su) {
+        if (su != null && su.getRights() != null) {
+            for (RightBasic right : su.getRights()) {
+                if (right.getIsactive() && right.getPersontypeId() != null && right.getPersontypeId() == 1) {
+                    return right;
+                }
+            }
+        }
+        return null;
+    }
+
+    private List<SpatialunitPersonwithinterest> getPropertyPois(long usin, int transactionId) {
+        List<SpatialunitPersonwithinterest> allPois = landRecordsService.findpersonInterestByUsin(usin);
+        List<SpatialunitPersonwithinterest> newPois = new ArrayList<>();
+        if (allPois != null) {
+            for (SpatialunitPersonwithinterest poi : allPois) {
+                if (poi.getIsactive() && poi.getTransactionid() != null && poi.getTransactionid() == transactionId) {
+                    newPois.add(poi);
+                }
+            }
+        }
+        return newPois;
+    }
+
+    @RequestMapping(value = "/viewer/landrecords/mutationtypes/", method = RequestMethod.GET)
+    @ResponseBody
+    public List<MutationType> getMutationTypes() {
+        return landRecordsService.getMutationTypes();
     }
 }

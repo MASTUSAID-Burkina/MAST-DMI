@@ -121,7 +121,7 @@ public class MobileDataController {
 
     @Autowired
     ProjectRegionDAO projectRegion;
-    
+
     @Autowired
     DisputeDao disputeDao;
 
@@ -329,10 +329,10 @@ public class MobileDataController {
                 configurationData.put("SpatialData", spatialDataService.getProjectSpatialDataByProjectId(projobj.getProjectnameid()));
 
                 configurationData.put("Villages", projectRegion.getVillagesByProject(projobj.getProjectnameid()));
-                
+
                 // Add List of claim types
                 configurationData.put("ClaimType", spatialUnitService.getClaimTypes());
-                
+
                 // Add List of title types
                 configurationData.put("TitleType", spatialUnitService.getTitleTypes());
 
@@ -488,10 +488,8 @@ public class MobileDataController {
      */
     @RequestMapping(value = "/sync/mobile/document/upload/", method = RequestMethod.POST)
     @ResponseBody
-    synchronized public String upload(MultipartHttpServletRequest request,
-            HttpServletResponse response) {
+    synchronized public String upload(MultipartHttpServletRequest request, HttpServletResponse response) {
         try {
-            int counter = 0;
             SourceDocument sourceDocument = new SourceDocument();
             ResourceSourceDocument resourceDocument = new ResourceSourceDocument();
             Iterator<String> files = request.getFileNames();
@@ -503,13 +501,14 @@ public class MobileDataController {
             JSONArray sourceDocumentAttribute = new JSONArray(attributes);
             JSONArray media = sourceDocumentAttribute.getJSONArray(0);
             String flag = media.get(7).toString();
+            
             if (null != sourceDocumentAttribute.getJSONArray(1) && flag.equalsIgnoreCase("M")) {
                 name = sourceDocumentAttribute.getJSONArray(1).getJSONArray(0);
                 comments = sourceDocumentAttribute.getJSONArray(1).getJSONArray(1);
             }
+            
             while (files.hasNext()) {
                 String fileName = files.next();
-                System.out.println("FILE NAME:::: " + fileName);
                 MultipartFile mpFile = request.getFile(fileName);
                 String originalFileName = mpFile.getOriginalFilename();
                 sourceDocument.setIsactive(true);
@@ -526,52 +525,28 @@ public class MobileDataController {
                 sourceDocument.setRemarks("");
                 sourceDocument.setDocumentname(originalFileName);
                 sourceDocument.setRecordationdate(new Date());
-                Outputformat outputformat = Outputformatdao.findByName(media
-                        .get(4).toString()
-                        + "/"
-                        + FileUtils.getFileExtension(sourceDocument
-                                .getDocumentname()));
+                Outputformat outputformat = Outputformatdao.findByName(media.get(4).toString() + "/" + FileUtils.getFileExtension(sourceDocument.getDocumentname()));
+                
                 if (null != outputformat) {
                     sourceDocument.setLaExtDocumentformat(outputformat);
-
                     resourceDocument.setLaExtDocumentformat(outputformat.getDocumentformatid());
                 }
 
-                mediaId = setDocumentAttributes(sourceDocument, resourceDocument, attributes, counter, flag);
+                mediaId = setDocumentAttributes(sourceDocument, resourceDocument, attributes, flag);
 
-                counter = counter + 1;
-                if (!"".equals(originalFileName)
-                        && mobileUserService.findMultimedia(originalFileName,
-                                sourceDocument.getLaSpatialunitLand()) == null) {
-
+                if (!"".equals(originalFileName) && mobileUserService.findMultimedia(originalFileName, sourceDocument.getLaSpatialunitLand()) == null) {
+                    String filesFolder = FileUtils.getFielsFolder(request);
+                    
                     // Add data to Source Document
                     if (sourceDocument.getLaExtTransactiondetail() != null && (flag.equalsIgnoreCase("P") || flag.equalsIgnoreCase("M"))) {
-                        File documentsDir = new File(
-                                FileUtils.getFielsFolder(request)
-                                + sourceDocument.getDocumentlocation());
-
-                        if (!documentsDir.exists()) {
-                            documentsDir.mkdirs();
-                        }
                         if (flag.equalsIgnoreCase("M")) {
-                            sourceDocument.setDocumentname(name.get(1).toString() + "." + FileUtils.getFileExtension(sourceDocument
-                                    .getDocumentname()));
+                            sourceDocument.setDocumentname(name.get(1).toString());
                             sourceDocument.setRemarks(comments.get(1).toString());
-
                         }
-                        mobileUserService.uploadMultimedia(sourceDocument, mpFile,
-                                documentsDir);
+                        sourceDocument = mobileUserService.uploadMultimedia(sourceDocument, mpFile, filesFolder);
 
                     } else if (flag.equalsIgnoreCase("R")) {
-                        File documentsDir = new File(
-                                FileUtils.getFielsFolder(request)
-                                + resourceDocument.getDocumentlocation());
-
-                        if (!documentsDir.exists()) {
-                            documentsDir.mkdirs();
-                        }
-
-                        mobileUserService.uploadResourceMultimedia(resourceDocument, mpFile, documentsDir);
+                        resourceDocument = mobileUserService.uploadResourceMultimedia(resourceDocument, mpFile, filesFolder);
                     }
                 }
             }
@@ -719,16 +694,6 @@ public class MobileDataController {
      */
     public String getFullFilePath(ProjectSpatialData projectSpatialData,
             int mbTiles) {
-
-        // if (projectSpatialData.getFileLocation().endsWith("/")) {
-        // // if FileLocation ends with "/"
-        // return projectSpatialData.getFileLocation() + mbTiles + "."
-        // + projectSpatialData.getFileExtension();
-        // } else {
-        // // if FileLocation doesn't ends with "/"
-        // return projectSpatialData.getFileLocation() + "/" + mbTiles + "."
-        // + projectSpatialData.getFileExtension();
-        // }
         return null;
     }
 
@@ -792,28 +757,22 @@ public class MobileDataController {
         }
     }
 
-    private String setDocumentAttributes(SourceDocument document, ResourceSourceDocument resdoc,
-            String attributes, int counter, String flag) {
+    private String setDocumentAttributes(SourceDocument document, ResourceSourceDocument resdoc, String attributes, String flag) {
         try {
             String mediaId = null;
 
             JSONArray sourceDocumentAttribute = new JSONArray(attributes);
             JSONArray media = sourceDocumentAttribute.getJSONArray(0);
-            SpatialUnit laSpatialunitLand = new SpatialUnit();
 
             if (media.length() > 0) {
                 long usin = Long.parseLong(media.get(0).toString());
 
-                SocialTenureHibernateDao socialtenuredao = new SocialTenureHibernateDao();
-
-                // List<SocialTenureRelationship> socialtenurerelationship =
-                // socialtenuredao.findSocailTenureByUsin(usin);
-                // List<SocialTenureRelationship> socialtenurerelationship =
-                // lapartydao.findSocailTenureByUsin(usin);
                 List<SocialTenureRelationship> socialtenurerelationship = socialTenureRelationshipdao.findbyUsin(usin);
                 List<LaExtDisputelandmapping> disputelandmapping = laExtDisputelandmappingDAO.findLaExtDisputelandmappingByLandId(usin);
                 List<SourceDocument> sourcedocument = sourceDocumentDAO.findByGId(usin);
                 LaExtTransactiondetail transobj = null;
+                String folderPath = "/multimedia";
+                
                 if (socialtenurerelationship.size() > 0 && flag.equalsIgnoreCase("P")) {
 
                     transobj = transactiondao
@@ -821,19 +780,14 @@ public class MobileDataController {
                                     .get(0).getLaExtTransactiondetail()
                                     .getTransactionid());
                     document.setLaSpatialunitLand(usin);
-                    document.setDocumentlocation("/storage/emulated/0/MAST/multimedia/Parcel_Media");
+                    document.setDocumentlocation("/multimedia");
                     document.setLaExtTransactiondetail(transobj);
-
-                    document.setLaParty(lapartydao
-                            .getPartyIdByID(socialtenurerelationship.get(0)
-                                    .getPartyid()));
+                    document.setLaParty(lapartydao.getPartyIdByID(socialtenurerelationship.get(0).getPartyid()));
 
                     if (null != sourcedocument && sourcedocument.size() > 0) {
                         for (int j = 0; j < sourcedocument.size(); j++) {
                             if (null != sourcedocument.get(j)) {
-                                document.setLaParty(lapartydao
-                                        .getPartyIdByID(socialtenurerelationship.get(j + 1)
-                                                .getPartyid()));
+                                document.setLaParty(lapartydao.getPartyIdByID(socialtenurerelationship.get(j + 1).getPartyid()));
                             }
                         }
                     }
@@ -845,7 +799,7 @@ public class MobileDataController {
                                     .get(0).getLaExtTransactiondetail()
                                     .getTransactionid());
                     document.setLaSpatialunitLand(usin);
-                    document.setDocumentlocation("/storage/emulated/0/MAST/multimedia/Parcel_Media");
+                    document.setDocumentlocation("/multimedia");
                     document.setLaExtTransactiondetail(transobj);
                     document.setLaParty(lapartydao
                             .getPartyIdByID(disputelandmapping.get(0)
@@ -859,38 +813,11 @@ public class MobileDataController {
                                                 .getPartyid()));
 
                             }
-                            /*else if(null != sourcedocument.get(j)){
-								document.setLaParty(lapartydao
-										.getPartyIdByID(disputelandmapping.get(j+1)
-												.getPartyid()));
-									}
-							else if(null != sourcedocument.get(j)){
-								document.setLaParty(lapartydao
-										.getPartyIdByID(disputelandmapping.get(j+1)
-												.getPartyid()));
-									}
-							else if(null != sourcedocument.get(j)){
-								document.setLaParty(lapartydao
-										.getPartyIdByID(disputelandmapping.get(j+1)
-												.getPartyid()));
-									}
-							else if(null != sourcedocument.get(j)){
-								document.setLaParty(lapartydao
-										.getPartyIdByID(disputelandmapping.get(j+1)
-												.getPartyid()));
-									}
-							else if(null != sourcedocument.get(j)){
-								document.setLaParty(lapartydao
-										.getPartyIdByID(disputelandmapping.get(j+1)
-												.getPartyid()));
-									}*/
                         }
 
                     }
 
-                    // document.setLaSpatialunitLand(laSpatialunitLand.setLandid(usin));
                     mediaId = media.getString(2);
-                    // document.setMediaType(media.getString(4));
 
                 } else if (socialtenurerelationship.size() > 0 && flag.equalsIgnoreCase("M")) {
 
@@ -899,7 +826,7 @@ public class MobileDataController {
                                     .get(0).getLaExtTransactiondetail()
                                     .getTransactionid());
                     document.setLaSpatialunitLand(usin);
-                    document.setDocumentlocation("/storage/emulated/0/MAST/multimedia/Parcel_Media");
+                    document.setDocumentlocation("/multimedia");
                     document.setLaExtTransactiondetail(transobj);
 
                     mediaId = media.getString(2);
@@ -909,31 +836,23 @@ public class MobileDataController {
                                     .get(0).getLaExtTransactiondetail()
                                     .getTransactionid());
                     document.setLaSpatialunitLand(usin);
-                    document.setDocumentlocation("/storage/emulated/0/MAST/multimedia/Parcel_Media");
+                    document.setDocumentlocation("/multimedia");
                     document.setLaExtTransactiondetail(transobj);
                     mediaId = media.getString(2);
 
                 } else if (flag.equalsIgnoreCase("R")) {
                     resdoc.setLaSpatialunitLand(usin);
-                    resdoc.setDocumentlocation("/storage/emulated/0/MAST/multimedia/Resource_Media");
+                    resdoc.setDocumentlocation("/multimedia");
                     mediaId = media.getString(2);
-//					resdoc.setLaExtTransactiondetail(99999);
-//					resdoc.setLaParty(99999);
                 }
 
                 document.setIsactive(true);
-                // document.setRecordation(new SimpleDateFormat("dd/MM/yyyy")
-                // .parse(new SimpleDateFormat("dd/MM/yyyy")
-                // .format(new Date())));
             }
             return mediaId;
 
         } catch (JSONException pex) {
             logger.error("Exception", pex);
-            System.out.println("Exception in setting data in SOURCE DOCUMNET: "
-                    + pex);
         }
         return null;
     }
-
 }

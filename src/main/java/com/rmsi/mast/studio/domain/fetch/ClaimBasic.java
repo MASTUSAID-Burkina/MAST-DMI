@@ -24,9 +24,7 @@ import org.postgis.Geometry;
 import com.rmsi.mast.studio.domain.AcquisitionType;
 import com.rmsi.mast.studio.domain.LaSpatialunitgroup;
 import com.rmsi.mast.studio.domain.LandType;
-import com.rmsi.mast.studio.domain.LandUseType;
 import com.rmsi.mast.studio.domain.ProjectRegion;
-import com.rmsi.mast.studio.domain.ShareType;
 import com.rmsi.mast.studio.domain.SlopeValues;
 import com.rmsi.mast.studio.domain.SoilQualityValues;
 import com.rmsi.mast.studio.domain.Unit;
@@ -114,13 +112,6 @@ public class ClaimBasic implements Serializable {
     @Column(name = "pv_no")
     private String pvNum;
 
-    @Column(name = "apfr_no")
-    private String apfrNum;
-    
-    @Column(name = "apfr_date")
-    @Temporal(javax.persistence.TemporalType.DATE)
-    private Date apfrDate;
-    
     @Column
     private Integer section;
     
@@ -199,11 +190,6 @@ public class ClaimBasic implements Serializable {
     @ManyToOne
     @JoinColumn(name = "acquisitiontypeid")
     private AcquisitionType laRightAcquisitiontype;
-
-    //bi-directional many-to-one association to LaRightLandsharetype
-    @ManyToOne
-    @JoinColumn(name = "landsharetypeid")
-    private ShareType laRightLandsharetype;
 
     //bi-directional many-to-one association to LaSpatialunitgroup
     @ManyToOne
@@ -543,14 +529,6 @@ public class ClaimBasic implements Serializable {
         this.laRightAcquisitiontype = laRightAcquisitiontype;
     }
 
-    public ShareType getLaRightLandsharetype() {
-        return laRightLandsharetype;
-    }
-
-    public void setLaRightLandsharetype(ShareType laRightLandsharetype) {
-        this.laRightLandsharetype = laRightLandsharetype;
-    }
-
     public LaSpatialunitgroup getLaSpatialunitgroup1() {
         return laSpatialunitgroup1;
     }
@@ -715,22 +693,6 @@ public class ClaimBasic implements Serializable {
 
     public void setPvNum(String pvNum) {
         this.pvNum = pvNum;
-    }
-
-    public String getApfrNum() {
-        return apfrNum;
-    }
-
-    public void setApfrNum(String apfrNum) {
-        this.apfrNum = apfrNum;
-    }
-
-    public Date getApfrDate() {
-        return apfrDate;
-    }
-
-    public void setApfrDate(Date apfrDate) {
-        this.apfrDate = apfrDate;
     }
 
     public Integer getSection() {

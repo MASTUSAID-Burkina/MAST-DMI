@@ -2,6 +2,7 @@ package com.rmsi.mast.studio.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Column;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -32,7 +33,9 @@ public class LaExtPersonLandMapping implements Serializable {
     private Integer modifiedby;
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date modifieddate;
-
+    @Column(name = "share_type_id")
+    private Integer shareTypeId;
+    
     public Integer getPersonlandid() {
         return personlandid;
     }
@@ -143,5 +146,13 @@ public class LaExtPersonLandMapping implements Serializable {
 
     public void setCertificatetypeid(Integer certificatetypeid) {
         this.certificatetypeid = certificatetypeid;
+    }
+
+    public Integer getShareTypeId() {
+        return shareTypeId;
+    }
+
+    public void setShareTypeId(Integer shareTypeId) {
+        this.shareTypeId = shareTypeId;
     }
 }
