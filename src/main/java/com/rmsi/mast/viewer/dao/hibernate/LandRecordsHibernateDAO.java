@@ -26,6 +26,7 @@ import com.rmsi.mast.studio.domain.fetch.ClaimsStat;
 import com.rmsi.mast.studio.domain.fetch.DataCorrectionReport;
 import com.rmsi.mast.studio.domain.fetch.DisputeStat;
 import com.rmsi.mast.studio.domain.fetch.FarmReport;
+import com.rmsi.mast.studio.domain.fetch.GeometryPoint;
 import com.rmsi.mast.studio.domain.fetch.LeaseHistoryForFetch;
 import com.rmsi.mast.studio.domain.fetch.MortageHistoryForFetch;
 import com.rmsi.mast.studio.domain.fetch.NaturalPersonBasic;
@@ -1560,7 +1561,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                     + " from la_lease lea inner join la_Party_person ps on ps.personid=lea.personid "
                     + " left join la_ext_transactiondetails td on td.moduletransid=lea.leaseid "
                     + " where lea.landid=" + landid + " order by lea.createddate desc;";
-            
+
             Query query = getEntityManager().createNativeQuery(sql, LeaseHistoryForFetch.class);
             List<LeaseHistoryForFetch> attribValues = query.getResultList();
 
@@ -1753,13 +1754,23 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                     + "lea.createddate,td.transactionid,lea.personid, td.processid, plm.certificateno, (case when '" + lang + "' = 'en' then lsh.landsharetype_en else lsh.landsharetype end) as sharetype "
                     + "from la_lease lea inner join la_spatialunit_land ld on ld.landid=lea.landid "
                     + "left join la_Party_person ps1 on ps1.personid=lea.personid "
-                    + "left join la_ext_personlandmapping plm on plm.landid=ld.landid "
+                    + "left join la_ext_personlandmapping plm on plm.partyid=lea.ownerid "
                     + "inner join la_right_landsharetype lsh on plm.share_type_id = lsh.landsharetypeid "
                     + "left join la_ext_transactiondetails td on td.moduletransid=lea.leaseid "
                     + "inner join la_ext_process p on td.processid = p.processid "
                     + "left join la_Party_person ps2 on ps2.personid=lea.ownerid "
                     + "where ld.landid=" + landid + " and td.processid in (1,10) and td.isactive=true "
-                    + "	Union"
+                    + "	union "
+                    + "select distinct on (lea.transactionid) (case when '" + lang + "' = 'en' then p.processname_en else p.processname end) as transactiontype, lea.landid,ps1.firstname||' '||coalesce(ps1.middlename, '')||' '||ps1.lastname as applicantname,ps2.firstname||' '||coalesce(ps2.middlename, '')||' '||ps2.lastname as ownername,"
+                    + " lea.createddate,td.transactionid,lea.applicantid as personid, td.processid, plm.certificateno, (case when '" + lang + "' = 'en' then lsh.landsharetype_en else lsh.landsharetype end) as sharetype "
+                    + " from la_ext_permission lea inner join la_ext_personlandmapping plm on lea.ownerid=plm.partyid "
+                    + " left join la_Party_person ps1 on ps1.personid=lea.applicantid "
+                    + " inner join la_right_landsharetype lsh on plm.share_type_id = lsh.landsharetypeid "
+                    + " left join la_ext_transactiondetails td on td.transactionid=lea.transactionid "
+                    + " inner join la_ext_process p on td.processid = p.processid "
+                    + " left join la_Party_person ps2 on ps2.personid=lea.ownerid "
+                    + " where lea.landid=" + landid + " and td.processid in (11,12) and td.isactive=true "
+                    + " Union"
                     + "	select distinct on (personid) 'Mortgage' as transactiontype,ld.landid,fin.financialagency as applicantname,ps2.firstname||' '||coalesce(ps2.middlename, '')||' '||ps2.lastname as ownername,mor.createddate,td.transactionid,"
                     + " mor.financialagencyid as personid, td.processid, '' as certificateno, '' as sharetype"
                     + "	from la_mortgage mor left join la_spatialunit_land ld on ld.landid=mor.landid"
@@ -1808,7 +1819,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                     + " lea.createddate,td.transactionid,lea.personid, td.processid, plm.certificateno, (case when '" + lang + "' = 'en' then lsh.landsharetype_en else lsh.landsharetype end) as sharetype "
                     + " from la_surrenderlease lea inner join la_spatialunit_land ld on ld.landid=lea.landid "
                     + " left join la_Party_person ps1 on ps1.personid=lea.personid "
-                    + " left join la_ext_personlandmapping plm on plm.landid=ld.landid "
+                    + " left join la_ext_personlandmapping plm on plm.partyid=lea.ownerid "
                     + " inner join la_right_landsharetype lsh on plm.share_type_id = lsh.landsharetypeid "
                     + " left join la_ext_transactiondetails td "
                     + " inner join la_ext_process p on td.processid = p.processid "
@@ -2294,5 +2305,11 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
             return null;
         }
         return null;
+    }
+    
+    @Override
+    public List<GeometryPoint> getGeometryPoints(int landid){
+        Query q = getEntityManager().createNativeQuery("select * from get_geometry_points(" + landid + ")", GeometryPoint.class);
+        return q.getResultList();
     }
 }

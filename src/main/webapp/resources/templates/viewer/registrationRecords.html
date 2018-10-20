@@ -1,6 +1,7 @@
 <script>
     $(function () {
         $("#tabs_res").tabs();
+        $("#tabs_permission").tabs();
     });
     $(function () {
         $("#tabs_registry").tabs();
@@ -185,8 +186,7 @@
                 </div>
             </div>
 
-            <div id="lease-dialog-form" data-i18n="[title]reg-reg-trans"
-                 style="display: none;">
+            <div id="lease-dialog-form" data-i18n="[title]reg-reg-trans" style="display: none;">
                 <form class="cmxform" id="editprocessAttributeformID" action="" onsubmit="return false;">
 
                     <input type="hidden" name="landidhide" id="landidhide" value="">
@@ -195,6 +195,8 @@
                     <input type="hidden" name="transactionId" id="transactionId" value="">
                     <input type="hidden" name="leaseid" id="leaseid" value="">
                     <input type="hidden" name="surrenderLeaseId" id="surrenderLeaseId" value="">
+                    <input type="hidden" name="permissionId" id="permissionId" value="">
+                    <input type="hidden" name="surrenderPermissionId" id="surrenderPermissionId" value="">
 
                     <div id="tabsl">
                         <ul>
@@ -295,6 +297,7 @@
                                     </div>
 
                                     <div style="margin: 10px; border: 1px solid #ccc; padding: 10px;">
+                                        <label data-i18n="reg-poi"></label>
                                         <table class="amendbeforeAfterTable space-top-10">
                                             <thead>
                                                 <tr>
@@ -1285,6 +1288,444 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <div id="tabPermission" style="display: none">
+                            <div id="tabs_permission">
+                                <ul>
+                                    <li id = "liPermCurrentOwner"><a href="#tabPermCurrentOwner" onclick="permissionTabClick('liPermCurrentOwner', 'tabPermCurrentOwner');" data-i18n="reg-owner-details"></a></li>
+                                    <li id = "liPermLandInfo"><a href="#tabPermLandInfo" onclick="permissionTabClick('liPermLandInfo', 'tabPermLandInfo');" data-i18n="reg-land-details"></a></li>
+                                    <li id = "liPermApplicant"><a href="#tabPermApplicant" onclick="permissionTabClick('liPermApplicant', 'tabPermApplicant');" data-i18n="reg-applicant-details"></a></li>
+                                    <li id = "liPermDocs"><a href="#tabPermDocs" onclick="permissionTabClick('liPermDocs', 'tabPermDocs');" data-i18n="gen-documents"></a></li>
+                                    <li id = "liPermDetails"><a href="#tabPermDetails" onclick="permissionTabClick('liPermDetails', 'tabPermDetails');" data-i18n="reg-tran-details"></a></li>
+                                </ul>
+                                <div id="tabPermCurrentOwner">
+                                    <div class="tab-pane landrecords22">
+                                        <div style="margin: 10px; border: 1px solid #ccc; padding: 10px">
+
+                                            <label data-i18n="reg-owner-details"></label>
+                                            <table class="amendbeforeAfterTable space-top-10">
+                                                <thead>
+                                                    <tr>
+                                                        <th data-i18n="reg-name"></th>
+                                                        <th data-i18n="reg-dob"></th>
+                                                        <th data-i18n="reg-birth-place"></th>
+                                                        <th data-i18n="reg-address"></th>
+                                                        <th data-i18n="reg-profession"></th>
+                                                        <th data-i18n="reg-gender"></th>
+                                                        <th data-i18n="reg-marital-status"></th>
+                                                        <th data-i18n="reg-id-number"></th>
+                                                        <th data-i18n="reg-id-date"></th>
+                                                        <th data-i18n="reg-father-name"></th>
+                                                        <th data-i18n="reg-mother-name"></th>
+                                                        <th data-i18n="reg-nature-of-power"></th>
+                                                        <th data-i18n="reg-mandate-date"></th>
+                                                        <th data-i18n="reg-mandate-location"></th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody id="rowsPermissionOwner">
+                                                </tbody>
+                                            </table>
+
+                                            <script id="rowPermissionOwner" type="text/x-jquery-tmpl">
+                                                <tr>
+                                                <td>
+                                                ${firstname} ${middlename} ${lastname}
+                                                </td> 
+                                                <td>		
+                                                ${dob}
+                                                </td> 
+                                                <td>		
+                                                ${birthplace}
+                                                </td> 
+                                                <td>
+                                                ${address}
+                                                </td>
+                                                <td>
+                                                ${profession}
+                                                </td>
+                                                <td>		
+                                                ${gendername}
+                                                </td> 
+                                                <td>		
+                                                ${maritalstatus}
+                                                </td> 
+                                                <td>		
+                                                ${identityno}
+                                                </td> 
+                                                <td>		
+                                                ${idDate}
+                                                </td> 
+                                                <td>		
+                                                ${fathername}
+                                                </td> 
+                                                <td>		
+                                                ${mothername}
+                                                </td> 
+                                                <td>		
+                                                ${natureOfPowerName}
+                                                </td>
+                                                <td>		
+                                                ${mandateDate}
+                                                </td>
+                                                <td>		
+                                                ${mandateLocation}
+                                                </td>
+                                                </tr>
+                                            </script>	
+                                        </div>
+                                    </div>
+
+                                    <div style="margin: 10px; border: 1px solid #ccc; padding: 10px;">
+                                        <label data-i18n="reg-poi"></label>
+                                        <table class="amendbeforeAfterTable space-top-10">
+                                            <thead>
+                                                <tr>
+                                                    <th data-i18n="reg-name"></th>
+                                                    <th data-i18n="reg-id-number"></th>
+                                                    <th data-i18n="reg-gender"></th>
+                                                    <th data-i18n="reg-address"></th>
+                                                    <th data-i18n="reg-dob"></th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody id="rowsPermissionOwnerPoi">
+                                            </tbody>
+                                        </table>
+
+                                        <script id="rowPermissionOwnerPoi" type="text/x-jquery-tmpl">
+                                            <tr>
+                                            <td>
+                                            ${firstName} ${middleName} ${lastName}
+                                            </td> 
+                                            <td>
+                                            ${identityno}
+                                            </td>
+                                            <td>
+                                            ${gender}
+                                            </td> 
+                                            <td>
+                                            ${address}
+                                            </td>
+                                            <td>		
+                                            ${dob}
+                                            </td> 
+                                            </tr>
+                                        </script>
+
+                                    </div>
+                                </div>
+                                <div id="tabPermLandInfo">
+                                    <div id="permissionLandDetailsContainer"></div>
+                                </div>
+
+                                <div id="tabPermApplicant">
+                                    <div class="tab-pane landrecords22" id="registry-record1">
+                                        <div style="margin: 10px; border: 1px solid #ccc; padding: 10px">
+                                            <input type="hidden" name="permissionApplicantId" id="permissionApplicantId" value="">
+                                            <table style="width: 100%" id="tablePermissionApplicantDetails" class="landrecords22 ">
+                                                <tr>
+                                                    <td>
+                                                        <label data-i18n="reg-firstname"></label> 
+                                                        <input type="text"
+                                                               name="perm_firstname" id="perm_firstname" value=""
+                                                               class="text ui-widget-content ui-corner-all"
+                                                               maxlength="50"> 
+                                                    </td>
+                                                    <td>
+                                                        <label data-i18n="reg-middlename"></label> 
+                                                        <input type="text"
+                                                               name="perm_middlename" id="perm_middlename"
+                                                               value="" class="text ui-widget-content ui-corner-all"
+                                                               maxlength="50"> 
+                                                    </td>
+                                                    <td>
+                                                        <label data-i18n="reg-lastname"></label> 
+                                                        <input type="text"
+                                                               name="perm_lastname" id="perm_lastname" value=""
+                                                               class="text ui-widget-content ui-corner-all"
+                                                               maxlength="50"> 
+                                                    </td>
+                                                    <td>
+                                                        <label data-i18n="reg-address"></label> 
+                                                        <input type="text"
+                                                               name="perm_address" id="perm_address" value=""
+                                                               class="text ui-widget-content ui-corner-all"
+                                                               maxlength="250"> 
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td>
+                                                        <label data-i18n="reg-id-number"></label> 
+                                                        <input type="text"
+                                                               name="perm_id_num" id="perm_id_num" value=""
+                                                               class="text ui-widget-content ui-corner-all"
+                                                               maxlength="50"> 
+                                                    </td>
+                                                    <td>
+                                                        <label data-i18n="reg-id-date"></label> 
+                                                        <input type="text"
+                                                               name="perm_id_date" id="perm_id_date"
+                                                               value="" class="input-medium datepicker"> 
+                                                    </td>
+                                                    <td>
+                                                        <label data-i18n="reg-dob"></label> 
+                                                        <input type="text"
+                                                               name="perm_dob" id="perm_dob"
+                                                               value="" class="input-medium datepicker"> 
+                                                    </td>
+                                                    <td>
+                                                        <label data-i18n="reg-birth-place"></label> 
+                                                        <input type="text"
+                                                               name="perm_place_of_birth" id="perm_place_of_birth" value=""
+                                                               class="text ui-widget-content ui-corner-all"
+                                                               maxlength="150"> 
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td>
+                                                        <label data-i18n="reg-gender"></label>
+                                                        <select name="perm_gender" id="perm_gender">
+                                                            <option data-i18n="gen-please-select"></option>
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <label data-i18n="reg-marital-status"></label>
+                                                        <select
+                                                            name="perm_marital_status" id="perm_marital_status">
+                                                            <option data-i18n="gen-please-select"></option>
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <label data-i18n="reg-profession"></label> 
+                                                        <input type="text"
+                                                               name="perm_profession" id="perm_profession" value=""
+                                                               class="text ui-widget-content ui-corner-all"
+                                                               maxlength="250"> 
+                                                    </td>
+                                                    <td>
+                                                        <label data-i18n="reg-father-name"></label> 
+                                                        <input type="text"
+                                                               name="perm_father_name" id="perm_father_name" value=""
+                                                               class="text ui-widget-content ui-corner-all"
+                                                               maxlength="250"> 
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td>
+                                                        <label data-i18n="reg-mother-name"></label> 
+                                                        <input type="text"
+                                                               name="perm_mother_name" id="perm_mother_name" value=""
+                                                               class="text ui-widget-content ui-corner-all"
+                                                               maxlength="250"> 
+                                                    </td>
+                                                    <td>
+                                                        <label data-i18n="reg-nature-of-power"></label> 
+                                                        <select name="perm_nop" id="perm_nop">
+                                                            <option data-i18n="gen-please-select"></option>
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <label data-i18n="reg-mandate-date"></label> 
+                                                        <input type="text"
+                                                               name="perm_mandate_date" id="perm_mandate_date"
+                                                               value="" class="input-medium datepicker"> 
+                                                    </td>
+                                                    <td>
+                                                        <label data-i18n="reg-mandate-location"></label> 
+                                                        <input type="text"
+                                                               name="perm_mandate_loc" id="perm_mandate_loc" value=""
+                                                               class="text ui-widget-content ui-corner-all"
+                                                               maxlength="250"> 
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <div style="text-align: right;padding-right: 20px;">
+                                                <button id="btnSavePermApplicant" onclick="savePermApplicant()" data-i18n="reg-add-person" 
+                                                        class="ui-button ui-corner-all ui-widget"></button>
+                                            </div>
+                                        </div>
+
+                                        <div id="permApplicant" style="margin: 10px; border: 1px solid #ccc; padding: 10px">
+
+                                            <label data-i18n="reg-applicant-details"></label>
+                                            <table class="amendbeforeAfterTable space-top-10">
+                                                <thead>
+                                                    <tr>
+                                                        <th data-i18n="reg-name"></th>
+                                                        <th data-i18n="reg-dob"></th>
+                                                        <th data-i18n="reg-birth-place"></th>
+                                                        <th data-i18n="reg-address"></th>
+                                                        <th data-i18n="reg-profession"></th>
+                                                        <th data-i18n="reg-gender"></th>
+                                                        <th data-i18n="reg-marital-status"></th>
+                                                        <th data-i18n="reg-id-number"></th>
+                                                        <th data-i18n="reg-id-date"></th>
+                                                        <th data-i18n="reg-father-name"></th>
+                                                        <th data-i18n="reg-mother-name"></th>
+                                                        <th data-i18n="reg-nature-of-power"></th>
+                                                        <th data-i18n="reg-mandate-date"></th>
+                                                        <th data-i18n="reg-mandate-location"></th>
+
+                                                        <th data-i18n="gen-edit"></th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody id="rowsPermissionApplicant">
+                                                </tbody>
+                                            </table>
+
+                                            <script id="rowPermissionApplicant" type="text/x-jquery-tmpl">
+                                                <tr>
+                                                <td>
+                                                ${firstname} ${middlename} ${lastname}
+                                                </td> 
+                                                <td>		
+                                                ${dob}
+                                                </td> 
+                                                <td>		
+                                                ${birthplace}
+                                                </td> 
+                                                <td>
+                                                ${address}
+                                                </td>
+                                                <td>
+                                                ${profession}
+                                                </td>
+                                                <td>		
+                                                ${gendername}
+                                                </td> 
+                                                <td>		
+                                                ${maritalstatus}
+                                                </td> 
+                                                <td>		
+                                                ${identityno}
+                                                </td> 
+                                                <td>		
+                                                ${idDate}
+                                                </td> 
+                                                <td>		
+                                                ${fathername}
+                                                </td> 
+                                                <td>		
+                                                ${mothername}
+                                                </td> 
+                                                <td>		
+                                                ${natureOfPowerName}
+                                                </td>
+                                                <td>		
+                                                ${mandateDate}
+                                                </td>
+                                                <td>		
+                                                ${mandateLocation}
+                                                </td>
+                                                <td>		
+                                                <button value="Submit" onclick="editPermissionApplicant('${personid}');" data-i18n="gen-edit"></button>		
+                                                </td >
+                                                </tr>
+                                            </script>	
+                                        </div>
+                                    </div>
+          
+                                </div>
+                                
+                                <div id="tabPermDocs">
+                                    <div style="padding: 7px;">
+                                        <table style="width: 100%" id="tablePermDoc" class="landrecords22 ">
+                                            <tr>
+                                                <td><label data-i18n="reg-doc-name"></label>
+                                                    <input type="text"	name="perm_doc_name" id="perm_doc_name" value="" class="text ui-widget-content ui-corner-all" maxlength="50">
+                                                </td>
+                                                <td>
+                                                    <label data-i18n="reg-doc-date"></label>
+                                                    <input type="text" name="perm_doc_date" id="perm_doc_date" value="" class="input-medium datepicker" style="background: none;" >
+                                                </td>
+                                                <td><label data-i18n="reg-doc-desc"></label> 
+                                                    <input type="text" name="perm_doc_desc" id="perm_doc_desc" value="" class="text ui-widget-content ui-corner-all" maxlength="250"/> 
+                                                </td>
+                                                <td style="padding-top: 18px;">
+                                                    <button type="button" id="btnSavePermDoc" class="ui-button ui-corner-all ui-widget" onclick="javascript:AddDocInfoRegistration();" data-i18n="gen-add"></button>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <table class="amendbeforeAfterTable">
+                                            <thead>
+                                                <tr>
+                                                    <th data-i18n="gen-doc"></th>
+                                                    <th data-i18n="reg-doc-date"></th>
+                                                    <th data-i18n="reg-doc-desc"></th>
+                                                    <th data-i18n="gen-view"></th>
+                                                    <th data-i18n="gen-browse"></th>
+                                                    <th data-i18n="gen-delete"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="rowsPermissionDocs">
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                <div id="tabPermDetails">
+                                    <div class="tab-pane landrecords22">
+                                        <div style="margin: 10px; border: 1px solid #ccc; padding: 10px">
+
+                                            <table style="width: 100%" id="tablePermissionDetails" class="landrecords22 ">
+                                                <tr>
+                                                    <td>
+                                                        <label data-i18n="reg-reg-number2"></label>
+                                                        <input type="text" name="permRegNum"
+                                                               id="permRegNum" value="" maxlength="20"
+                                                               style="width: 120px;"
+                                                               class="text ui-widget-content ui-corner-all">
+                                                    </td>
+                                                    <td>
+                                                        <label data-i18n="reg-app-number"></label>
+                                                        <input type="text" name="permAppNum"
+                                                               id="permAppNum" value="" maxlength="20"
+                                                               style="width: 120px;"
+                                                               class="text ui-widget-content ui-corner-all">
+                                                    </td>
+                                                    <td>
+                                                        <label data-i18n="reg-app-date"></label> 
+                                                        <input type="text"
+                                                               name="permAppDate" id="permAppDate" value=""
+                                                               class="input-medium datepicker" 
+                                                               style="background: none; width: 120px;">
+                                                    </td>
+                                                    <td>
+                                                        <label data-i18n="reg-lease-start-date"></label> 
+                                                        <input type="text"
+                                                               name="permStartDate" id="permStartDate" value=""
+                                                               class="input-medium datepicker" style="background: none; width: 120px;">
+                                                    </td>
+
+                                                    <td>
+                                                        <label data-i18n="reg-lease-end-date"></label> 
+                                                        <input type="text"
+                                                               name="permEndDate" id="permEndDate" value=""
+                                                               class="input-medium datepicker" style="background: none; width: 120px;">
+                                                    </td>
+                                                </tr>
+                                                <tr>													
+                                                    <td colspan="5" style="padding-bottom: 10px;">
+                                                        <label data-i18n="reg-usage"></label> 
+                                                        <input type="text" name="permUsage" id="permUsage" 
+                                                               class="text ui-widget-content ui-corner-all" 
+                                                               style="background: none; width: 95%;padding:5px 0px;">
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
                     </div>
 
                     <div id="Tab_3" style="display: none">
@@ -1872,6 +2313,10 @@
     {{if (processid == 1 || processid == 10)}}	  
     <a href="javascript:viewleasedetail('${transactionid}','${landid}');"><img src="resources/images/studio/doc_view.png" data-i18n="[title]gen-view" /></a>
     {{/if}}
+            
+    {{if (processid == 11 || processid == 12)}}	  
+    <a href="javascript:viewPermissionSummary('${transactionid}');"><img src="resources/images/studio/doc_view.png" data-i18n="[title]gen-view" /></a>
+    {{/if}}
 
     {{if (processid == 2)}}	  
     <a href="javascript:viewSaleDetails('${transactionid}');"><img src="resources/images/studio/doc_view.png" data-i18n="[title]gen-view" /></a>
@@ -1953,6 +2398,23 @@
     <td>
     ${leaseamount}    
     </td>
+    </tr>
+</script>
+
+<script id="permissionApplicantTemplate" type="text/x-jquery-tmpl">
+    <tr>       		                  
+    <td>
+    ${firstname} ${middlename} ${lastname}
+    </td>
+    <td>
+    ${address}    
+    </td>
+    <td>
+    ${identityno}    
+    </td>
+    <td>
+    ${idDate}    
+    </td>	
     </tr>
 </script>
 

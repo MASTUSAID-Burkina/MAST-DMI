@@ -268,6 +268,12 @@ var createEditProject = function (_name) {
                     }
 
                     $("#mayorname").val(data.projectArea[0].mayorname);
+                    $("#mayorElectionDate").val(data.projectArea[0].mayorelectiondate);
+                    //$("#mayorElectionDate").datepicker('destroy').datepicker({dateFormat: 'yy-mm-dd'}).focus();
+                    $("#mayorElectionDate").live('click', function () {
+                        $(this).datepicker('destroy').datepicker({dateFormat: 'yy-mm-dd'}).focus();
+                    });
+
                     jQuery("#villagechairmanId").val(data.projectArea[0].authorizedmember);
                     showSignature("SignatureVillageChairman", data.projectArea[0].authorizedmembersignature);
                     showSignature("SignatureVillageExecutive", data.projectArea[0].executiveofficersignature);

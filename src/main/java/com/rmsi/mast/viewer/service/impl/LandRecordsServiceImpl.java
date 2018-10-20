@@ -88,6 +88,7 @@ import com.rmsi.mast.studio.domain.fetch.ClaimProfile;
 import com.rmsi.mast.studio.domain.fetch.ClaimSummary;
 import com.rmsi.mast.studio.domain.fetch.DataCorrectionReport;
 import com.rmsi.mast.studio.domain.fetch.FarmReport;
+import com.rmsi.mast.studio.domain.fetch.GeometryPoint;
 import com.rmsi.mast.studio.domain.fetch.LeaseHistoryForFetch;
 import com.rmsi.mast.studio.domain.fetch.MortageHistoryForFetch;
 import com.rmsi.mast.studio.domain.fetch.OwnerHistoryForFetch;
@@ -1441,6 +1442,11 @@ public class LandRecordsServiceImpl implements LandRecordsService {
         return landRecordsDao.findsurrenderleasedetailbylandid(transactionid, landid);
     }
 
+    @Override
+    public List<GeometryPoint> getGeometryPoints(int landid){
+        return landRecordsDao.getGeometryPoints(landid);
+    }
+    
     @Override
     public List<TransactionHistoryForFetch> gettransactiondetails(Long landid, String lang) {
         return landRecordsDao.gettransactiondetails(landid, lang);

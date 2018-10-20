@@ -5353,6 +5353,18 @@ generateForms.prototype.Form5 = function (usin) {
     return formLst;
 };
 
+generateForms.prototype.Form43 = function (usin) {
+    var formLst = null;
+    jQuery.ajax({
+        url: "landrecords/spatialunit/form43/" + usin,
+        async: false,
+        success: function (data) {
+            formLst = data;
+        }
+    });
+    return formLst;
+};
+
 generateForms.prototype.Form7 = function (usin) {
     var formLst = [];
     jQuery.ajax({

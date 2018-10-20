@@ -11,7 +11,7 @@ var claimTypes_R = null;
 var landRecordsInitialized_R = false;
 var maritalStatus_R = null;
 var genderStatus_R = null;
-surrendermortagagedata = null;
+var surrendermortagagedata = null;
 var idtype_R = null;
 var country_r_id = 1;// would be null
 var region_r_id = 2; // would be null
@@ -50,6 +50,7 @@ var finaltransid = 0;
 var finalbuyerarray = [];
 var tenuretypeListR = null;
 var mutationTypes = null;
+var permissionApplicant = null;
 
 $("#transactionId").val(0);
 
@@ -525,10 +526,13 @@ function leaseAttribute(landid) {
     var sale = document.getElementById("Tab_2");
     var mortgage = document.getElementById("Tab_3");
     var split = document.getElementById("Tab_4");
-    lease.style.display = "none"; // lease.style.display = "block";
+    var tabPermission = document.getElementById("tabPermission");
+    lease.style.display = "none";
     sale.style.display = "none";
     mortgage.style.display = "none";
     split.style.display = "none";
+    tabPermission.style.display = "none";
+
     loadResPersonsOfEditingForEditing();
     clearBuyerDetails_sale();
 
@@ -589,6 +593,7 @@ function leaseAttribute(landid) {
             $("#POIRecordsRowDataSale1").empty();
             $("#POIRecordsRowDataMortgage1").empty();
             $("#POIownerRecordsRowDataLease1").empty();
+            $("#rowsPermissionOwnerPoi").empty();
             if (data.length > 0) {
 
                 for (var i = 0; i < data.length; i++) {
@@ -616,7 +621,7 @@ function leaseAttribute(landid) {
                     $("#POIRecordsAttrTemplateSale1").tmpl(data[i]).appendTo("#POIRecordsRowDataSale1");
                     $("#POIRecordsAttrTemplateMortgage1").tmpl(data[i]).appendTo("#POIRecordsRowDataMortgage1");
                     $("#POIownerRecordsAttrTemplateLease1").tmpl(data[i]).appendTo("#POIownerRecordsRowDataLease1");
-
+                    $("#rowPermissionOwnerPoi").tmpl(data[i]).appendTo("#rowsPermissionOwnerPoi");
                 }
             }
 
@@ -762,8 +767,7 @@ function leaseAttribute(landid) {
                                 $("#comment_Save").show();
                                 $("#comment_Next").hide();
                             }
-                        } else if (currentdiv == "Lease")
-                        {
+                        } else if (currentdiv == "Lease") {
                             if ($('#Owner_Details').css('display') == 'block')
                             {
                                 LeaseFormTabClick("selectedLanddetails", "Land_Details_lease");
@@ -772,6 +776,9 @@ function leaseAttribute(landid) {
                                 LeaseFormTabClick("selectedApplicant", "Applicant_Details");
                             } else if ($('#Applicant_Details').css('display') == 'block')
                             {
+                                if (processid == "5") {
+                                    saveattributesSurrenderLease();
+                                }
                                 LeaseFormTabClick("selecteddocs", "Upload_Documents_Lease");
                             } else if ($('#regLeasePoi').css('display') == 'block')
                             {
@@ -780,8 +787,24 @@ function leaseAttribute(landid) {
                             {
                                 LeaseFormTabClick("selectedsleasedetails", "Lease_Details");
                             }
-                        } else if (currentdiv == "Mortgage")
-                        {
+                        } else if (currentdiv == "Permission") {
+                            if ($('#tabPermCurrentOwner').css('display') == 'block')
+                            {
+                                permissionTabClick("liPermLandInfo", "tabPermLandInfo");
+                            } else if ($('#tabPermLandInfo').css('display') == 'block')
+                            {
+                                permissionTabClick("liPermApplicant", "tabPermApplicant");
+                            } else if ($('#tabPermApplicant').css('display') == 'block')
+                            {
+                                if (processid == "12") {
+                                    savePermissionSurrender();
+                                }
+                                permissionTabClick("liPermDocs", "tabPermDocs");
+                            } else if ($('#tabPermDocs').css('display') == 'block')
+                            {
+                                permissionTabClick("liPermDetails", "tabPermDetails");
+                            }
+                        } else if (currentdiv == "Mortgage") {
 
                             if ($('#MortgageOwner_Details').css('display') == 'block')
                             {
@@ -847,17 +870,19 @@ function leaseAttribute(landid) {
                 {
                     text: $.i18n("reg-reg"),
                     "id": "comment_Save",
-                    click: function ()
-                    {
-                        if (currentdiv == "Sale")
-                        {
+                    click: function () {
+                        if (currentdiv == "Sale") {
                             saveattributessale();
-                        } else if (currentdiv == "Lease")
-                        {
+                        } else if (currentdiv == "Lease") {
                             saveLease();
-                        } else
-                        {
-                            saveattributesMortagage()
+                        } else if (currentdiv == "Permission") {
+                            if (processid == 11) {
+                                registerNewPermission();
+                            } else if (processid == 12) {
+                                registerPermissionSurrender();
+                            }
+                        } else {
+                            saveattributesMortagage();
                         }
                     }
                 },
@@ -867,29 +892,20 @@ function leaseAttribute(landid) {
                     click: function () {
                         $("input,select,textarea").removeClass('addBg');
                         setInterval(function () {
-
                         }, 4000);
-
                         attributeEditDialog.dialog("close");
-
                     }
-
                 }
-
-
             ],
             Cancel: function () {
-
                 attributeEditDialog.dialog("close");
                 $("input,select,textarea").removeClass('addBg');
-
             }
         });
         $("#comment_cancel").html('<span class="ui-button-text">' + $.i18n("gen-cancel") + '</span>');
         attributeEditDialog.dialog("open");
         $("#comment_Save").hide();
         $("#comment_Next").hide();
-
     });
 }
 
@@ -1551,9 +1567,14 @@ function getprocessvalue(id) {
     var sale = document.getElementById("Tab_2");
     var mortgage = document.getElementById("Tab_3");
     var split = document.getElementById("Tab_4");
-    lease.style.isplay = "none"; // lease.style.display = "block";
+    var tabPermission = document.getElementById("tabPermission");
+
+    lease.style.display = "none";
     sale.style.display = "none";
     mortgage.style.display = "none";
+    split.style.display = "none";
+    tabPermission.style.display = "none";
+
     $("#comment_Next").show();
     $("#comment_Save").hide();
     SaleOwnerdBuyeretails(selectedlandid);
@@ -1561,7 +1582,6 @@ function getprocessvalue(id) {
     if (id == 1 || id == 10 || id == 5) // Lease / surrender
     {
         var hasActiveLeases = false;
-
         jQuery.ajax({
             url: "registration/checkforactivelease/" + selectedlandid + "/" + id,
             async: false,
@@ -1618,6 +1638,40 @@ function getprocessvalue(id) {
 
         fetchDocument(selectedlandid, 1, id);
         loadLease();
+    } else if (id == 11 || id == 12) // Permission / surrender
+    {
+        var hasRegisteredPermission = false;
+        jQuery.ajax({
+            url: "registration/checkForRegisteredPermission/" + selectedlandid,
+            async: false,
+            success: function (response) {
+                hasRegisteredPermission = response;
+            }
+        });
+
+        if ((id == 11) && hasRegisteredPermission) {
+            jAlert($.i18n("err-active-permission-exists"), $.i18n("err-alert"));
+            return;
+        }
+        if (id == 12 && !hasRegisteredPermission) {
+            jAlert($.i18n("err-no-active-permission"), $.i18n("err-alert"));
+            return;
+        }
+
+        $("#permissionApplicantId").val("");
+        $("#tablePermissionApplicantDetails input").val("");
+        $("#tablePermissionApplicantDetails select").val(0);
+        $("#tablePermDoc input").val("");
+        $("#tablePermissionDetails input").val("");
+
+        $("#tabs_permission").tabs({active: 0});
+        permissionTabClick('liPermCurrentOwner', 'tabPermCurrentOwner');
+
+        processid = id;
+        tabPermission.style.display = "block";
+
+        currentdiv = "Permission";
+        loadPermission();
     } else if (id == 2) // "Sale"
     {
         salebuyerdetails(id);
@@ -2949,10 +3003,12 @@ function ActionfillRegistration(landid, transactionid, apfrNo, shareTypeId) {
 
     var html = "";
     html += "<li> <a title='" + $.i18n("reg-view-land-record") + "' href='#' onclick='editAttribute(" + landid + ", false)'>" + $.i18n("reg-view-land-record") + "</a></li>";
-    html += "<li> <a title='" + $.i18n("reg-print-apfr") + "' href='#' onclick='printApfr(" + landid + ", " + shareTypeId + ")'>" + $.i18n("reg-print-apfr") + "</a></li>";
     html += "<li> <a title='" + $.i18n("reg-view-spatial-data") + "' href='#' onclick='showOnMap(" + landid + ", 0)'>" + $.i18n("reg-view-spatial-data") + "</a></li>";
+    html += "<li> <a title='" + $.i18n("reg-print-apfr") + "' href='#' onclick='printApfr(" + landid + ", " + shareTypeId + ")'>" + $.i18n("reg-print-apfr") + "</a></li>";
+    html += "<li> <a title='" + $.i18n("reg-print-permission") + "' href='#' onclick='printPermission(" + landid + ")'>" + $.i18n("reg-print-permission") + "</a></li>";
     html += "<li> <a title='" + $.i18n("reg-init-tran") + "' href='#' onclick='leaseAttribute(" + landid + ")'>" + $.i18n("reg-init-tran") + "</a></li>";
     html += "<li> <a title='" + $.i18n("reg-view-tran-history") + "' id='' name=''  href='#' onclick='ViewHistory(" + landid + ")'>" + $.i18n("reg-view-tran-history") + "</a></li>";
+    
 
     $("" + appid + "").append('<div class="signin_menu"><div class="signin"><ul>' + html + '</ul></div></div>');
 
@@ -3531,6 +3587,24 @@ function AddDocInfoRegistration() {
         if (doc_desc_Lease.value.length == 0) {
             errors += "- " + $.i18n("err-enter-doc-desc") + "\n"
         }
+    } else if (processid == 11 || processid == 12) {
+        if (processid == 11 && $("#permissionId").val() === "") {
+            jAlert($.i18n("err-add-applicant"), $.i18n("err-alert"));
+            return;
+        }
+        if (processid == 12 && $("#surrenderPermissionId").val() === "") {
+            jAlert($.i18n("err-save-applicant"), $.i18n("err-alert"));
+            return;
+        }
+        if (perm_doc_name.value.length == 0) {
+            errors += "- " + $.i18n("err-enter-doc-name") + "\n"
+        }
+        if (perm_doc_date.value.length == 0) {
+            errors += "- " + $.i18n("err-enter-doc-date") + "\n"
+        }
+        if (perm_doc_desc.value.length == 0) {
+            errors += "- " + $.i18n("err-enter-doc-desc") + "\n"
+        }
     } else if (processid == 2 || processid == 4 || processid == 6 || processid == 7) {
         if (arry_Buyerbyprocessid == null || arry_Buyerbyprocessid.length < 1) {
             jAlert($.i18n("err-add-new-owner"), $.i18n("err-alert"));
@@ -3570,9 +3644,13 @@ function AddDocInfoRegistration() {
         success: function (data) {
             if (data) {
                 jAlert($.i18n("reg-doc-added"), $.i18n("gen-info"));
-                fetchDocument(selectedlandid, data, processid);
+                if (processid == 11 || processid == 12) {
+                    loadPermissionDocs();
+                } else {
+                    fetchDocument(selectedlandid, data, processid);
+                    fetchDocEdit();
+                }
                 clearDocuments();
-                fetchDocEdit();
             }
         }
     });
@@ -3590,7 +3668,9 @@ function clearDocuments()
     $("#doc_name_mortgage").val('');
     $("#doc_date_mortgage").val('');
     $("#doc_desc_mortgage").val('');
-
+    $("#perm_doc_name").val('');
+    $("#perm_doc_date").val('');
+    $("#perm_doc_desc").val('');
 }
 
 
@@ -3665,8 +3745,7 @@ function fetchDocument(landId, TypeId, processId)
     });
 }
 
-function fetchDocumentSplit(landId)
-{
+function fetchDocumentSplit(landId) {
     jQuery.ajax({
         type: 'GET',
         url: "registryrecords/getsplitDocument/" + landId,
@@ -3683,12 +3762,41 @@ function fetchDocumentSplit(landId)
     });
 }
 
+function permissionTabClick(tabHeaderId, tabId) {
+    $("#comment_Save").hide();
+    $("#comment_Next").hide();
+
+    $("#tabPermCurrentOwner").hide();
+    $("#tabPermLandInfo").hide();
+    $("#tabPermApplicant").hide();
+    $("#tabPermDocs").hide();
+    $("#tabPermDetails").hide();
+
+    $("#liPermCurrentOwner").removeClass("ui-tabs-active");
+    $("#liPermLandInfo").removeClass("ui-tabs-active");
+    $("#liPermApplicant").removeClass("ui-tabs-active");
+    $("#liPermDocs").removeClass("ui-tabs-active");
+    $("#liPermDetails").removeClass("ui-tabs-active");
+
+    $("#liPermCurrentOwner").removeClass("ui-state-active");
+    $("#liPermLandInfo").removeClass("ui-state-active");
+    $("#liPermApplicant").removeClass("ui-state-active");
+    $("#liPermDocs").removeClass("ui-state-active");
+    $("#liPermDetails").removeClass("ui-state-active");
+
+    $("#" + tabId).show();
+    $("#" + tabHeaderId).addClass("ui-tabs-active");
+    $("#" + tabHeaderId).addClass("ui-state-active");
+
+    if (tabHeaderId === "liPermDetails") {
+        $("#comment_Save").show();
+    } else {
+        $("#comment_Next").show();
+    }
+}
+
 function LeaseFormTabClick(tabHeaderId, tabId)
 {
-    if (processid == "5") {
-        saveattributesSurrenderLease();
-    }
-
     $("#comment_Save").hide();
     $("#comment_Next").hide();
 
@@ -3721,7 +3829,6 @@ function LeaseFormTabClick(tabHeaderId, tabId)
     } else {
         $("#comment_Next").show();
     }
-
 }
 
 function saveattributesLeaseDetails() {
@@ -3988,9 +4095,14 @@ function deleteMediaFile_sales(id) {
         processData: false,
         success: function (data, textStatus, jqXHR)
         {
-            fetchDocument(parseInt(data), persontypeid, processid);
             landid = data;
-            fetchDocumentSplit(landid);
+            if (processid == 11 || processid == 12) {
+                loadPermissionDocs();
+            } else {
+                fetchDocument(parseInt(data), persontypeid, processid);
+                fetchDocumentSplit(landid);
+            }
+
             jAlert($.i18n("reg-file-deleted"));
         }
 
@@ -4574,6 +4686,11 @@ function SaleOwnerdBuyeretails(landid) {
 
             $("#newOwnerRecordsRowDataSale").empty();
             $("#OwnerRecordsRowDataSaleEdit").empty();
+
+            $("#rowsPermissionOwner").empty();
+            $("#liPermCurrentOwner").show();
+            $("#tabPermCurrentOwner").show();
+
             if (edit === 0) {
                 $("#SellerEdit").hide();
                 $("#newOwner").show();
@@ -4628,13 +4745,14 @@ function SaleOwnerdBuyeretails(landid) {
                 }
             }
 
-            if (arry_Seller.length > 0) {
+            if (arry_Seller !== null && arry_Seller.length > 0) {
                 for (var i = 0; i < arry_Seller.length; i++) {
                     $("#OwnerRecordsAttrTemplateSale").tmpl(arry_Seller[i]).appendTo("#OwnerRecordsRowDataSale");
                     $("#OwnerRecordsAttrTemplateLease").tmpl(arry_Seller[i]).appendTo("#OwnerRecordsRowDataLease");
                     $("#OwnerRecordsAttrTemplateMortgage").tmpl(arry_Seller[i]).appendTo("#OwnerRecordsRowDataMortgage");
 
                     $("#OwnerRecordsAttrTemplateSaleEdit").tmpl(arry_Seller[i]).appendTo("#OwnerRecordsRowDataSaleEdit");
+                    $("#rowPermissionOwner").tmpl(arry_Seller[i]).appendTo("#rowsPermissionOwner");
                     $("#OwnerRecordsRowDataSaleEdit").i18n();
                 }
             }
@@ -5689,6 +5807,438 @@ function fetchDocEdit() {
     });
 }
 
+function loadPermission() {
+    if (!$("#permissionLandDetailsContainer #pnlLandDetails").length) {
+        $("#permissionLandDetailsContainer").empty();
+        $("#pnlLandDetails").appendTo($("#permissionLandDetailsContainer"));
+    }
+    fillLandDetails();
+
+    $("#permissionId").val("");
+    $("#surrenderPermissionId").val("");
+
+    if (natureOfPowers === null) {
+        jQuery.ajax({
+            url: "landrecords/powernature/",
+            async: false,
+            success: function (data) {
+                natureOfPowers = data;
+            }
+        });
+    }
+
+    // Init lists
+    $("#perm_marital_status").empty();
+    $("#perm_gender").empty();
+    $("#perm_nop").empty();
+
+    $("#perm_marital_status").append($("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
+    $("#perm_gender").append($("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
+    $("#perm_nop").append($("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
+
+    jQuery.each(maritalStatus_R, function (i, obj1) {
+        var displayName = obj1.maritalstatus;
+        if (Global.LANG === "en") {
+            displayName = obj1.maritalstatusEn;
+        }
+        $("#perm_marital_status").append($("<option></option>").attr("value", obj1.maritalstatusid).text(displayName));
+    });
+    jQuery.each(genderStatus_R, function (i, obj1) {
+        var displayName = obj1.gender;
+        if (Global.LANG === "en") {
+            displayName = obj1.gender_en;
+        }
+        $("#perm_gender").append($("<option></option>").attr("value", obj1.genderId).text(displayName));
+    });
+    jQuery.each(natureOfPowers, function (i, obj1) {
+        var displayName = obj1.name;
+        if (Global.LANG === "en") {
+            displayName = obj1.nameEn;
+        }
+        $("#perm_nop").append($("<option></option>").attr("value", obj1.id).text(displayName));
+    });
+
+    var permission = null;
+
+    if (processid == 11) {
+        // Try to get pending permission
+        $.ajax({
+            url: "registration/getPendingPermission/" + selectedlandid,
+            async: false,
+            success: function (data) {
+                if (data != "" && data !== null) {
+                    permission = data;
+                    removeNulls(permission);
+                    $("#permissionId").val(permission.id);
+                }
+            }
+        });
+    } else if (processid == 12) {
+        // Try to get surrender lease
+        $.ajax({
+            url: "registration/getPendingPermissionSurrender/" + selectedlandid,
+            async: false,
+            success: function (data) {
+                if (data != "" && data !== null) {
+                    permission = data;
+                    removeNulls(permission);
+                    $("#permissionId").val(permission.terminatedid);
+                    $("#surrenderPermissionId").val(permission.id);
+                } else {
+                    // Try to get registered permission
+                    $.ajax({
+                        url: "registration/getRegisteredPermission/" + selectedlandid,
+                        async: false,
+                        success: function (data) {
+                            if (data != "" && data !== null) {
+                                permission = data;
+                                removeNulls(permission);
+                                $("#permissionId").val(permission.id);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    $("#btnSavePermApplicant").show();
+    $("#btnSavePermApplicant").text($.i18n("reg-add-person"));
+
+    // Disable/hide fields if it's surrender. Other wise revert
+    var disabled = false;
+    if (processid == 12) {
+        disabled = true;
+    }
+
+    $("#tablePermissionApplicantDetails input").prop("disabled", disabled);
+    $("#tablePermissionApplicantDetails select").prop("disabled", disabled);
+    $("#tablePermissionDetails input").prop("disabled", disabled);
+
+    if (permission !== null) {
+        showPermissionApplicant(permission.applicant);
+        $("#permRegNum").val(permission.regnum);
+        $("#permAppNum").val(permission.appnum);
+        $("#permAppDate").val(permission.appdate);
+        $("#permStartDate").val(permission.startdate);
+        $("#permEndDate").val(permission.enddate);
+        $("#permUsage").val(permission.usage);
+
+        loadPermissionDocs();
+    }
+}
+
+function printPermission(landid) {
+    jQuery.ajax({
+        url: "landrecords/spatialunit/form43/" + landid,
+        async: false,
+        success: function (data) {
+            if (data != "" && data !== null) {
+                generateform43(landid, data);
+            } else {
+                jAlert($.i18n("err-no-active-permission"), $.i18n("err-alert"));
+            }
+        }
+    });
+}
+
+function showPermissionApplicant(applicant) {
+    permissionApplicant = applicant;
+    removeNulls(applicant);
+    $("#btnSavePermApplicant").hide();
+    $("#btnSavePermApplicant").text($.i18n("gen-save"));
+
+    $("#rowsPermissionApplicant").empty();
+    $('#rowPermissionApplicant').tmpl(applicant).appendTo('#rowsPermissionApplicant');
+    if (processid == 12) {
+        $("#rowsPermissionApplicant button").hide();
+    } else {
+        $("#rowsPermissionApplicant button").show();
+    }
+    $('#rowsPermissionApplicant').i18n();
+}
+
+function loadPermissionDocs() {
+    var permissionId = $("#permissionId").val();
+    if (processid == 12) {
+        permissionId = $("#surrenderPermissionId").val();
+    }
+
+    $("#rowsPermissionDocs").empty();
+
+    if (permissionId !== "") {
+        $.ajax({
+            url: "registration/getPermissionDocs/" + permissionId,
+            async: false,
+            success: function (data) {
+                if (data != "" && data !== null) {
+                    $("#salesdocumentTemplate_add").tmpl(data).appendTo("#rowsPermissionDocs");
+                    $("#rowsPermissionDocs").i18n();
+                }
+            }
+        });
+    }
+}
+
+function savePermApplicant() {
+    var errors = "";
+    if (perm_firstname.value.length === 0) {
+        errors += "-" + $.i18n("err-select-firstname") + "\n";
+    }
+    if (perm_lastname.value.length === 0) {
+        errors += "-" + $.i18n("err-select-lastname") + "\n";
+    }
+    if (perm_dob.value.length === 0) {
+        errors += "-" + $.i18n("err-enter-dob") + "\n";
+    }
+    if (perm_id_num.value.length === 0) {
+        errors += "-" + $.i18n("err-enter-idnumber") + "\n";
+    }
+    if (perm_id_date.value.length === 0) {
+        errors += "-" + $.i18n("err-enter-id-date") + "\n";
+    }
+
+    if (errors !== "") {
+        jAlert(errors, $.i18n("err-alert"));
+        return false;
+    }
+
+    jQuery.ajax({
+        type: "POST",
+        url: "registration/saveNewPermission",
+        data: $("#editprocessAttributeformID").serialize(),
+        success: function (result) {
+            if (result !== null && result !== undefined) {
+                $("#tablePermissionApplicantDetails input").val("");
+                $("#tablePermissionApplicantDetails select").val(0);
+                $("#permissionId").val(result.id);
+                showPermissionApplicant(result.applicant);
+                jAlert($.i18n("reg-applicant-saved"));
+            } else {
+                jAlert($.i18n("err-request-not-completed"));
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            jAlert($.i18n("err-request-not-completed"));
+        }
+    });
+}
+
+function editPermissionApplicant(id) {
+    if (permissionApplicant !== null) {
+        var person = permissionApplicant;
+
+        $("#perm_firstname").val(person.firstname);
+        $("#perm_middlename").val(person.middlename);
+        $("#perm_lastname").val(person.lastname);
+        $("#perm_id_num").val(person.identityno);
+        $("#perm_id_date").val(person.idDate);
+        $("#perm_address").val(person.address);
+        $("#perm_dob").val(person.dob);
+        $("#perm_place_of_birth").val(person.birthplace);
+        $("#perm_marital_status").val(person.maritalstatusid);
+        $("#perm_gender").val(person.genderid);
+        $("#perm_profession").val(person.profession);
+        $("#perm_father_name").val(person.fathername);
+        $("#perm_mother_name").val(person.mothername);
+        $("#perm_nop").val(person.nopId);
+        $("#perm_mandate_date").val(person.mandateDate);
+        $("#perm_mandate_loc").val(person.mandateLocation);
+        $("#btnSavePermApplicant").show();
+    }
+}
+
+function registerNewPermission() {
+    if ($("#permissionId").val() === "") {
+        jAlert($.i18n("err-add-applicant"), $.i18n("err-alert"));
+        return;
+    }
+    // Validate
+    var errors = "";
+    if ($("#permRegNum").val() === "") {
+        errors += "- " + $.i18n("err-enter-regnum") + "\n";
+    }
+    if ($("#permAppNum").val() === "") {
+        errors += "- " + $.i18n("err-enter-appnum") + "\n";
+    }
+    if ($("#permAppDate").val() === "") {
+        errors += "- " + $.i18n("err-enter-appdate") + "\n";
+    }
+    if ($("#permStartDate").val() === "") {
+        errors += "- " + $.i18n("err-enter-start-date") + "\n";
+    }
+    if ($("#permEndDate").val() === "") {
+        errors += "- " + $.i18n("err-enter-end-date") + "\n";
+    }
+    if (errors !== "") {
+        jAlert(errors, $.i18n("err-alert"));
+        return;
+    }
+
+    jConfirm($.i18n("reg-reg-confirmation"), $.i18n("gen-confirmation"),
+            function (response) {
+                if (response) {
+                    jQuery.ajax({
+                        type: "POST",
+                        url: "registration/registerNewPermission",
+                        data: $("#editprocessAttributeformID").serialize(),
+                        success: function (result) {
+                            jAlert($.i18n("reg-permission-registered"), $.i18n("gen-info"));
+                            attributeEditDialog.dialog("close");
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            jAlert($.i18n("err-request-not-completed"));
+                        }
+                    });
+                }
+            });
+}
+
+function registerPermissionSurrender() {
+    if ($("#surrenderPermissionId").val() === "") {
+        jAlert($.i18n("err-save-applicant"), $.i18n("err-alert"));
+        return;
+    }
+
+    jConfirm($.i18n("reg-reg-confirmation"), $.i18n("gen-confirmation"),
+            function (response) {
+                if (response) {
+                    jQuery.ajax({
+                        type: "POST",
+                        url: "registration/registerSurrenderPermission",
+                        data: $("#editprocessAttributeformID").serialize(),
+                        success: function (result) {
+                            jAlert($.i18n("reg-permission-surrender-registered"), $.i18n("gen-info"));
+                            attributeEditDialog.dialog("close");
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            jAlert($.i18n("err-request-not-completed"));
+                        }
+                    });
+                }
+            });
+}
+
+function savePermissionSurrender() {
+    if ($("#surrenderPermissionId").val() !== "") {
+        // Skip save, because it already exists
+        return;
+    }
+
+    jQuery.ajax({
+        type: "POST",
+        url: "registration/saveSurrenderPermission",
+        data: $("#editprocessAttributeformID").serialize(),
+        success: function (result) {
+            if (result !== null && result !== undefined) {
+                $("#surrenderPermissionId").val(result.id);
+                showPermissionApplicant(result.applicant);
+                jAlert($.i18n("reg-applicant-saved"));
+            } else {
+                jAlert($.i18n("err-request-not-completed"));
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            jAlert($.i18n("err-request-not-completed"));
+        }
+    });
+}
+
+function viewPermissionSummary(transactionid) {
+    jQuery.ajax({
+        type: 'GET',
+        url: 'registration/getPermissionByTransaction/' + transactionid,
+        async: false,
+        success: function (perm) {
+            if (perm !== null) {
+                removeNulls(perm);
+                $('#ViewPopuupDiv').empty();
+                $('#ViewPopuupDiv').css("visibility", "visible");
+
+                //To show person Property Changes
+                $('#ViewPopuupDiv').append('<div class="amendbeforeAfterTable"><h3 class="gridTitle"><span>'
+                        + $.i18n("reg-applicant-details")
+                        + '</span></h3>\n\
+                            <table width=100%" border="0" cellspacing="1" cellpadding="0" class="grid01">\n\
+                                <thead>\n\
+                                    <tr>\n\
+                                        <th>' + $.i18n("reg-name") + '</th>\n\
+                                        <th>' + $.i18n("reg-address") + '</th>\n\
+                                        <th>' + $.i18n("reg-id-number") + '</th>\n\
+                                        <th>' + $.i18n("reg-id-date") + '</th>\n\
+                                    </tr>\n\
+                                </thead>\n\
+                                <tbody id="popupBody"></tbody>\n\
+                            </table>\n\
+                            </div>');
+
+                $('#ViewPopuupDiv').append('<div class="amendbeforeAfterTable">\n\
+                        <h3 class="gridTitle"><span>' + $.i18n("reg-tran-details") + '</span></h3>\n\
+                        <table width=100%" border="0" cellspacing="1" cellpadding="0" class="grid01">\n\
+                            <thead>\n\
+                                <tr>\n\
+                                    <th>' + $.i18n("reg-reg-number2") + '</th>\n\
+                                    <th>' + $.i18n("reg-app-number") + '</th>\n\
+                                    <th>' + $.i18n("reg-app-date") + '</th>\n\
+                                    <th>' + $.i18n("reg-lease-start-date") + '</th>\n\
+                                    <th>' + $.i18n("reg-lease-end-date") + '</th>\n\
+                                    <th>' + $.i18n("reg-usage") + '</th>\n\
+                                </tr>\n\
+                            </thead>\n\
+                            <tbody>\n\
+                                <tr>\n\
+                                    <td>' + perm.regnum + '</td>\n\
+                                    <td>' + perm.appnum + '</td>\n\
+                                    <td>' + perm.appdate + '</td>\n\
+                                    <td>' + perm.startdate + '</td>\n\
+                                    <td>' + perm.enddate + '</td>\n\
+                                    <td>' + perm.usage + '</td>\n\
+                                </tr>\n\
+                            </tbody>\n\
+                        </table>\n\
+                        </div></br>');
+
+                if (perm.applicant != null) {
+                    $("#permissionApplicantTemplate").tmpl(perm.applicant).appendTo("#popupBody");
+                }
+
+                $("#ViewPopuupDiv").dialog(
+                        {
+                            height: 450,
+                            width: 700,
+                            modal: true,
+                            buttons:
+                                    {
+                                        "Cancel": {
+                                            text: $.i18n("gen-cancel"),
+                                            "id": "comment_Trans_cancel",
+                                            click: function () {
+                                                setInterval(function () {
+
+                                                }, 4000);
+                                                $(this).dialog("close");
+
+                                            }
+                                        }
+                                    },
+                            close: function (ev, ui)
+                            {
+                                $(this).dialog("close");
+                            }
+                        });
+                $('#ViewPopuupDiv').dialog('option', 'title', $.i18n("reg-tran-details"));
+
+            } else
+            {
+                jAlert($.i18n("err-request-not-completed"));
+            }
+        },
+        error: function () {
+
+        }
+    });
+}
+
 function loadLease() {
     if (!$("#leaseLandDetailsContainer #pnlLandDetails").length) {
         $("#leaseLandDetailsContainer").empty();
@@ -5718,7 +6268,7 @@ Nature des investissements : ......................................\n\
 Améliorations autorisées : .........................................";
 
     $("#rowUsage").hide();
-    
+
     if (processid == 10) {
         if ($("#leaseConditions").val() === "") {
             $("#leaseConditions").val(leaseConditionsTemplateForm35);

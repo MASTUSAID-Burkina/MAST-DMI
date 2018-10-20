@@ -527,6 +527,7 @@ LANGUAGES.en = {
     "reg-mayor-signatory-date": "Mayor Signatory Date",
     "reg-signatory-date": "Signatory Date",
     "reg-app-number": "Application Number",
+    "reg-app-date": "Application Date",
     "reg-app-issue-date": "Application Issue Date",
     "reg-pv-number": "PV Number",
     "reg-apfr-number": "APFR Number",
@@ -537,6 +538,7 @@ LANGUAGES.en = {
     "reg-section": "Section",
     "reg-app-nature": "Nature of Application",
     "reg-reg-number": "Registration Number (optional)",
+    "reg-reg-number2": "Registration Number",
     "reg-recon-right-date": "Recognition Rights Date",
     "reg-contra-date": "Contradictory Date",
     "reg-existing-title": "Existing Title",
@@ -611,6 +613,12 @@ LANGUAGES.en = {
     "reg-lessee-lender-details": "Lessee/Lender Details",
     "reg-lessee-loan-registered": "Lease/Loan has been successfully registered",
     "reg-lease-loan": "Lease/Loan",
+    "reg-applicant-details": "Applicant Details",
+    "reg-applicant-saved": "Applicant has beed successfully saved",
+    "reg-permission-registered": "Development Autorization has been successfully registered",
+    "reg-permission-surrender-registered": "Surrender of Development Autorization has been successfully registered",
+    "reg-print-permission": "Print Development Autorization",
+    "reg-mayor-election-date": "Mayor Election Date",
     
     "err-error": "Error",
     "err-alert": "Alert",
@@ -797,5 +805,13 @@ LANGUAGES.en = {
     "err-enter-years-months": "Enter number of years or/and months",
     "err-enter-start-date": "Enter Start Date",
     "err-add-lessee-lender": "Add Lessee/Lender first",
-    "err-save-lessee-lender": "Save Lessee/Lender first"
+    "err-save-lessee-lender": "Save Lessee/Lender first",
+    "err-active-permission-exists": "There is already registered Development Authorization. You cannot proceseed.",
+    "err-no-active-permission": "There is no registered Development Authorization. You cannot proceseed.",
+    "err-add-applicant": "Add applicant first",
+    "err-save-applicant": "Save applicant first",
+    "err-enter-regnum": "Enter Registration Number",
+    "err-enter-appnum": "Enter Application Number",
+    "err-enter-appdate": "Enter Application Date",
+    "err-enter-end-date": "Enter End Date"
 };

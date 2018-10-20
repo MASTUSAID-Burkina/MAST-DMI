@@ -105,14 +105,6 @@ public class Project implements Serializable, Cloneable {
         this.outputformat = outputformat;
     }
 
-    /*	public Projection getDisplayProjection() {
-			return this.displayProjection;
-		}
-
-		public void setDisplayProjection(Projection displayProjection) {
-			this.displayProjection = displayProjection;
-		}
-     */
     public Integer getProjectnameid() {
         return projectnameid;
     }

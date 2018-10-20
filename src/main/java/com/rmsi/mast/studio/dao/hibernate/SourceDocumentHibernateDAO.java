@@ -33,9 +33,9 @@ public class SourceDocumentHibernateDAO extends GenericHibernateDAO<SourceDocume
             return null;
         }
     }
-    
+
     @Override
-    public List<SourceDocument> getDocumentsByDispute(Long disputeId){
+    public List<SourceDocument> getDocumentsByDispute(Long disputeId) {
         try {
             Query query = getEntityManager().createQuery("Select sd from SourceDocument sd where sd.disputeId = :disputeId and sd.active= true");
             List<SourceDocument> sourcedoc = query.setParameter("disputeId", disputeId).getResultList();
@@ -117,8 +117,8 @@ public class SourceDocumentHibernateDAO extends GenericHibernateDAO<SourceDocume
     public SourceDocument getDocumentByPerson(Long documentid) {
 
         try {
-        	
-        	//documentid = 7L;
+
+            //documentid = 7L;
             Query query = getEntityManager().createQuery("Select sd from SourceDocument sd where sd.laExtTransactiondetail.transactionid = :documentid");
             List<SourceDocument> documentlist = query.setParameter("documentid", documentid.intValue()).getResultList();
 
@@ -134,13 +134,12 @@ public class SourceDocumentHibernateDAO extends GenericHibernateDAO<SourceDocume
         }
 
     }
-    
+
     @Override
-    public SourceDocument getdocumentByPersonfortransaction(Long transactionid, Long partyid)
-    {
+    public SourceDocument getdocumentByPersonfortransaction(Long transactionid, Long partyid) {
 
         try {
-        	
+
             Query query = getEntityManager().createQuery("Select sd from SourceDocument sd where sd.laExtTransactiondetail.transactionid = :transactionid and sd.laParty.partyid= :partyid ");
             List<SourceDocument> documentlist = query.setParameter("transactionid", transactionid).setParameter("partyid", partyid).getResultList();
 
@@ -199,46 +198,45 @@ public class SourceDocumentHibernateDAO extends GenericHibernateDAO<SourceDocume
 
     }
 
-	@Override
-	public List<SourceDocument> findSourceDocumentByLandIdandTransactionid(
-			Long id, Integer transactionid) {
-		
-		  try {
-	        	
-	            Query query = getEntityManager().createQuery("Select sd from SourceDocument sd where sd.laExtTransactiondetail.transactionid = :transactionid and sd.laSpatialunitLand= :landId  and sd.isactive= true");
-	            List<SourceDocument> documentlist = query.setParameter("transactionid", transactionid).setParameter("landId", id).getResultList();
-	           return    documentlist;
-	           
-	        } catch (Exception e) {
+    @Override
+    public List<SourceDocument> findSourceDocumentByLandIdandTransactionid(
+            Long id, Integer transactionid) {
 
-	            logger.error(e);
-	            return null;
-	        }
+        try {
 
-	}
+            Query query = getEntityManager().createQuery("Select sd from SourceDocument sd where sd.laExtTransactiondetail.transactionid = :transactionid and sd.laSpatialunitLand= :landId  and sd.isactive= true");
+            List<SourceDocument> documentlist = query.setParameter("transactionid", transactionid).setParameter("landId", id).getResultList();
+            return documentlist;
 
-	@Override
-	public List<SourceDocument> findSourceDocumentByLandIdAndProessId(Long id,Long processId) {
-	
+        } catch (Exception e) {
 
-		try {
-	            
-	            String strQuery = " select * from la_ext_documentdetails plm left join la_ext_transactiondetails td on td.transactionid=plm.transactionid"
-	            		+ "  where plm.landid= "+id +" and td.processid=" + processId +" and td.applicationstatusid=1 and plm.isactive= true";
-				
-				List<SourceDocument> lstSourceDocument = getEntityManager().createNativeQuery(strQuery,SourceDocument.class).getResultList();
-	           return lstSourceDocument;
+            logger.error(e);
+            return null;
+        }
 
-	        } catch (Exception e) {
+    }
 
-	            logger.error(e);
-	            return null;
-	        }
-			
-	}
+    @Override
+    public List<SourceDocument> findSourceDocumentByLandIdAndProessId(Long id, Long processId) {
 
-	@Override
-	public SourceDocument findDocumentByDocumentId(Long documentId) {
+        try {
+
+            String strQuery = " select * from la_ext_documentdetails plm left join la_ext_transactiondetails td on td.transactionid=plm.transactionid"
+                    + "  where plm.landid= " + id + " and td.processid=" + processId + " and td.applicationstatusid=1 and plm.isactive= true";
+
+            List<SourceDocument> lstSourceDocument = getEntityManager().createNativeQuery(strQuery, SourceDocument.class).getResultList();
+            return lstSourceDocument;
+
+        } catch (Exception e) {
+
+            logger.error(e);
+            return null;
+        }
+
+    }
+
+    @Override
+    public SourceDocument findDocumentByDocumentId(Long documentId) {
         try {
             Query query = getEntityManager().createQuery("Select sd from SourceDocument sd where sd.documentid = :documentid and sd.isactive= true");
             List<SourceDocument> sourcedoc = query.setParameter("documentid", documentId).getResultList();
@@ -255,35 +253,14 @@ public class SourceDocumentHibernateDAO extends GenericHibernateDAO<SourceDocume
         }
     }
 
-	@Override
-	public List<SourceDocument> findBatchSourceDocumentByLandIdandTransactionid(
-			Long transactionid) {
-		
-	/*	Long startid=transactionidstart;
-		
-		Long endid=transactionidend;
-		
-		Long transiddiffr = transactionidend - transactionidstart;
-		String ids= startid+",";
-		for(int i=0; i<transiddiffr; i++){
-			transactionidstart =transactionidstart+1;
-			ids=ids+transactionidstart+",";
-		}
-		
-		ids=ids.substring(0, ids.length()-1);
-		*/
-		  try {
-	        	
-	            Query query = getEntityManager().createQuery("Select sd from SourceDocument sd where sd.laExtTransactiondetail.transactionid ="+ transactionid+" and sd.isactive= true");
-	            List<SourceDocument> documentlist = query.getResultList();
-	           return    documentlist;
-	           
-	        } catch (Exception e) {
-
-	            logger.error(e);
-	            return null;
-	        }
-
-	}
-
+    @Override
+    public List<SourceDocument> getDocumentsByTransactionId(Long transactionid) {
+        try {
+            Query query = getEntityManager().createNativeQuery("select * from la_ext_documentdetails where transactionid=" + transactionid + " and isactive= true", SourceDocument.class);
+            return query.getResultList();
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
 }

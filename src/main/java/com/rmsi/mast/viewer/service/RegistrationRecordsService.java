@@ -23,6 +23,7 @@ import com.rmsi.mast.studio.domain.La_Month;
 import com.rmsi.mast.studio.domain.LandType;
 import com.rmsi.mast.studio.domain.MaritalStatus;
 import com.rmsi.mast.studio.domain.NaturalPerson;
+import com.rmsi.mast.studio.domain.Permission;
 import com.rmsi.mast.studio.domain.PersonType;
 import com.rmsi.mast.studio.domain.ProjectRegion;
 import com.rmsi.mast.studio.domain.ShareType;
@@ -174,4 +175,15 @@ public interface RegistrationRecordsService {
     LaExtTransactionHistory saveTransactionHistory(LaExtTransactionHistory latranshist);
 
     SocialTenureRelationship getSocialTenureRelationshipByLandIdandTypeId(Long landId, Long processid, Integer persontype);
+    
+    Permission getPermissionById(int id);
+    Permission getRegisteredPermissionByPropId(long usin);
+    Permission getPermissionByTransactionId(int transactionId);
+    Permission getPendingTerminationPermissionByPropId(long usin);
+    @Transactional
+    Permission savePermission(Permission permission);
+    @Transactional
+    boolean registerPermission(Permission permission);
+    boolean checkForRegisteredPermission(long usin);
+    Permission getPendingPermissionByPropId(long usin);
 }

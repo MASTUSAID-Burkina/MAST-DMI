@@ -4,6 +4,7 @@ import com.rmsi.mast.custom.dto.BoundaryMapDto;
 import com.rmsi.mast.custom.dto.Form1Dto;
 import com.rmsi.mast.custom.dto.Form2Dto;
 import com.rmsi.mast.custom.dto.Form3Dto;
+import com.rmsi.mast.custom.dto.Form43Dto;
 import com.rmsi.mast.custom.dto.Form5Dto;
 import com.rmsi.mast.custom.dto.Form7Dto;
 import com.rmsi.mast.custom.dto.Form8Dto;
@@ -98,6 +99,7 @@ import com.rmsi.mast.studio.domain.LaExtRegistrationLandShareType;
 import com.rmsi.mast.studio.domain.LaExtTransactionHistory;
 import com.rmsi.mast.studio.domain.LaExtTransactiondetail;
 import com.rmsi.mast.studio.domain.LaParty;
+import com.rmsi.mast.studio.domain.LaPartyPerson;
 import com.rmsi.mast.studio.domain.LaSpatialunitLand;
 import com.rmsi.mast.studio.domain.LandType;
 import com.rmsi.mast.studio.domain.LandUseType;
@@ -109,6 +111,7 @@ import com.rmsi.mast.studio.domain.NonNaturalPerson;
 import com.rmsi.mast.studio.domain.OccupancyType;
 import com.rmsi.mast.studio.domain.Outputformat;
 import com.rmsi.mast.studio.domain.PaymentInfo;
+import com.rmsi.mast.studio.domain.Permission;
 import com.rmsi.mast.studio.domain.Person;
 import com.rmsi.mast.studio.domain.PersonType;
 import com.rmsi.mast.studio.domain.Project;
@@ -6500,7 +6503,7 @@ public class LandRecordsController {
             }
 
             try {
-                List<SourceDocument> doc = sourcedocdao.findBatchSourceDocumentByLandIdandTransactionid(transid);
+                List<SourceDocument> doc = sourcedocdao.getDocumentsByTransactionId(transid);
 
                 objdocs = (Object) doc;
                 if (null != objlanddetails) {
@@ -7388,6 +7391,64 @@ public class LandRecordsController {
         return dto;
     }
 
+    @RequestMapping(value = "/viewer/landrecords/spatialunit/form43/{usin}", method = RequestMethod.GET)
+    @ResponseBody
+    public Form43Dto getForm43(@PathVariable Long usin) {
+
+        Form43Dto dto = new Form43Dto();
+        try {
+            Permission perm = registrationRecordsService.getRegisteredPermissionByPropId(usin);
+            if(perm == null){
+                return null;
+            }
+            
+            ClaimBasic su = spatialUnitService.getClaimsBasicByLandId(usin).get(0);
+            RightBasic right = getOwnershipRight(su);
+            LaPartyPerson person = perm.getApplicant();
+            Project project = projectService.findProjectById(su.getProjectnameid());
+
+            String mayorname = project.getProjectArea().iterator().next().getMayorname();
+            Date electionDate = project.getProjectArea().iterator().next().getMayorelectiondate();
+            
+            if (su.getLaSpatialunitgroupHierarchy5() != null) {
+                dto.setVillage(su.getLaSpatialunitgroupHierarchy5().getName());
+            }
+            if (su.getLaSpatialunitgroupHierarchy4() != null) {
+                dto.setCommune(su.getLaSpatialunitgroupHierarchy4().getName());
+            }
+            if (su.getLaSpatialunitgroupHierarchy3() != null) {
+                dto.setProvince(su.getLaSpatialunitgroupHierarchy3().getName());
+            }
+            if (su.getLaSpatialunitgroupHierarchy2() != null) {
+                dto.setRegion(su.getLaSpatialunitgroupHierarchy2().getName());
+            }
+
+            dto.setAddress(person.getAddress());
+            dto.setApfrDate(right.getCertIssueDate());
+            dto.setApfrNum(right.getCertNumber());
+            dto.setArea(Double.toString(su.getArea()));
+            dto.setAppDate(perm.getAppdate());
+            dto.setAppNum(perm.getAppnum());
+            dto.setApplicant(person.getFirstname() + " " + person.getLastname());
+            dto.setElectionDate(electionDate);
+            dto.setEndDate(perm.getEnddate());
+            dto.setStartDate(perm.getStartdate());
+            dto.setIdDate(person.getIdDate());
+            dto.setIdNum(person.getIdentityno());
+            dto.setLocation(dto.getCommune() + " " + dto.getVillage());
+            dto.setLot("000");
+            dto.setMayorName(mayorname);
+            dto.setParcelNum(su.getLandid());
+            dto.setCoords(landRecordsService.getGeometryPoints(usin.intValue()));
+            dto.setRegNum(perm.getRegnum());
+            dto.setSection(su.getSection());
+            dto.setUsage(perm.getUsage());
+        } catch (Exception e) {
+            logger.error(e);
+        }
+        return dto;
+    }
+    
     @RequestMapping(value = "/viewer/landrecords/spatialunit/form8/{usin}", method = RequestMethod.GET)
     @ResponseBody
     public Form8Dto getForm8(@PathVariable Long usin) {

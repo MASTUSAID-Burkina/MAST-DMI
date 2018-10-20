@@ -29,6 +29,7 @@ import com.rmsi.mast.studio.domain.LandType;
 import com.rmsi.mast.studio.domain.MaritalStatus;
 import com.rmsi.mast.studio.domain.NaturalPerson;
 import com.rmsi.mast.studio.domain.ParcelCount;
+import com.rmsi.mast.studio.domain.Permission;
 import com.rmsi.mast.studio.domain.PersonType;
 import com.rmsi.mast.studio.domain.Project;
 import com.rmsi.mast.studio.domain.ProjectRegion;
@@ -63,6 +64,7 @@ import com.rmsi.mast.viewer.dao.LandTypeLadmDAO;
 import com.rmsi.mast.viewer.dao.MaritalStatusaDao;
 import com.rmsi.mast.viewer.dao.NaturalPersonDAO;
 import com.rmsi.mast.viewer.dao.ParcelCountDao;
+import com.rmsi.mast.viewer.dao.PermissionDao;
 import com.rmsi.mast.viewer.dao.PersonTypeLDao;
 import com.rmsi.mast.viewer.dao.ProjectRegionDao;
 import com.rmsi.mast.viewer.dao.RegistrationRecordsDao;
@@ -77,16 +79,7 @@ import java.util.Date;
 public class RegistrationRecordsImpl implements RegistrationRecordsService {
 
     private static final Logger logger = Logger.getLogger(RegistrationRecordsImpl.class);
-    /*@Autowired
-    private SpatialUnitTempDao spatialUnitTempDao;
-     */
 
- /*@Autowired
-	private LaSpatialunitLandDao laSpatialunitLandDao;
-	
-	@Autowired
-	SocialTenureRelationshipDAO socialTenureRelationshipDao;
-     */
     @Autowired
     RegistrationRecordsDao registrationRecordsDao;
 
@@ -176,6 +169,9 @@ public class RegistrationRecordsImpl implements RegistrationRecordsService {
 
     @Autowired
     SpatialUnitHibernateDao spatialUnitDao;
+
+    @Autowired
+    PermissionDao permissionDao;
 
     @Override
     public List<LaSpatialunitLand> findAllSpatialUnitTemp(String defaultProject,
@@ -298,7 +294,7 @@ public class RegistrationRecordsImpl implements RegistrationRecordsService {
     @Override
     public boolean registerLease(LaLease lease) {
         laLeaseDao.saveLease(lease);
-        
+
         LaExtTransactiondetail laExtTransactiondetail = transactionDao.getLaExtTransactionByLeaseeid(lease.getLeaseid().longValue());
         Status status = getStatusById(7); // Final
         laExtTransactiondetail.setLaExtApplicationstatus(status);
@@ -567,5 +563,82 @@ public class RegistrationRecordsImpl implements RegistrationRecordsService {
     public SocialTenureRelationship getAllSocialTenureRelationshipByTransactionId(
             Long transactionId) {
         return socialTenureRelationshipDao.getAllSocialTenureRelationshipByTransactionId(transactionId);
+    }
+
+    @Override
+    public Permission getPermissionById(int id) {
+        return permissionDao.findById(id);
+    }
+
+    @Override
+    public Permission getRegisteredPermissionByPropId(long usin) {
+        return permissionDao.findRegisteredPermissionByPropId(usin);
+    }
+    
+    @Override
+    public Permission getPermissionByTransactionId(int transactionId){
+        return permissionDao.findPermissionByTransactionId(transactionId);
+    }
+
+    @Override
+    public Permission getPendingTerminationPermissionByPropId(long usin) {
+        return permissionDao.findPendingTerminationPermissionByPropId(usin);
+    }
+
+    @Override
+    public Permission getPendingPermissionByPropId(long usin) {
+        return permissionDao.findPendingPermissionByPropId(usin);
+    }
+
+    @Override
+    public Permission savePermission(Permission permission) {
+        Permission p;
+        if (permission.getTransactionid() == null) {
+            // Create new transaction
+            long processId = 11;
+            if (permission.getTerminatedid() != null && permission.getTerminatedid() > 0) {
+                processId = 12;
+            }
+            LaExtTransactiondetail tran = new LaExtTransactiondetail();
+            tran.setCreatedby(permission.getCreatedby());
+            tran.setCreateddate(permission.getCreateddate());
+            tran.setIsactive(true);
+            tran.setLaExtApplicationstatus(getStatusById(1));
+            tran.setProcessid(processId);
+            tran = transactionDao.makePersistent(tran);
+            
+            permission.setTransactionid(tran.getTransactionid());
+            p = permissionDao.save(permission);
+            
+            tran.setModuletransid(p.getId());
+            transactionDao.makePersistent(tran);
+        } else {
+            p = permissionDao.save(permission);
+        }
+        return p;
+    }
+
+    @Override
+    public boolean registerPermission(Permission permission) {
+        LaExtTransactiondetail tran = transactionDao.getLaExtTransactiondetail(permission.getTransactionid());
+        tran.setLaExtApplicationstatus(getStatusById(7));
+        transactionDao.makePersistent(tran);
+        
+        // If termination, make original one disaplbed
+        if (permission.getTerminatedid() != null && permission.getTerminatedid() > 0) {
+            Permission p = permissionDao.findById(permission.getTerminatedid());
+            p.setActive(Boolean.FALSE);
+            p.setModifiedby(permission.getModifiedby());
+            p.setModifieddate(Calendar.getInstance().getTime());
+            permissionDao.save(p);
+        } else {
+            permissionDao.save(permission);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean checkForRegisteredPermission(long usin) {
+        return permissionDao.checkForRegisteredPermission(usin);
     }
 }

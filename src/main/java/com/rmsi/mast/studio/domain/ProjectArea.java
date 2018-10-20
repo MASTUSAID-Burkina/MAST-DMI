@@ -120,6 +120,9 @@ public class ProjectArea implements Serializable {
 
     private String mayorname;
     
+    @Temporal(javax.persistence.TemporalType.DATE)
+    private Date mayorelectiondate;
+    
     private String authorizedmember;
 
     private String authorizedmembersignature;
@@ -221,13 +224,6 @@ public class ProjectArea implements Serializable {
         this.modifieddate = modifieddate;
     }
 
-//	public Integer getSpatialunitgroupid6() {
-//		return spatialunitgroupid6;
-//	}
-//
-//	public void setSpatialunitgroupid6(Integer spatialunitgroupid6) {
-//		this.spatialunitgroupid6 = spatialunitgroupid6;
-//	}
     public LaSpatialunitgroup getLaSpatialunitgroup1() {
         return laSpatialunitgroup1;
     }
@@ -419,4 +415,11 @@ public class ProjectArea implements Serializable {
         this.mayorname = mayorname;
     }
 
+    public Date getMayorelectiondate() {
+        return mayorelectiondate;
+    }
+
+    public void setMayorelectiondate(Date mayorelectiondate) {
+        this.mayorelectiondate = mayorelectiondate;
+    }
 }

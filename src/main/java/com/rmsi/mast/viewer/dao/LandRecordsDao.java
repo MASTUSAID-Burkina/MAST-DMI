@@ -10,6 +10,7 @@ import com.rmsi.mast.studio.domain.fetch.ClaimProfile;
 import com.rmsi.mast.studio.domain.fetch.ClaimSummary;
 import com.rmsi.mast.studio.domain.fetch.DataCorrectionReport;
 import com.rmsi.mast.studio.domain.fetch.FarmReport;
+import com.rmsi.mast.studio.domain.fetch.GeometryPoint;
 import com.rmsi.mast.studio.domain.fetch.LeaseHistoryForFetch;
 import com.rmsi.mast.studio.domain.fetch.MortageHistoryForFetch;
 import com.rmsi.mast.studio.domain.fetch.NaturalPersonBasic;
@@ -21,7 +22,6 @@ import com.rmsi.mast.studio.domain.fetch.ProjectDetails;
 import com.rmsi.mast.studio.domain.fetch.RegistryBook;
 import com.rmsi.mast.studio.domain.fetch.ReportCertificateFetch;
 import com.rmsi.mast.studio.domain.fetch.SpatialUnitBasic;
-import com.rmsi.mast.studio.domain.fetch.SpatialUnitGeom;
 import com.rmsi.mast.studio.domain.fetch.SpatialUnitTable;
 import com.rmsi.mast.studio.domain.fetch.TransactionHistoryForFetch;
 import com.rmsi.mast.studio.domain.fetch.UploadedDocumentDetailsForFetch;
@@ -159,4 +159,6 @@ public interface LandRecordsDao extends GenericDAO<SpatialUnitTable, Long> {
     List<Object> findparcelcountbygender(int project,String tag, Integer villageId);
     
     List<Object> findRegistrytable(int project, String tag, Integer villageId);
+    
+    List<GeometryPoint> getGeometryPoints(int landid);
 }

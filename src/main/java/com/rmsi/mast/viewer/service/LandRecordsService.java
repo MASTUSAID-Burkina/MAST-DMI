@@ -49,6 +49,7 @@ import com.rmsi.mast.studio.domain.fetch.ClaimProfile;
 import com.rmsi.mast.studio.domain.fetch.ClaimSummary;
 import com.rmsi.mast.studio.domain.fetch.DataCorrectionReport;
 import com.rmsi.mast.studio.domain.fetch.FarmReport;
+import com.rmsi.mast.studio.domain.fetch.GeometryPoint;
 import com.rmsi.mast.studio.domain.fetch.LeaseHistoryForFetch;
 import com.rmsi.mast.studio.domain.fetch.MortageHistoryForFetch;
 import com.rmsi.mast.studio.domain.fetch.OwnerHistoryForFetch;
@@ -940,4 +941,6 @@ public interface LandRecordsService {
     List<MutationType> getMutationTypes();
     
     MutationType getMutationType(int id);
+    
+    List<GeometryPoint> getGeometryPoints(int landid);
 }

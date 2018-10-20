@@ -792,6 +792,69 @@ function generateform51(usin, dto) {
             });
 }
 
+function generateform43(usin, dto) {
+
+    var formImage = getFormImage();
+
+    jQuery.ajax(
+            {
+                type: 'GET',
+                url: 'resources/templates/forms/form43.html',
+                dataType: 'html',
+                success: function (data43)
+                {
+                    jQuery("#printDiv div").empty();
+                    jQuery("#printDiv").append(data43);
+
+                    var form43Obj = dto;
+                    var generateForm = new generateForms();
+                    
+                    if(isEmpty(dto)){
+                        var fromTmp = new generateForms();
+                        form43Obj = fromTmp.Form43(usin);
+                    }
+                    removeNulls(form43Obj);
+                    
+                    $('.commune_logo').append("<img width='125' height='100' src='" + formImage + "'>");
+
+                    $('#lblForm43Region').text(form43Obj.region);
+                    $('#lblForm43Province').text(form43Obj.province);
+                    $('#lblForm43Commune').text(form43Obj.commune);
+                    
+                    $('#lblForm43Regnum').text(form43Obj.regNum);
+                    $('#lblForm43ElectionDate').text(form43Obj.electionDate);
+                    $('#lblForm43AppNum').text(form43Obj.appNum);
+                    $('#lblForm43AppDate').text(form43Obj.appDate);
+                    $('#lblForm43Applicant').text(form43Obj.applicant);
+                    $('#lblForm43Usage').text(form43Obj.usage);
+                    $('#lblForm43Applicant2').text(form43Obj.applicant);
+                    $('#lblForm43ApfrNum').text(form43Obj.apfrNum);
+                    $('#lblForm43ApfrDate').text(form43Obj.startDate);
+                    $('#lblForm43Ha').text(((form43Obj.area) * area_constant).toFixed(2));
+                    $('#lblForm43Vaillage').text(form43Obj.village);
+                    $('#lblForm43Section').text(form43Obj.section);
+                    $('#lblForm43Lot').text(form43Obj.lot);
+                    $('#lblForm43ParcelNum').text(form43Obj.parcelNum);
+                    $('#lblForm43StartDate').text(form43Obj.startDate);
+                    $('#lblForm43EndDate').text(form43Obj.endDate);
+                    $('#lblForm43Commune2').text(form43Obj.commune);
+                    $('#lblForm43CurrentDate').text(getCurrentDate());
+                    
+                    $("#rowsForm43Coords").empty();
+                    $("#rowForm43Coords").tmpl(form43Obj.coords).appendTo("#rowsForm43Coords");
+                    
+                    var printWindow = window.open('', 'form43' + usin, 'height=900,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no,status=no, location=no');
+                    printWindow.document.write('<html><head><title>Form 43</title>' +
+                            '<script src="../resources/scripts/cloudburst/viewer/Form.js"></script>' +
+                            '</head><body> ' + $("#printDiv").html() + '</body></html>');
+
+
+                    printWindow.document.close();
+                    printWindow.focus();
+                }
+            });
+}
+
 function generatePaymentLetter(usin) {
     var formImage = getFormImage();
     jQuery.ajax(

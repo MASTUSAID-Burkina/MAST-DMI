@@ -14,19 +14,21 @@ public interface SourceDocumentDAO extends GenericDAO<SourceDocument, Integer> {
     SourceDocument findDocumentByAdminId(Long adminID);
 
     SourceDocument getDocumentByPerson(Long person_gid);
+
     SourceDocument getdocumentByPersonfortransaction(Long transactionid, Long personid);
-    
+
     List<SourceDocument> getDocumentsByDispute(Long disputeId);
 
     boolean deleteNaturalPersonImage(Long id);
 
     boolean checkPersonImage(Long id);
-    SourceDocument findDocumentByDocumentId(Long documentId);
-    
-    List<SourceDocument> findSourceDocumentByLandIdandTransactionid(Long id,Integer transactionid);
-    
-    List<SourceDocument> findBatchSourceDocumentByLandIdandTransactionid(Long transactionid);
 
-    List<SourceDocument> findSourceDocumentByLandIdAndProessId(Long id,Long processId);
-    
+    SourceDocument findDocumentByDocumentId(Long documentId);
+
+    List<SourceDocument> findSourceDocumentByLandIdandTransactionid(Long id, Integer transactionid);
+
+    List<SourceDocument> getDocumentsByTransactionId(Long transactionid);
+
+    List<SourceDocument> findSourceDocumentByLandIdAndProessId(Long id, Long processId);
+
 }

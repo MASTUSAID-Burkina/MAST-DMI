@@ -56,6 +56,7 @@ import com.rmsi.mast.studio.domain.LandType;
 import com.rmsi.mast.studio.domain.LandUseType;
 import com.rmsi.mast.studio.domain.MaritalStatus;
 import com.rmsi.mast.studio.domain.NaturalPerson;
+import com.rmsi.mast.studio.domain.Permission;
 import com.rmsi.mast.studio.domain.PersonType;
 import com.rmsi.mast.studio.domain.Project;
 import com.rmsi.mast.studio.domain.ProjectRegion;
@@ -78,6 +79,7 @@ import com.rmsi.mast.viewer.dao.LaMortgageDao;
 import com.rmsi.mast.viewer.dao.LaMortgageSurrenderDao;
 import com.rmsi.mast.viewer.dao.LaPartyDao;
 import com.rmsi.mast.viewer.dao.LaSurrenderLeaseDao;
+import com.rmsi.mast.viewer.dao.PermissionDao;
 import com.rmsi.mast.viewer.dao.SourceDocumentsDao;
 import com.rmsi.mast.viewer.service.LaExtRegistrationLandShareTypeService;
 import com.rmsi.mast.viewer.service.LandRecordsService;
@@ -89,7 +91,7 @@ public class RegistrationRecordsController {
     Logger logger = Logger.getLogger(RegistrationRecordsController.class);
 
     @Autowired
-    RegistrationRecordsService registrationRecordsService;
+    RegistrationRecordsService regRecordsService;
 
     @Autowired
     UserService userService;
@@ -178,53 +180,53 @@ public class RegistrationRecordsController {
     public LaExtPersonLandMapping getPersonLandMapDetails(
             @PathVariable Integer landid) {
 
-        return registrationRecordsService.getPersonLandMapDetails(landid);
+        return regRecordsService.getPersonLandMapDetails(landid);
     }
 
     @RequestMapping(value = "/viewer/registration/partydetails/sale/{landid}", method = RequestMethod.GET)
     @ResponseBody
     public List<LaPartyPerson> getAllPartyPersonDetails(@PathVariable Integer landid) {
 
-        return registrationRecordsService.getAllPartyPersonDetails(landid);
+        return regRecordsService.getAllPartyPersonDetails(landid);
     }
 
     @RequestMapping(value = "/viewer/registration/editpartydetails/{transid}", method = RequestMethod.GET)
     @ResponseBody
     public List<LaPartyPerson> getAllPartyPersonDetailsByTransactionId(@PathVariable Integer transid) {
 
-        return registrationRecordsService.getAllPartyPersonDetailsByTransactionId(transid);
+        return regRecordsService.getAllPartyPersonDetailsByTransactionId(transid);
     }
 
     @RequestMapping(value = "/viewer/registration/partydetails/filldetails/{landid}/{processid}", method = RequestMethod.GET)
     @ResponseBody
     public List<LaPartyPerson> fillAllPartyPersonDetails(@PathVariable Integer landid, @PathVariable Integer processid) {
 
-        return registrationRecordsService.fillAllPartyPersonDetails(landid, processid);
+        return regRecordsService.fillAllPartyPersonDetails(landid, processid);
     }
 
     @RequestMapping(value = "/viewer/registration/partypersondetailssurrenderlease/{landid}", method = RequestMethod.GET)
     @ResponseBody
     public LaPartyPerson getPartyPersonDetailssurrenderlease(@PathVariable Integer landid) {
 
-        return registrationRecordsService.getPartyPersonDetailssurrenderlease(landid);
+        return regRecordsService.getPartyPersonDetailssurrenderlease(landid);
     }
 
     @RequestMapping(value = "/viewer/registration/getleasebylandid/{landid}", method = RequestMethod.GET)
     @ResponseBody
     public LaLease getLeaseByLandId(@PathVariable Integer landid) {
-        return registrationRecordsService.getLeaseByLandId(landid);
+        return regRecordsService.getLeaseByLandId(landid);
     }
 
     @RequestMapping(value = "/viewer/registration/checkforactivelease/{landid}/{processid}", method = RequestMethod.GET)
     @ResponseBody
     public boolean checkForActiveLease(@PathVariable Integer landid, @PathVariable Integer processid) {
-        return registrationRecordsService.checkForActiveLease(landid, processid);
+        return regRecordsService.checkForActiveLease(landid, processid);
     }
 
     @RequestMapping(value = "/viewer/registration/getleasebytransactionid/{transid}", method = RequestMethod.GET)
     @ResponseBody
     public LaLease getLeaseByTransactionId(@PathVariable Integer landid, @PathVariable Integer transid) {
-        return registrationRecordsService.getLeaseByTransactionId(transid);
+        return regRecordsService.getLeaseByTransactionId(transid);
     }
 
     // MaritalStatusDao
@@ -232,27 +234,27 @@ public class RegistrationRecordsController {
     @ResponseBody
     public List<MaritalStatus> getMaritalStatusDetails() {
 
-        return registrationRecordsService.getMaritalStatusDetails();
+        return regRecordsService.getMaritalStatusDetails();
     }
 
     @RequestMapping(value = "/viewer/registration/genderstatus/", method = RequestMethod.GET)
     @ResponseBody
     public List<Gender> getGenderDetails() {
 
-        return registrationRecordsService.getGenderDetails();
+        return regRecordsService.getGenderDetails();
     }
 
     @RequestMapping(value = "/viewer/registration/idtype/", method = RequestMethod.GET)
     @ResponseBody
     public List<IdType> getIDTypeDetails() {
 
-        return registrationRecordsService.getIDTypeDetails();
+        return regRecordsService.getIDTypeDetails();
     }
 
     @RequestMapping(value = "/viewer/registration/laspatialunitland/{landid}", method = RequestMethod.GET)
     @ResponseBody
     public LaSpatialunitLand getLaSpatialunitLandDetails(@PathVariable Long landid) {
-        LaSpatialunitLand su = registrationRecordsService.getLaSpatialunitLandDetails(landid);
+        LaSpatialunitLand su = regRecordsService.getLaSpatialunitLandDetails(landid);
         if (su != null) {
             if (StringUtils.isNotEmpty(su.getLandusetypeid())) {
                 List<LandUseType> existingList = landRecordsService.getExistingUseName(su.getLandusetypeid());
@@ -297,28 +299,28 @@ public class RegistrationRecordsController {
     @ResponseBody
     public List<LandType> getLandTypeDetails() {
 
-        return registrationRecordsService.getAllLandType();
+        return regRecordsService.getAllLandType();
     }
 
     @RequestMapping(value = "/viewer/registration/allcountry/", method = RequestMethod.GET)
     @ResponseBody
     public List<ProjectRegion> getAllCountry() {
 
-        return registrationRecordsService.getAllCountry();
+        return regRecordsService.getAllCountry();
     }
 
     @RequestMapping(value = "/viewer/registration/allregion/{country_r_id}", method = RequestMethod.GET)
     @ResponseBody
     public List<ProjectRegion> getAllRegion(@PathVariable Integer country_r_id) {
 
-        return registrationRecordsService.getAllRegion(country_r_id);
+        return regRecordsService.getAllRegion(country_r_id);
     }
 
     @RequestMapping(value = "/viewer/registration/allprovince/{region_r_id}", method = RequestMethod.GET)
     @ResponseBody
     public List<ProjectRegion> getAllProvience(@PathVariable Integer region_r_id) {
 
-        return registrationRecordsService.getAllProvience(region_r_id);
+        return regRecordsService.getAllProvience(region_r_id);
     }
 
     //
@@ -326,35 +328,35 @@ public class RegistrationRecordsController {
     @ResponseBody
     public List<ShareType> getAlllandsharetypes() {
 
-        return registrationRecordsService.getAlllandsharetype();
+        return regRecordsService.getAlllandsharetype();
     }
 
     @RequestMapping(value = "/viewer/registration/land/sharetype/", method = RequestMethod.GET)
     @ResponseBody
     public List<ShareType> getAlllandsharetype() {
 
-        return registrationRecordsService.getAlllandsharetype();
+        return regRecordsService.getAlllandsharetype();
     }
 
     @RequestMapping(value = "/viewer/registration/processdetails/", method = RequestMethod.GET)
     @ResponseBody
     public List<LaExtProcess> getAllProcessDetails() {
 
-        return registrationRecordsService.getAllProcessDetails();
+        return regRecordsService.getAllProcessDetails();
     }
 
     @RequestMapping(value = "/viewer/registration/monthoflease/", method = RequestMethod.GET)
     @ResponseBody
     public List<La_Month> getmonthofleaseDetails() {
 
-        return registrationRecordsService.getmonthofleaseDetails();
+        return regRecordsService.getmonthofleaseDetails();
     }
 
     @RequestMapping(value = "/viewer/registration/financialagency/", method = RequestMethod.GET)
     @ResponseBody
     public List<LaExtFinancialagency> getFinancialagencyDetails() {
 
-        return registrationRecordsService.getFinancialagencyDetails();
+        return regRecordsService.getFinancialagencyDetails();
     }
 
     @RequestMapping(value = "/viewer/registration/savefinalsaledata", method = RequestMethod.POST)
@@ -389,7 +391,7 @@ public class RegistrationRecordsController {
                 }
             }
 
-            List<SocialTenureRelationship> sellerRights = registrationRecordsService.getSocialTenureRelationshipListForSellerByLandId(landId);
+            List<SocialTenureRelationship> sellerRights = regRecordsService.getSocialTenureRelationshipListForSellerByLandId(landId);
             Long sellerPartyId = 0L;
 
             if (sellerRights.size() > 0 && (processid == 2 || processid == 4 || processid == 6)) {
@@ -402,12 +404,12 @@ public class RegistrationRecordsController {
                         sellerpartyids = sellerpartyids + "," + sellerPartyId.toString();
                     }
                     if (editflag == 0) {
-                        registrationRecordsService.updateSocialTenureRelationshipByPartyId(sellerPartyId, landId);
+                        regRecordsService.updateSocialTenureRelationshipByPartyId(sellerPartyId, landId);
                     }
                 }
             }
 
-            List<SocialTenureRelationship> buyerRights = registrationRecordsService.getSocialTenureRelationshipListByLandIdForBuyer(landId, processid);
+            List<SocialTenureRelationship> buyerRights = regRecordsService.getSocialTenureRelationshipListByLandIdForBuyer(landId, processid);
             Long buyerPartyId = 0L;
             if (null != buyerRights && buyerRights.size() > 0) {
                 for (SocialTenureRelationship right : buyerRights) {
@@ -419,7 +421,7 @@ public class RegistrationRecordsController {
                         buyerpartyids = buyerpartyids + "," + buyerPartyId.toString();
                     }
                     if (editflag == 0) {
-                        registrationRecordsService.updateSocialTenureRelationshipByPartytypeId(
+                        regRecordsService.updateSocialTenureRelationshipByPartytypeId(
                                 buyerPartyId, landId, mutationType, contractName, contractNum, dtContractDate, ownershipType);
                     }
                 }
@@ -434,7 +436,7 @@ public class RegistrationRecordsController {
                 latranshist.setTransactionid(buyerRights.get(0).getLaExtTransactiondetail().getTransactionid());
                 latranshist.setCreatedby(user_id.intValue());
                 latranshist.setCreateddate(new Date());
-                latranshist = registrationRecordsService.saveTransactionHistory(latranshist);
+                latranshist = regRecordsService.saveTransactionHistory(latranshist);
             }
 
             return "Success";
@@ -476,9 +478,9 @@ public class RegistrationRecordsController {
             }
 
             landId = ServletRequestUtils.getRequiredLongParameter(request, "landidhide");
-            Status status = registrationRecordsService.getStatusById(2);
+            Status status = regRecordsService.getStatusById(2);
 
-            PersonType personType = registrationRecordsService.getPersonTypeById(1);
+            PersonType personType = regRecordsService.getPersonTypeById(1);
 
             DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
             /*Date date = null;
@@ -492,8 +494,8 @@ public class RegistrationRecordsController {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            MaritalStatus maritalStatus = registrationRecordsService.getMaritalStatusByID(buyerMaritalStatusId);
-            IdType idType = registrationRecordsService.getIDTypeDetailsByID(buyerIdTypeid);
+            MaritalStatus maritalStatus = regRecordsService.getMaritalStatusByID(buyerMaritalStatusId);
+            IdType idType = regRecordsService.getIDTypeDetailsByID(buyerIdTypeid);
             NaturalPerson naturalPerson = new NaturalPerson();
             naturalPerson.setContactno(buyerContact_No);
             naturalPerson.setCreatedby(user_id.intValue());
@@ -515,12 +517,12 @@ public class RegistrationRecordsController {
                 naturalPerson.setLaPartygroupRelationshiptype(obj);
             }
 
-            naturalPerson.setLaSpatialunitgroup1(registrationRecordsService.findLaSpatialunitgroupById(1));
-            naturalPerson.setLaSpatialunitgroup2(registrationRecordsService.findLaSpatialunitgroupById(2));
-            naturalPerson.setLaSpatialunitgroup3(registrationRecordsService.findLaSpatialunitgroupById(3));
-            naturalPerson.setLaSpatialunitgroupHierarchy1(registrationRecordsService.findProjectRegionById(1));
-            naturalPerson.setLaSpatialunitgroupHierarchy2(registrationRecordsService.findProjectRegionById(2));
-            naturalPerson.setLaSpatialunitgroupHierarchy3(registrationRecordsService.findProjectRegionById(3));
+            naturalPerson.setLaSpatialunitgroup1(regRecordsService.findLaSpatialunitgroupById(1));
+            naturalPerson.setLaSpatialunitgroup2(regRecordsService.findLaSpatialunitgroupById(2));
+            naturalPerson.setLaSpatialunitgroup3(regRecordsService.findLaSpatialunitgroupById(3));
+            naturalPerson.setLaSpatialunitgroupHierarchy1(regRecordsService.findProjectRegionById(1));
+            naturalPerson.setLaSpatialunitgroupHierarchy2(regRecordsService.findProjectRegionById(2));
+            naturalPerson.setLaSpatialunitgroupHierarchy3(regRecordsService.findProjectRegionById(3));
 
             LaParty laParty = new LaParty();
             laParty.setCreatedby(user_id.intValue());
@@ -528,7 +530,7 @@ public class RegistrationRecordsController {
             laParty.setLaPartygroupPersontype(personType);
 
             Long partyId = 0l;
-            SocialTenureRelationship socialTenureRelationshipSellerDetails = registrationRecordsService.getSocialTenureRelationshipByLandId(landId);
+            SocialTenureRelationship socialTenureRelationshipSellerDetails = regRecordsService.getSocialTenureRelationshipByLandId(landId);
             Long sellerPartyId = 0L;
             if (socialTenureRelationshipSellerDetails != null) {
                 sellerPartyId = socialTenureRelationshipSellerDetails.getPartyid();
@@ -538,7 +540,7 @@ public class RegistrationRecordsController {
 
             try {
                 naturalPerson.setLaPartygroupPersontype(personType);
-                NaturalPerson naturalPerson2 = registrationRecordsService.saveNaturalPerson(naturalPerson);
+                NaturalPerson naturalPerson2 = regRecordsService.saveNaturalPerson(naturalPerson);
                 partyId = naturalPerson2.getPartyid();
             } catch (Exception er) {
                 er.printStackTrace();
@@ -572,8 +574,8 @@ public class RegistrationRecordsController {
 				 * registrationRecordsService
 				 * .getLaSpatialunitLandDetails(landId);
                  */
-                socialTenureRelationship = registrationRecordsService.saveSocialTenureRelationship(socialTenureRelationship);
-                registrationRecordsService.updateSocialTenureRelationshipByPartyId(sellerPartyId, landId);
+                socialTenureRelationship = regRecordsService.saveSocialTenureRelationship(socialTenureRelationship);
+                regRecordsService.updateSocialTenureRelationshipByPartyId(sellerPartyId, landId);
                 /*
 				 * registrationRecordsService.updateLaSpatialunitLand(
 				 * lstLaSpatialunitLand.get(0));
@@ -621,8 +623,8 @@ public class RegistrationRecordsController {
             String buyerDOBstr = ServletRequestUtils.getRequiredStringParameter(request, "date_Of_birth_sale1");
             int buyerMaritalStatusId = ServletRequestUtils.getRequiredIntParameter(request, "sale_marital_buyer");
 
-            Status status = registrationRecordsService.getStatusById(7); // Final
-            PersonType personType = registrationRecordsService.getPersonTypeById(11);
+            Status status = regRecordsService.getStatusById(7); // Final
+            PersonType personType = regRecordsService.getPersonTypeById(11);
             DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
 
             Date buyerDOB = null;
@@ -643,8 +645,8 @@ public class RegistrationRecordsController {
                 e.printStackTrace();
             }
 
-            MaritalStatus maritalStatus = registrationRecordsService.getMaritalStatusByID(buyerMaritalStatusId);
-            SocialTenureRelationship rightBuyer = registrationRecordsService.getSocialTenureRelationshipByLandIdForBuyer(landId, processid);
+            MaritalStatus maritalStatus = regRecordsService.getMaritalStatusByID(buyerMaritalStatusId);
+            SocialTenureRelationship rightBuyer = regRecordsService.getSocialTenureRelationshipByLandIdForBuyer(landId, processid);
             Long buyerPartyId = ((Integer) buyerId).longValue();
             NaturalPerson person = new NaturalPerson();
 
@@ -667,12 +669,12 @@ public class RegistrationRecordsController {
             } else {
                 person.setOwnertype(1);
             }
-            person.setLaSpatialunitgroup1(registrationRecordsService.findLaSpatialunitgroupById(1));
-            person.setLaSpatialunitgroup2(registrationRecordsService.findLaSpatialunitgroupById(2));
-            person.setLaSpatialunitgroup3(registrationRecordsService.findLaSpatialunitgroupById(3));
-            person.setLaSpatialunitgroupHierarchy1(registrationRecordsService.findProjectRegionById(1));
-            person.setLaSpatialunitgroupHierarchy2(registrationRecordsService.findProjectRegionById(2));
-            person.setLaSpatialunitgroupHierarchy3(registrationRecordsService.findProjectRegionById(3));
+            person.setLaSpatialunitgroup1(regRecordsService.findLaSpatialunitgroupById(1));
+            person.setLaSpatialunitgroup2(regRecordsService.findLaSpatialunitgroupById(2));
+            person.setLaSpatialunitgroup3(regRecordsService.findLaSpatialunitgroupById(3));
+            person.setLaSpatialunitgroupHierarchy1(regRecordsService.findProjectRegionById(1));
+            person.setLaSpatialunitgroupHierarchy2(regRecordsService.findProjectRegionById(2));
+            person.setLaSpatialunitgroupHierarchy3(regRecordsService.findProjectRegionById(3));
             person.setLaPartygroupPersontype(personType);
             if (buyerNopId > 0) {
                 person.setNopId(buyerNopId);
@@ -690,12 +692,12 @@ public class RegistrationRecordsController {
                 person.setCreateddate(new Date());
 
                 Long partyId = 0l;
-                SocialTenureRelationship sellerRight = registrationRecordsService.getSocialTenureRelationshipByLandId(landId);
+                SocialTenureRelationship sellerRight = regRecordsService.getSocialTenureRelationshipByLandId(landId);
                 if (sellerRight == null) {
                     return null;
                 }
 
-                NaturalPerson person2 = registrationRecordsService.saveNaturalPerson(person);
+                NaturalPerson person2 = regRecordsService.saveNaturalPerson(person);
                 partyId = person2.getPartyid();
 
                 SocialTenureRelationship newRight = new SocialTenureRelationship();
@@ -717,7 +719,7 @@ public class RegistrationRecordsController {
 
                 newRight.setLaExtTransactiondetail(laExtTransactiondetail);
 
-                newRight = registrationRecordsService.saveSocialTenureRelationship(newRight);
+                newRight = regRecordsService.saveSocialTenureRelationship(newRight);
                 return newRight.getLaExtTransactiondetail().getTransactionid() + "";
 
             } else {
@@ -725,8 +727,8 @@ public class RegistrationRecordsController {
                 person.setModifiedby(user_id.intValue());
                 person.setModifieddate(new Date());
 
-                registrationRecordsService.getSocialTenureRelationshipByLandId(landId);
-                registrationRecordsService.saveNaturalPerson(person);
+                regRecordsService.getSocialTenureRelationshipByLandId(landId);
+                regRecordsService.saveNaturalPerson(person);
             }
 
         } catch (Exception e) {
@@ -766,8 +768,8 @@ public class RegistrationRecordsController {
             Integer editflag = ServletRequestUtils.getRequiredIntParameter(request, "editflag");
 
             landId = ServletRequestUtils.getRequiredLongParameter(request, "landidhide");
-            Status status = registrationRecordsService.getStatusById(1);
-            PersonType personType = registrationRecordsService.getPersonTypeById(1);
+            Status status = regRecordsService.getStatusById(1);
+            PersonType personType = regRecordsService.getPersonTypeById(1);
 
             DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
             Date dateOfBirth = null;
@@ -791,7 +793,7 @@ public class RegistrationRecordsController {
             User userObj = userService.findByUniqueName(principal.getName());
             Long user_id = userObj.getId();
 
-            MaritalStatus maritalStatus = registrationRecordsService.getMaritalStatusByID(maritalStatusId);
+            MaritalStatus maritalStatus = regRecordsService.getMaritalStatusByID(maritalStatusId);
 
             if (editflag == 1 || personId != 0) {
                 leaseeobjList = laLeaseDao.getleaseeListByLandandPersonId(landId, (long) personId);
@@ -817,12 +819,12 @@ public class RegistrationRecordsController {
             person.setAddress(address);
             person.setIdentityno(idNumber);
             person.setOwnertype(2);
-            person.setLaSpatialunitgroup1(registrationRecordsService.findLaSpatialunitgroupById(1));
-            person.setLaSpatialunitgroup2(registrationRecordsService.findLaSpatialunitgroupById(2));
-            person.setLaSpatialunitgroup3(registrationRecordsService.findLaSpatialunitgroupById(3));
-            person.setLaSpatialunitgroupHierarchy1(registrationRecordsService.findProjectRegionById(1));
-            person.setLaSpatialunitgroupHierarchy2(registrationRecordsService.findProjectRegionById(2));
-            person.setLaSpatialunitgroupHierarchy3(registrationRecordsService.findProjectRegionById(3));
+            person.setLaSpatialunitgroup1(regRecordsService.findLaSpatialunitgroupById(1));
+            person.setLaSpatialunitgroup2(regRecordsService.findLaSpatialunitgroupById(2));
+            person.setLaSpatialunitgroup3(regRecordsService.findLaSpatialunitgroupById(3));
+            person.setLaSpatialunitgroupHierarchy1(regRecordsService.findProjectRegionById(1));
+            person.setLaSpatialunitgroupHierarchy2(regRecordsService.findProjectRegionById(2));
+            person.setLaSpatialunitgroupHierarchy3(regRecordsService.findProjectRegionById(3));
             person.setLaPartygroupPersontype(personType);
             if (nopId > 0) {
                 person.setNopId(nopId);
@@ -839,15 +841,15 @@ public class RegistrationRecordsController {
                 lease = leaseeobjList.get(0);
                 person.setModifiedby(user_id.intValue());
                 person.setModifieddate(Calendar.getInstance().getTime());
-                registrationRecordsService.saveNaturalPerson(person);
+                regRecordsService.saveNaturalPerson(person);
                 transactionDao.getLaExtTransactionByLeaseeid(lease.getLeaseid().longValue());
             } else if (leaseeobjList.size() < 1 && personId == 0) {
                 person.setCreatedby(user_id.intValue());
                 person.setCreateddate(new Date());
-                person = registrationRecordsService.saveNaturalPerson(person);
+                person = regRecordsService.saveNaturalPerson(person);
 
                 Long ownerid = 0L;
-                SocialTenureRelationship ownerRight = registrationRecordsService.getSocialTenureRelationshipByLandId(landId);
+                SocialTenureRelationship ownerRight = regRecordsService.getSocialTenureRelationshipByLandId(landId);
 
                 if (ownerRight != null) {
                     ownerid = ownerRight.getPartyid();
@@ -863,7 +865,7 @@ public class RegistrationRecordsController {
                 lease.setLandid(landId);
                 lease.setOwnerid(ownerid);
                 lease.setIndividual(Boolean.TRUE);
-                lease = registrationRecordsService.saveLease(lease);
+                lease = regRecordsService.saveLease(lease);
 
                 laExtTransactiondetail = new LaExtTransactiondetail();
                 laExtTransactiondetail.setCreatedby(user_id.intValue());
@@ -873,7 +875,7 @@ public class RegistrationRecordsController {
                 laExtTransactiondetail.setProcessid(processId);
                 laExtTransactiondetail.setModuletransid(lease.getLeaseid());
 
-                registrationRecordsService.saveTransaction(laExtTransactiondetail);
+                regRecordsService.saveTransaction(laExtTransactiondetail);
             }
 
             if (lease != null) {
@@ -918,7 +920,7 @@ public class RegistrationRecordsController {
                 return null;
             }
 
-            Status status = registrationRecordsService.getStatusById(1);
+            Status status = regRecordsService.getStatusById(1);
             String username = principal.getName();
             User userObj = userService.findByUniqueName(username);
             Long user_id = userObj.getId();
@@ -943,7 +945,7 @@ public class RegistrationRecordsController {
                 surrenderLease.setLeasestartdate(lease.getLeasestartdate());
                 surrenderLease.setLeaseenddate(lease.getLeaseenddate());
 
-                surrenderLease = registrationRecordsService.savesurrenderLease(surrenderLease);
+                surrenderLease = regRecordsService.savesurrenderLease(surrenderLease);
 
                 laExtTransactiondetail = new LaExtTransactiondetail();
                 laExtTransactiondetail.setCreatedby(user_id.intValue());
@@ -953,7 +955,7 @@ public class RegistrationRecordsController {
                 laExtTransactiondetail.setProcessid(5L);
                 laExtTransactiondetail.setModuletransid(surrenderLease.getLeaseid());
 
-                laExtTransactiondetail = registrationRecordsService.saveTransaction(laExtTransactiondetail);
+                laExtTransactiondetail = regRecordsService.saveTransaction(laExtTransactiondetail);
             }
 
             return surrenderLease.getLeaseid().toString();
@@ -989,7 +991,7 @@ public class RegistrationRecordsController {
 
             landId = ServletRequestUtils.getRequiredLongParameter(request, "landidhide");
 
-            Status status = registrationRecordsService.getStatusById(1);
+            Status status = regRecordsService.getStatusById(1);
 
 //			PersonType personType = registrationRecordsService.getPersonTypeById(1);
             DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
@@ -1017,21 +1019,21 @@ public class RegistrationRecordsController {
                 laMortgage.setMortgagefrom(mortgage_fromDate);
                 laMortgage.setMortgageto(mortgage_toDate);
                 laMortgage.setMortgageamount(amount_mortgage);
-                laExtFinancialagency = registrationRecordsService.getFinancialagencyByID(financial_AgenciesID);
+                laExtFinancialagency = regRecordsService.getFinancialagencyByID(financial_AgenciesID);
                 laMortgage.setLaExtFinancialagency(laExtFinancialagency);
-                laMortgage = registrationRecordsService.saveMortgage(laMortgage);
+                laMortgage = regRecordsService.saveMortgage(laMortgage);
                 laExtTransactiondetail = transactionDao.getLaExtTransactionByLeaseeid(laMortgage.getMortgageid().longValue());
                 laExtTransactiondetail.setLaExtApplicationstatus(status);
-                laExtTransactiondetail = registrationRecordsService.saveTransaction(laExtTransactiondetail);
+                laExtTransactiondetail = regRecordsService.saveTransaction(laExtTransactiondetail);
 
             } else if (null != laMortgage && editflag == 1) {
 
                 laMortgage.setMortgagefrom(mortgage_fromDate);
                 laMortgage.setMortgageto(mortgage_toDate);
                 laMortgage.setMortgageamount(amount_mortgage);
-                laExtFinancialagency = registrationRecordsService.getFinancialagencyByID(financial_AgenciesID);
+                laExtFinancialagency = regRecordsService.getFinancialagencyByID(financial_AgenciesID);
                 laMortgage.setLaExtFinancialagency(laExtFinancialagency);
-                laMortgage = registrationRecordsService.saveMortgage(laMortgage);
+                laMortgage = regRecordsService.saveMortgage(laMortgage);
                 /*laExtTransactiondetail = transactionDao.getpoiByLeaseeid(laMortgage.getMortgageid().longValue());
 				 laExtTransactiondetail.setLaExtApplicationstatus(status);
 				 laExtTransactiondetail = registrationRecordsService.saveTransaction(laExtTransactiondetail);*/
@@ -1039,7 +1041,7 @@ public class RegistrationRecordsController {
             } else if (null == laMortgage) {
                 Long ownerid = 0L;
                 try {
-                    SocialTenureRelationship socialTenureRelationshipSellerDetails = registrationRecordsService.getSocialTenureRelationshipByLandId(landId);
+                    SocialTenureRelationship socialTenureRelationshipSellerDetails = regRecordsService.getSocialTenureRelationshipByLandId(landId);
 
                     if (socialTenureRelationshipSellerDetails != null) {
                         ownerid = socialTenureRelationshipSellerDetails.getPartyid();
@@ -1052,7 +1054,7 @@ public class RegistrationRecordsController {
                 }
 
 //			SocialTenureRelationship socialTenureRelationshipSellerDetails = registrationRecordsService.getSocialTenureRelationshipByLandId(landId);
-                laExtFinancialagency = registrationRecordsService.getFinancialagencyByID(financial_AgenciesID);
+                laExtFinancialagency = regRecordsService.getFinancialagencyByID(financial_AgenciesID);
 
                 laExtTransactiondetail = new LaExtTransactiondetail();
                 laExtTransactiondetail.setCreatedby(user_id.intValue());
@@ -1075,11 +1077,11 @@ public class RegistrationRecordsController {
                 laMortgage.setLandid(landId);
                 laMortgage.setOwnerid(ownerid);
 
-                laMortgage = registrationRecordsService.saveMortgage(laMortgage);
+                laMortgage = regRecordsService.saveMortgage(laMortgage);
 
                 laExtTransactiondetail.setModuletransid(laMortgage.getMortgageid());
 
-                laExtTransactiondetail = registrationRecordsService.saveTransaction(laExtTransactiondetail);
+                laExtTransactiondetail = regRecordsService.saveTransaction(laExtTransactiondetail);
             }
             if (null != laExtTransactiondetail) {
 
@@ -1156,15 +1158,15 @@ public class RegistrationRecordsController {
                 sourceDocument.setDocumenttypeid(doc_typeid.intValue());
                 try {
                     //List<SpatialUnit> lstSpatialUnit = registrationRecordsService.getSpatialUnitLandMappingDetails(landId);
-                    SocialTenureRelationship socialTenureRelationship = registrationRecordsService.getSocialTenureRelationshipByLandId(landId);
+                    SocialTenureRelationship socialTenureRelationship = regRecordsService.getSocialTenureRelationshipByLandId(landId);
                     Long partyId = socialTenureRelationship.getPartyid();
                     //Integer transactionid1 = socialTenureRelationship.getLaExtTransactiondetail().getTransactionid();
-                    LaParty laParty = registrationRecordsService.getLaPartyById(partyId);
-                    LaExtTransactiondetail laExtTransactiondetail = registrationRecordsService.getLaExtTransactiondetail(Integer.parseInt(transactionid));
+                    LaParty laParty = regRecordsService.getLaPartyById(partyId);
+                    LaExtTransactiondetail laExtTransactiondetail = regRecordsService.getLaExtTransactiondetail(Integer.parseInt(transactionid));
                     sourceDocument.setLaParty(laParty);
                     sourceDocument.setLaExtTransactiondetail(laExtTransactiondetail);
                     sourceDocument.setLaSpatialunitLand(landId);
-                    sourceDocument = registrationRecordsService.saveUploadedDocuments(sourceDocument);
+                    sourceDocument = regRecordsService.saveUploadedDocuments(sourceDocument);
 
                 } catch (Exception e) {
                     logger.error(e);
@@ -1250,16 +1252,16 @@ public class RegistrationRecordsController {
                 sourceDocument.setDocumenttypeid(doc_typeid.intValue());
                 try {
 //					List<SpatialUnit> lstSpatialUnit = registrationRecordsService.getSpatialUnitLandMappingDetails(landId);
-                    SocialTenureRelationship socialTenureRelationship = registrationRecordsService.getSocialTenureRelationshipByLandId(landId);
+                    SocialTenureRelationship socialTenureRelationship = regRecordsService.getSocialTenureRelationshipByLandId(landId);
                     Long partyId = socialTenureRelationship.getPartyid();
                     //Integer transactionid = socialTenureRelationship.getLaExtTransactiondetail().getTransactionid();
-                    LaParty laParty = registrationRecordsService.getLaPartyById(partyId);
-                    LaExtTransactiondetail laExtTransactiondetail = registrationRecordsService.getLaExtTransactiondetail(Integer.parseInt(transactionid));
+                    LaParty laParty = regRecordsService.getLaPartyById(partyId);
+                    LaExtTransactiondetail laExtTransactiondetail = regRecordsService.getLaExtTransactiondetail(Integer.parseInt(transactionid));
                     sourceDocument.setLaParty(laParty);
                     sourceDocument.setLaExtTransactiondetail(laExtTransactiondetail);
                     sourceDocument.setLaSpatialunitLand(landId);
                     //sourceDocument.setLaSpatialunitLand(lstSpatialUnit.get(0).getLandid());
-                    sourceDocument = registrationRecordsService.saveUploadedDocuments(sourceDocument);
+                    sourceDocument = regRecordsService.saveUploadedDocuments(sourceDocument);
 
                 } catch (Exception e) {
                     logger.error(e);
@@ -1349,15 +1351,15 @@ public class RegistrationRecordsController {
 					Long partyId = socialTenureRelationship.getPartyid();*/
 //					Integer transactionid = socialTenureRelationship.getLaExtTransactiondetail().getTransactionid();
 
-                    LaExtTransactiondetail laExtTransactiondetail = registrationRecordsService.getLaExtTransactiondetail(Integer.parseInt(transactionid));
+                    LaExtTransactiondetail laExtTransactiondetail = regRecordsService.getLaExtTransactiondetail(Integer.parseInt(transactionid));
                     Integer leaseid = laExtTransactiondetail.getModuletransid();
                     LaLease laLease = laLeaseDao.getLeaseById(leaseid);
-                    LaParty laParty = registrationRecordsService.getLaPartyById(laLease.getPersonid());
+                    LaParty laParty = regRecordsService.getLaPartyById(laLease.getPersonid());
                     sourceDocument.setLaParty(laParty);
                     sourceDocument.setLaExtTransactiondetail(laExtTransactiondetail);
                     sourceDocument.setLaSpatialunitLand(landId);
                     //sourceDocument.setLaSpatialunitLand(lstSpatialUnit.get(0).getLandid());
-                    sourceDocument = registrationRecordsService.saveUploadedDocuments(sourceDocument);
+                    sourceDocument = regRecordsService.saveUploadedDocuments(sourceDocument);
 
                 } catch (Exception e) {
                     logger.error(e);
@@ -1447,15 +1449,15 @@ public class RegistrationRecordsController {
 					Long partyId = socialTenureRelationship.getPartyid();*/
 //					Integer transactionid = socialTenureRelationship.getLaExtTransactiondetail().getTransactionid();
 
-                    LaExtTransactiondetail laExtTransactiondetail = registrationRecordsService.getLaExtTransactiondetail(Integer.parseInt(transactionid));
+                    LaExtTransactiondetail laExtTransactiondetail = regRecordsService.getLaExtTransactiondetail(Integer.parseInt(transactionid));
                     Integer leaseid = laExtTransactiondetail.getModuletransid();
                     LaSurrenderLease laLease = laLeaseDao.getSurrenderLeaseById(leaseid);
-                    LaParty laParty = registrationRecordsService.getLaPartyById(laLease.getPersonid());
+                    LaParty laParty = regRecordsService.getLaPartyById(laLease.getPersonid());
                     sourceDocument.setLaParty(laParty);
                     sourceDocument.setLaExtTransactiondetail(laExtTransactiondetail);
                     sourceDocument.setLaSpatialunitLand(landId);
                     //sourceDocument.setLaSpatialunitLand(lstSpatialUnit.get(0).getLandid());
-                    sourceDocument = registrationRecordsService.saveUploadedDocuments(sourceDocument);
+                    sourceDocument = regRecordsService.saveUploadedDocuments(sourceDocument);
 
                 } catch (Exception e) {
                     logger.error(e);
@@ -1563,9 +1565,9 @@ public class RegistrationRecordsController {
             //int no_Of_years_Lease = ServletRequestUtils.getRequiredIntParameter(request,"no_Of_years_Lease");
 
             landId = ServletRequestUtils.getRequiredLongParameter(request, "landidhide");
-            Status status = registrationRecordsService.getStatusById(2);
+            Status status = regRecordsService.getStatusById(2);
 
-            PersonType personType = registrationRecordsService.getPersonTypeById(1);
+            PersonType personType = regRecordsService.getPersonTypeById(1);
 
             DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
             Date dateOfBirth = null;
@@ -1580,8 +1582,8 @@ public class RegistrationRecordsController {
 
             Long user_id = userObj.getId();
 
-            MaritalStatus maritalStatus = registrationRecordsService.getMaritalStatusByID(martialId);
-            IdType idType = registrationRecordsService.getIDTypeDetailsByID(id_type);
+            MaritalStatus maritalStatus = regRecordsService.getMaritalStatusByID(martialId);
+            IdType idType = regRecordsService.getIDTypeDetailsByID(id_type);
             NaturalPerson naturalPerson = new NaturalPerson();
             naturalPerson.setContactno(contact_no);
             naturalPerson.setCreatedby(user_id.intValue());
@@ -1596,16 +1598,16 @@ public class RegistrationRecordsController {
             naturalPerson.setAddress(address);
             naturalPerson.setLaPartygroupIdentitytype(idType);
             naturalPerson.setIdentityno(id);
-            naturalPerson.setLaSpatialunitgroup1(registrationRecordsService.findLaSpatialunitgroupById(1));
-            naturalPerson.setLaSpatialunitgroup2(registrationRecordsService.findLaSpatialunitgroupById(2));
-            naturalPerson.setLaSpatialunitgroup3(registrationRecordsService.findLaSpatialunitgroupById(3));
-            naturalPerson.setLaSpatialunitgroupHierarchy1(registrationRecordsService.findProjectRegionById(1));
-            naturalPerson.setLaSpatialunitgroupHierarchy2(registrationRecordsService.findProjectRegionById(2));
-            naturalPerson.setLaSpatialunitgroupHierarchy3(registrationRecordsService.findProjectRegionById(3));
+            naturalPerson.setLaSpatialunitgroup1(regRecordsService.findLaSpatialunitgroupById(1));
+            naturalPerson.setLaSpatialunitgroup2(regRecordsService.findLaSpatialunitgroupById(2));
+            naturalPerson.setLaSpatialunitgroup3(regRecordsService.findLaSpatialunitgroupById(3));
+            naturalPerson.setLaSpatialunitgroupHierarchy1(regRecordsService.findProjectRegionById(1));
+            naturalPerson.setLaSpatialunitgroupHierarchy2(regRecordsService.findProjectRegionById(2));
+            naturalPerson.setLaSpatialunitgroupHierarchy3(regRecordsService.findProjectRegionById(3));
 
             try {
                 naturalPerson.setLaPartygroupPersontype(personType);
-                naturalPerson = registrationRecordsService.saveNaturalPerson(naturalPerson);
+                naturalPerson = regRecordsService.saveNaturalPerson(naturalPerson);
             } catch (Exception er) {
                 er.printStackTrace();
                 return null;
@@ -1613,7 +1615,7 @@ public class RegistrationRecordsController {
 
             Long ownerid = 0L;
             try {
-                SocialTenureRelationship socialTenureRelationshipSellerDetails = registrationRecordsService.getSocialTenureRelationshipByLandId(landId);
+                SocialTenureRelationship socialTenureRelationshipSellerDetails = regRecordsService.getSocialTenureRelationshipByLandId(landId);
 
                 if (socialTenureRelationshipSellerDetails != null) {
                     ownerid = socialTenureRelationshipSellerDetails.getPartyid();
@@ -1646,11 +1648,11 @@ public class RegistrationRecordsController {
             laExtTransactiondetail.setRemarks(remrks_lease);
             laExtTransactiondetail.setProcessid(1L);// process Id 1 for Lease
 
-            laLease = registrationRecordsService.saveLease(laLease);
+            laLease = regRecordsService.saveLease(laLease);
 
             laExtTransactiondetail.setModuletransid(laLease.getLeaseid());
 
-            laExtTransactiondetail = registrationRecordsService.saveTransaction(laExtTransactiondetail);
+            laExtTransactiondetail = regRecordsService.saveTransaction(laExtTransactiondetail);
 
             return laExtTransactiondetail.getTransactionid().toString();
         } catch (Exception e) {
@@ -1666,13 +1668,14 @@ public class RegistrationRecordsController {
 
         SocialTenureRelationship socialTenureRelationshipBuyerDetails = null;
         List<LaLease> leaseeobjList = new ArrayList<>();
-        LaExtTransactiondetail laExtTransactiondetail = null;
+        LaExtTransactiondetail tran = null;
         LaParty laParty = null;
         LaMortgage laMortgage = null;
         LaSurrenderMortgage lasurrenderMortgage = null;
         LaSurrenderLease surenderLease = null;
         Integer transactionId = 0;
         Integer persontypeId = 0;
+        Permission permission = null;
 
         try {
             String landId = "";
@@ -1698,28 +1701,43 @@ public class RegistrationRecordsController {
                 doc_name = ServletRequestUtils.getRequiredStringParameter(request, "doc_name_Lease");
                 doc_desc = ServletRequestUtils.getRequiredStringParameter(request, "doc_desc_Lease");
                 doc_date = ServletRequestUtils.getRequiredStringParameter(request, "doc_date_Lease");
+
                 if (editflag == 0) {
                     LaLease l = laLeaseDao.getLeaseByLandId(Long.parseLong(landId));
                     if (l != null) {
                         leaseeobjList.add(l);
                     }
                 } else if (editflag == 1) {
-                    laExtTransactiondetail = transactionDao.getLaExtTransactiondetail(transactionId);
-                    LaLease l = laLeaseDao.getLeaseById(laExtTransactiondetail.getModuletransid());
+                    tran = transactionDao.getLaExtTransactiondetail(transactionId);
+                    LaLease l = laLeaseDao.getLeaseById(tran.getModuletransid());
                     if (l != null) {
                         leaseeobjList.add(l);
                     }
                 }
 
+            } else if (processid == 11 || processid == 12) {
+                persontypeId = 1;
+                doc_name = ServletRequestUtils.getRequiredStringParameter(request, "perm_doc_name");
+                doc_desc = ServletRequestUtils.getRequiredStringParameter(request, "perm_doc_desc");
+                doc_date = ServletRequestUtils.getRequiredStringParameter(request, "perm_doc_date");
+
+                int permissionId = 0;
+                if (processid == 11) {
+                    permissionId = ServletRequestUtils.getRequiredIntParameter(request, "permissionId");
+                } else {
+                    permissionId = ServletRequestUtils.getRequiredIntParameter(request, "surrenderPermissionId");
+                }
+
+                permission = regRecordsService.getPermissionById(permissionId);
             } else if (processid == 2) {
                 persontypeId = 11;
                 doc_name = ServletRequestUtils.getRequiredStringParameter(request, "doc_name_sale");
                 doc_desc = ServletRequestUtils.getRequiredStringParameter(request, "doc_desc_sale");
                 doc_date = ServletRequestUtils.getRequiredStringParameter(request, "doc_date_sale");
                 if (editflag == 0) {
-                    socialTenureRelationshipBuyerDetails = registrationRecordsService.getSocialTenureRelationshipByLandIdandTypeId(Long.parseLong(landId), processid.longValue(), persontypeId);
+                    socialTenureRelationshipBuyerDetails = regRecordsService.getSocialTenureRelationshipByLandIdandTypeId(Long.parseLong(landId), processid.longValue(), persontypeId);
                 } else if (editflag == 1) {
-                    socialTenureRelationshipBuyerDetails = registrationRecordsService.getSocialTenureRelationshipByTransactionId(transactionId.longValue());
+                    socialTenureRelationshipBuyerDetails = regRecordsService.getSocialTenureRelationshipByTransactionId(transactionId.longValue());
                 }
             } else if (processid == 3) {
                 persontypeId = 1;
@@ -1729,8 +1747,8 @@ public class RegistrationRecordsController {
                 if (editflag == 0) {
                     laMortgage = laMortgagedao.getMortgageByLandId(Long.parseLong(landId));
                 } else if (editflag == 1) {
-                    laExtTransactiondetail = transactionDao.getLaExtTransactiondetail(transactionId);
-                    laMortgage = laMortgagedao.getMortgageByMotgageId(laExtTransactiondetail.getModuletransid());
+                    tran = transactionDao.getLaExtTransactiondetail(transactionId);
+                    laMortgage = laMortgagedao.getMortgageByMotgageId(tran.getModuletransid());
                 }
 
             } else if (processid == 4) {
@@ -1739,9 +1757,9 @@ public class RegistrationRecordsController {
                 doc_desc = ServletRequestUtils.getRequiredStringParameter(request, "doc_desc_sale");
                 doc_date = ServletRequestUtils.getRequiredStringParameter(request, "doc_date_sale");
                 if (editflag == 0) {
-                    socialTenureRelationshipBuyerDetails = registrationRecordsService.getSocialTenureRelationshipByLandIdandTypeId(Long.parseLong(landId), processid.longValue(), persontypeId);
+                    socialTenureRelationshipBuyerDetails = regRecordsService.getSocialTenureRelationshipByLandIdandTypeId(Long.parseLong(landId), processid.longValue(), persontypeId);
                 } else if (editflag == 1) {
-                    socialTenureRelationshipBuyerDetails = registrationRecordsService.getSocialTenureRelationshipByTransactionId(transactionId.longValue());
+                    socialTenureRelationshipBuyerDetails = regRecordsService.getSocialTenureRelationshipByTransactionId(transactionId.longValue());
                 }
             } else if (processid == 5) {
                 persontypeId = 1;
@@ -1755,9 +1773,9 @@ public class RegistrationRecordsController {
                 doc_desc = ServletRequestUtils.getRequiredStringParameter(request, "doc_desc_sale");
                 doc_date = ServletRequestUtils.getRequiredStringParameter(request, "doc_date_sale");
                 if (editflag == 0) {
-                    socialTenureRelationshipBuyerDetails = registrationRecordsService.getSocialTenureRelationshipByLandIdandTypeId(Long.parseLong(landId), processid.longValue(), persontypeId);
+                    socialTenureRelationshipBuyerDetails = regRecordsService.getSocialTenureRelationshipByLandIdandTypeId(Long.parseLong(landId), processid.longValue(), persontypeId);
                 } else if (editflag == 1) {
-                    socialTenureRelationshipBuyerDetails = registrationRecordsService.getSocialTenureRelationshipByTransactionId(transactionId.longValue());
+                    socialTenureRelationshipBuyerDetails = regRecordsService.getSocialTenureRelationshipByTransactionId(transactionId.longValue());
                 }
             } else if (processid == 7) {
                 persontypeId = 11;
@@ -1765,9 +1783,9 @@ public class RegistrationRecordsController {
                 doc_desc = ServletRequestUtils.getRequiredStringParameter(request, "doc_desc_sale");
                 doc_date = ServletRequestUtils.getRequiredStringParameter(request, "doc_date_sale");
                 if (editflag == 0) {
-                    socialTenureRelationshipBuyerDetails = registrationRecordsService.getSocialTenureRelationshipByLandIdandTypeId(Long.parseLong(landId), processid.longValue(), persontypeId);
+                    socialTenureRelationshipBuyerDetails = regRecordsService.getSocialTenureRelationshipByLandIdandTypeId(Long.parseLong(landId), processid.longValue(), persontypeId);
                 } else if (editflag == 1) {
-                    socialTenureRelationshipBuyerDetails = registrationRecordsService.getSocialTenureRelationshipByTransactionId(transactionId.longValue());
+                    socialTenureRelationshipBuyerDetails = regRecordsService.getSocialTenureRelationshipByTransactionId(transactionId.longValue());
                 }
             } else if (processid == 9) {
                 persontypeId = 1;
@@ -1777,24 +1795,17 @@ public class RegistrationRecordsController {
                 if (editflag == 0) {
                     lasurrenderMortgage = lasurrenderMortgagedao.getMortgageByLandIdandprocessId(Long.parseLong(landId), processid.longValue());
                 } else if (editflag == 1) {
-                    laExtTransactiondetail = transactionDao.getLaExtTransactiondetail(transactionId);
-                    lasurrenderMortgage = lasurrenderMortgagedao.getMortgageBysurMortgageId(laExtTransactiondetail.getModuletransid());
+                    tran = transactionDao.getLaExtTransactiondetail(transactionId);
+                    lasurrenderMortgage = lasurrenderMortgagedao.getMortgageBysurMortgageId(tran.getModuletransid());
 
                 }
             }
 
-            String outDirPath = FileUtils.getFielsFolder(request) + "resources" + File.separator + "documents" + File.separator + "Registry" + File.separator + "webupload";
-            File outDir = new File(outDirPath);
-            boolean exists = outDir.exists();
             Date uploadDate = null;
             DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
-            if (!exists) {
-                (new File(outDirPath)).mkdirs();
-            }
 
             try {
                 uploadDate = dateformat.parse(doc_date);
-
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -1815,40 +1826,43 @@ public class RegistrationRecordsController {
                     buyerPartyId = socialTenureRelationshipBuyerDetails.getPartyid();
                     buyertransid = socialTenureRelationshipBuyerDetails.getLaExtTransactiondetail().getTransactionid().longValue();
                     Long partyId = buyerPartyId;
-                    laParty = registrationRecordsService.getLaPartyById(partyId);
-                    laExtTransactiondetail = registrationRecordsService.getLaExtTransactiondetail(buyertransid.intValue());
+                    laParty = regRecordsService.getLaPartyById(partyId);
+                    tran = regRecordsService.getLaExtTransactiondetail(buyertransid.intValue());
                     sourceDocument.setLaParty(laParty);
-                    sourceDocument.setLaExtTransactiondetail(laExtTransactiondetail);
+                    sourceDocument.setLaExtTransactiondetail(tran);
                     sourceDocument.setLaSpatialunitLand(Long.parseLong(landId));
-                    sourceDocument = registrationRecordsService.saveUploadedDocuments(sourceDocument);
+                    regRecordsService.saveUploadedDocuments(sourceDocument);
                 } else if (null != leaseeobjList && leaseeobjList.size() > 0) {
-                    laExtTransactiondetail = transactionDao.getLaExtTransactionByLeaseeid(leaseeobjList.get(0).getLeaseid().longValue());
-                    laParty = registrationRecordsService.getLaPartyById(leaseeobjList.get(0).getPersonid());
+                    tran = transactionDao.getLaExtTransactionByLeaseeid(leaseeobjList.get(0).getLeaseid().longValue());
+                    laParty = regRecordsService.getLaPartyById(leaseeobjList.get(0).getPersonid());
                     sourceDocument.setLaParty(laParty);
-                    sourceDocument.setLaExtTransactiondetail(laExtTransactiondetail);
+                    sourceDocument.setLaExtTransactiondetail(tran);
                     sourceDocument.setLaSpatialunitLand(Long.parseLong(landId));
-                    sourceDocument = registrationRecordsService.saveUploadedDocuments(sourceDocument);
+                    regRecordsService.saveUploadedDocuments(sourceDocument);
                 } else if (null != laMortgage) {
-                    laExtTransactiondetail = transactionDao.getLaExtTransactionforMortgage(laMortgage.getMortgageid().longValue());
-                    laParty = registrationRecordsService.getLaPartyById(laMortgage.getOwnerid());
+                    tran = transactionDao.getLaExtTransactionforMortgage(laMortgage.getMortgageid().longValue());
+                    laParty = regRecordsService.getLaPartyById(laMortgage.getOwnerid());
                     sourceDocument.setLaParty(laParty);
-                    sourceDocument.setLaExtTransactiondetail(laExtTransactiondetail);
+                    sourceDocument.setLaExtTransactiondetail(tran);
                     sourceDocument.setLaSpatialunitLand(Long.parseLong(landId));
-                    sourceDocument = registrationRecordsService.saveUploadedDocuments(sourceDocument);
+                    regRecordsService.saveUploadedDocuments(sourceDocument);
                 } else if (null != surenderLease) {
-                    laExtTransactiondetail = transactionDao.getLaExtTransactionByLeaseeidForSurrenderLease(surenderLease.getLeaseid().longValue());
-                    //laParty = registrationRecordsService.getLaPartyById(surenderLease.getOwnerid());
-                    //sourceDocument.setLaParty(laParty);
-                    sourceDocument.setLaExtTransactiondetail(laExtTransactiondetail);
+                    tran = transactionDao.getLaExtTransactionByLeaseeidForSurrenderLease(surenderLease.getLeaseid().longValue());
+                    sourceDocument.setLaExtTransactiondetail(tran);
                     sourceDocument.setLaSpatialunitLand(Long.parseLong(landId));
-                    sourceDocument = registrationRecordsService.saveUploadedDocuments(sourceDocument);
+                    regRecordsService.saveUploadedDocuments(sourceDocument);
                 } else if (null != lasurrenderMortgage) {
-                    laExtTransactiondetail = transactionDao.getLaExtTransactionforSurrenderMortgage(lasurrenderMortgage.getMortgageid().longValue());
-                    laParty = registrationRecordsService.getLaPartyById(lasurrenderMortgage.getOwnerid());
+                    tran = transactionDao.getLaExtTransactionforSurrenderMortgage(lasurrenderMortgage.getMortgageid().longValue());
+                    laParty = regRecordsService.getLaPartyById(lasurrenderMortgage.getOwnerid());
                     sourceDocument.setLaParty(laParty);
-                    sourceDocument.setLaExtTransactiondetail(laExtTransactiondetail);
+                    sourceDocument.setLaExtTransactiondetail(tran);
                     sourceDocument.setLaSpatialunitLand(Long.parseLong(landId));
-                    sourceDocument = registrationRecordsService.saveUploadedDocuments(sourceDocument);
+                    regRecordsService.saveUploadedDocuments(sourceDocument);
+                } else if (permission != null) {
+                    tran = transactionDao.getLaExtTransactiondetail(permission.getTransactionid());
+                    sourceDocument.setLaExtTransactiondetail(tran);
+                    sourceDocument.setLaSpatialunitLand(Long.parseLong(landId));
+                    regRecordsService.saveUploadedDocuments(sourceDocument);
                 }
 
             } catch (Exception e) {
@@ -1859,9 +1873,7 @@ public class RegistrationRecordsController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return persontypeId;
-
     }
 
     @RequestMapping(value = "/viewer/registration/savedocumentInfo/split", method = RequestMethod.POST)
@@ -1905,18 +1917,18 @@ public class RegistrationRecordsController {
             sourceDocument.setRecordationdate(uploadDate);
             sourceDocument.setDocumenttypeid(1);
             try {
-                SocialTenureRelationship socialTenureRelationship = registrationRecordsService.getSocialTenureRelationshipByLandId(Long.parseLong(landId));
+                SocialTenureRelationship socialTenureRelationship = regRecordsService.getSocialTenureRelationshipByLandId(Long.parseLong(landId));
                 Long partyId = socialTenureRelationship.getPartyid();
-                LaParty laParty = registrationRecordsService.getLaPartyById(partyId);
+                LaParty laParty = regRecordsService.getLaPartyById(partyId);
                 List<SourceDocument> lstsourceDocument = sourceDocumentDAO.findSourceDocumentByLandIdAndProessId(Long.parseLong(landId), 8l);
                 if (lstsourceDocument.size() > 0) {
 
-                    laExtTransactiondetail = registrationRecordsService.getLaExtTransactiondetail(lstsourceDocument.get(0).getLaExtTransactiondetail().getTransactionid());
+                    laExtTransactiondetail = regRecordsService.getLaExtTransactiondetail(lstsourceDocument.get(0).getLaExtTransactiondetail().getTransactionid());
                 } else {
                     laExtTransactiondetail.setCreatedby(user_id.intValue());
                     laExtTransactiondetail.setCreateddate(new Date());
                     laExtTransactiondetail.setIsactive(true);
-                    laExtTransactiondetail.setLaExtApplicationstatus(registrationRecordsService.getStatusById(1));
+                    laExtTransactiondetail.setLaExtApplicationstatus(regRecordsService.getStatusById(1));
                     laExtTransactiondetail.setModuletransid(partyId.intValue());
                     laExtTransactiondetail.setRemarks("");
                     laExtTransactiondetail.setProcessid(8l);
@@ -1925,7 +1937,7 @@ public class RegistrationRecordsController {
                 sourceDocument.setLaParty(laParty);
                 sourceDocument.setLaExtTransactiondetail(laExtTransactiondetail);
                 sourceDocument.setLaSpatialunitLand(Long.parseLong(landId));
-                sourceDocument = registrationRecordsService.saveUploadedDocuments(sourceDocument);
+                sourceDocument = regRecordsService.saveUploadedDocuments(sourceDocument);
 
             } catch (Exception e) {
                 logger.error(e);
@@ -1947,7 +1959,7 @@ public class RegistrationRecordsController {
 
         try {
 
-            SocialTenureRelationship socialTenureRelationshipBuyerDetails = registrationRecordsService.getSocialTenureRelationshipByLandIdandTypeId(landid, processId, persontypeId); //landid,2l,11
+            SocialTenureRelationship socialTenureRelationshipBuyerDetails = regRecordsService.getSocialTenureRelationshipByLandIdandTypeId(landid, processId, persontypeId); //landid,2l,11
             List<LaLease> leaseeobjList = laLeaseDao.getleaseobjbylandandprocessidList(landid, processId);
             LaMortgage laMortgageobj = laMortgagedao.getMortgageByLandIdandprocessId(landid, processId);
             LaSurrenderMortgage lasurrenderMortgageobj = lasurrenderMortgagedao.getMortgageByLandIdandprocessId(landid, processId);
@@ -2119,7 +2131,7 @@ public class RegistrationRecordsController {
                 leaseeobj.setYears(0);
                 leaseeobj.setLeasestartdate(startDate);
                 leaseeobj.setLeaseenddate(endDate);
-                leaseeobj = registrationRecordsService.saveLease(leaseeobj);
+                leaseeobj = regRecordsService.saveLease(leaseeobj);
 
                 laExtTransactiondetail = transactionDao.getLaExtTransactionByLeaseeid(leaseeobj.getLeaseid().longValue());
             } else if (leaseeobjList.size() > 0 && personId != 0) {
@@ -2129,7 +2141,7 @@ public class RegistrationRecordsController {
                 leaseeobj.setYears(0);
                 leaseeobj.setLeasestartdate(startDate);
                 leaseeobj.setLeaseenddate(endDate);
-                leaseeobj = registrationRecordsService.saveLease(leaseeobj);
+                leaseeobj = regRecordsService.saveLease(leaseeobj);
 
                 laExtTransactiondetail = transactionDao.getLaExtTransactionByLeaseeid(leaseeobj.getLeaseid().longValue());
             } else if (leaseeobjList.size() > 0 && personId == 0 && leaseepersonid == 0) {
@@ -2139,7 +2151,7 @@ public class RegistrationRecordsController {
                     leaseeobj.setYears(0);
                     leaseeobjall.setLeasestartdate(startDate);
                     leaseeobjall.setLeaseenddate(endDate);
-                    leaseeobjall = registrationRecordsService.saveLease(leaseeobjall);
+                    leaseeobjall = regRecordsService.saveLease(leaseeobjall);
                 }
 
                 laExtTransactiondetail = transactionDao.getLaExtTransactionByLeaseeid(leaseeobjList.get(0).getLeaseid().longValue());
@@ -2205,7 +2217,7 @@ public class RegistrationRecordsController {
             }
             lease.setConditions(leaseConditions);
 
-            return registrationRecordsService.registerLease(lease);
+            return regRecordsService.registerLease(lease);
         } catch (Exception e) {
             logger.error(e);
         }
@@ -2227,9 +2239,9 @@ public class RegistrationRecordsController {
             if (null != laMortgage) {
 
                 laExtTransactiondetail = transactionDao.getLaExtTransactionByLeaseeid(laMortgage.getMortgageid().longValue());
-                Status status = registrationRecordsService.getStatusById(2);
+                Status status = regRecordsService.getStatusById(2);
                 laExtTransactiondetail.setLaExtApplicationstatus(status);
-                laExtTransactiondetail = registrationRecordsService.saveTransaction(laExtTransactiondetail);
+                laExtTransactiondetail = regRecordsService.saveTransaction(laExtTransactiondetail);
             } else {
 
             }
@@ -2394,10 +2406,10 @@ public class RegistrationRecordsController {
 
             if (null != surrenderleaseobj) {
                 laExtTransactiondetail = transactionDao.getLaExtTransactionByLeaseeid(surrenderleaseobj.getLeaseid().longValue());
-                Status status = registrationRecordsService.getStatusById(7); // Final
+                Status status = regRecordsService.getStatusById(7); // Final
                 laExtTransactiondetail.setLaExtApplicationstatus(status);
-                registrationRecordsService.saveTransaction(laExtTransactiondetail);
-                registrationRecordsService.disablelease(leaseId);
+                regRecordsService.saveTransaction(laExtTransactiondetail);
+                regRecordsService.disablelease(leaseId);
             }
 
             return true;
@@ -2434,7 +2446,7 @@ public class RegistrationRecordsController {
 
             landId = ServletRequestUtils.getRequiredLongParameter(request, "landidhide");
 
-            Status status = registrationRecordsService.getStatusById(1);
+            Status status = regRecordsService.getStatusById(1);
 
 //				PersonType personType = registrationRecordsService.getPersonTypeById(1);
             DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
@@ -2464,10 +2476,10 @@ public class RegistrationRecordsController {
                 laMortgage.setMortgagefrom(mortgage_fromDate);
                 laMortgage.setMortgageto(mortgage_toDate);
                 laMortgage.setMortgageamount(amount_mortgage);
-                laExtFinancialagency = registrationRecordsService.getFinancialagencyByID(financial_AgenciesID);
+                laExtFinancialagency = regRecordsService.getFinancialagencyByID(financial_AgenciesID);
                 laMortgage.setLaExtFinancialagency(laExtFinancialagency);
                 laMortgage.setSurrenderreason(mortgagesurrender_reason);
-                laMortgage = registrationRecordsService.saveSurrenderMortgage(laMortgage);
+                laMortgage = regRecordsService.saveSurrenderMortgage(laMortgage);
                 /* laExtTransactiondetail = transactionDao.getLaExtTransactionByLeaseeid(laMortgage.getMortgageid().longValue());
 					 laExtTransactiondetail.setLaExtApplicationstatus(status);
 					 laExtTransactiondetail = registrationRecordsService.saveTransaction(laExtTransactiondetail);*/
@@ -2475,7 +2487,7 @@ public class RegistrationRecordsController {
             } else if (null == laMortgage && null != mortgageobj) {
                 Long ownerid = 0L;
                 try {
-                    SocialTenureRelationship socialTenureRelationshipSellerDetails = registrationRecordsService.getSocialTenureRelationshipByLandId(landId);
+                    SocialTenureRelationship socialTenureRelationshipSellerDetails = regRecordsService.getSocialTenureRelationshipByLandId(landId);
 
                     if (socialTenureRelationshipSellerDetails != null) {
                         ownerid = socialTenureRelationshipSellerDetails.getPartyid();
@@ -2488,7 +2500,7 @@ public class RegistrationRecordsController {
                 }
 
 //				SocialTenureRelationship socialTenureRelationshipSellerDetails = registrationRecordsService.getSocialTenureRelationshipByLandId(landId);
-                laExtFinancialagency = registrationRecordsService.getFinancialagencyByID(financial_AgenciesID);
+                laExtFinancialagency = regRecordsService.getFinancialagencyByID(financial_AgenciesID);
 
                 laExtTransactiondetail = new LaExtTransactiondetail();
                 laExtTransactiondetail.setCreatedby(user_id.intValue());
@@ -2512,11 +2524,11 @@ public class RegistrationRecordsController {
                 laMortgage.setOwnerid(ownerid);
                 laMortgage.setSurrenderreason(mortgagesurrender_reason);
 
-                laMortgage = registrationRecordsService.saveSurrenderMortgage(laMortgage);
+                laMortgage = regRecordsService.saveSurrenderMortgage(laMortgage);
 
                 laExtTransactiondetail.setModuletransid(laMortgage.getMortgageid());
 
-                laExtTransactiondetail = registrationRecordsService.saveTransaction(laExtTransactiondetail);
+                laExtTransactiondetail = regRecordsService.saveTransaction(laExtTransactiondetail);
             }
 
             return laExtTransactiondetail.getTransactionid().toString();
@@ -2541,10 +2553,10 @@ public class RegistrationRecordsController {
 
             if (null != laMortgage) {
                 laExtTransactiondetail = transactionDao.getLaExtTransactionforSurrenderMortgage(laMortgage.getMortgageid().longValue());
-                Status status = registrationRecordsService.getStatusById(2);
+                Status status = regRecordsService.getStatusById(2);
                 laExtTransactiondetail.setLaExtApplicationstatus(status);
-                laExtTransactiondetail = registrationRecordsService.saveTransaction(laExtTransactiondetail);
-                registrationRecordsService.disableMortagage(laMortgage.getOwnerid(), landId);
+                laExtTransactiondetail = regRecordsService.saveTransaction(laExtTransactiondetail);
+                regRecordsService.disableMortagage(laMortgage.getOwnerid(), landId);
             }
 
             return laExtTransactiondetail.getTransactionid().toString();
@@ -2909,4 +2921,308 @@ public class RegistrationRecordsController {
         }
     }
 
+    @RequestMapping(value = "/viewer/registration/checkForRegisteredPermission/{landid}", method = RequestMethod.GET)
+    @ResponseBody
+    public boolean checkForRegisteredPermission(HttpServletRequest request, @PathVariable Long landid) {
+        try {
+            return regRecordsService.checkForRegisteredPermission(landid);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return false;
+        }
+    }
+
+    @RequestMapping(value = "/viewer/registration/getPendingPermissionSurrender/{landid}", method = RequestMethod.GET)
+    @ResponseBody
+    public Permission getPendingPermissionSurrender(HttpServletRequest request, @PathVariable Long landid) {
+        try {
+            return regRecordsService.getPendingTerminationPermissionByPropId(landid);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
+    }
+
+    @RequestMapping(value = "/viewer/registration/getPendingPermission/{landid}", method = RequestMethod.GET)
+    @ResponseBody
+    public Permission getPendingPermission(HttpServletRequest request, @PathVariable Long landid) {
+        try {
+            return regRecordsService.getPendingPermissionByPropId(landid);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
+    }
+
+    @RequestMapping(value = "/viewer/registration/getRegisteredPermission/{landid}", method = RequestMethod.GET)
+    @ResponseBody
+    public Permission getRegisteredPermission(HttpServletRequest request, @PathVariable Long landid) {
+        try {
+            return regRecordsService.getRegisteredPermissionByPropId(landid);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
+    }
+    
+    @RequestMapping(value = "/viewer/registration/getPermissionByTransaction/{transactionId}", method = RequestMethod.GET)
+    @ResponseBody
+    public Permission getPermissionByTransactionId(HttpServletRequest request, @PathVariable int transactionId) {
+        try {
+            return regRecordsService.getPermissionByTransactionId(transactionId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
+    }
+
+    @RequestMapping(value = "/viewer/registration/getPermissionDocs/{permissionId}", method = RequestMethod.GET)
+    @ResponseBody
+    public List<SourceDocument> getPermissionDocs(HttpServletRequest request, @PathVariable int permissionId) {
+        try {
+            Permission p = regRecordsService.getPermissionById(permissionId);
+            if (p != null) {
+                return sourceDocumentDAO.getDocumentsByTransactionId((long) p.getTransactionid());
+            }
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            return null;
+        }
+    }
+
+    @RequestMapping(value = "/viewer/registration/saveNewPermission", method = RequestMethod.POST)
+    @ResponseBody
+    public Permission saveNewPermission(HttpServletRequest request, HttpServletResponse response, Principal principal) {
+        return savePermission(request, principal, true);
+    }
+
+    @RequestMapping(value = "/viewer/registration/saveSurrenderPermission", method = RequestMethod.POST)
+    @ResponseBody
+    public Permission saveSurrenderPermission(HttpServletRequest request, HttpServletResponse response, Principal principal) {
+        return savePermission(request, principal, false);
+    }
+
+    @RequestMapping(value = "/viewer/registration/registerNewPermission", method = RequestMethod.POST)
+    @ResponseBody
+    public boolean registerNewPermission(HttpServletRequest request, Principal principal) {
+        try {
+            Integer permissionId = ServletRequestUtils.getIntParameter(request, "permissionId", 0);
+            Long userId = userService.findByUniqueName(principal.getName()).getId();
+            String regNum = ServletRequestUtils.getStringParameter(request, "permRegNum", "");
+            String appNum = ServletRequestUtils.getStringParameter(request, "permAppNum", "");
+            String appDateStr = ServletRequestUtils.getStringParameter(request, "permAppDate", "");
+            String startDateStr = ServletRequestUtils.getStringParameter(request, "permStartDate", "");
+            String endDateStr = ServletRequestUtils.getStringParameter(request, "permEndDate", "");
+            String usage = ServletRequestUtils.getStringParameter(request, "permUsage", "");
+            
+            DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
+            Date appDate = null;
+            Date startDate = null;
+            Date endDate = null;
+
+            try {
+                if (StringUtils.isNotEmpty(appDateStr)) {
+                    appDate = dateformat.parse(appDateStr);
+                }
+                if (StringUtils.isNotEmpty(startDateStr)) {
+                    startDate = dateformat.parse(startDateStr);
+                }
+                if (StringUtils.isNotEmpty(endDateStr)) {
+                    endDate = dateformat.parse(endDateStr);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            
+            Permission p = regRecordsService.getPermissionById(permissionId);
+            p.setRegnum(regNum);
+            p.setAppnum(appNum);
+            p.setAppdate(appDate);
+            p.setStartdate(startDate);
+            p.setEnddate(endDate);
+            p.setUsage(usage);
+            p.setModifiedby(userId.intValue());
+            p.setModifieddate(Calendar.getInstance().getTime());
+            
+            return regRecordsService.registerPermission(p);
+        } catch (Exception e) {
+            logger.error(e);
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @RequestMapping(value = "/viewer/registration/registerSurrenderPermission", method = RequestMethod.POST)
+    @ResponseBody
+    public boolean registerSurrenderPermission(HttpServletRequest request, Principal principal) {
+        try {
+            Integer permissionId = ServletRequestUtils.getIntParameter(request, "surrenderPermissionId", 0);
+            Long userId = userService.findByUniqueName(principal.getName()).getId();
+            
+            Permission p = regRecordsService.getPermissionById(permissionId);
+            p.setModifiedby(userId.intValue());
+            
+            return regRecordsService.registerPermission(p);
+        } catch (Exception e) {
+            logger.error(e);
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private Permission savePermission(HttpServletRequest request, Principal principal, boolean isNew) {
+        try {
+            Integer permissionId = ServletRequestUtils.getIntParameter(request, "permissionId", 0);
+            Long userId = userService.findByUniqueName(principal.getName()).getId();
+
+            if (!isNew) {
+                Integer permissionSurrenderId = ServletRequestUtils.getIntParameter(request, "surrenderPermissionId", 0);
+                if (permissionSurrenderId > 0) {
+                    return regRecordsService.getPermissionById(permissionSurrenderId);
+                }
+
+                // Create new surrender permission
+                Permission p = regRecordsService.getPermissionById(permissionId);
+
+                Permission surrenderPermission = new Permission();
+                surrenderPermission.setAppdate(p.getAppdate());
+                surrenderPermission.setApplicantid(p.getApplicantid());
+                surrenderPermission.setAppnum(p.getAppnum());
+                surrenderPermission.setCreatedby(userId.intValue());
+                surrenderPermission.setCreateddate(Calendar.getInstance().getTime());
+                surrenderPermission.setEnddate(p.getEnddate());
+                surrenderPermission.setLandid(p.getLandid());
+                surrenderPermission.setOwnerid(p.getOwnerid());
+                surrenderPermission.setRegnum(p.getRegnum());
+                surrenderPermission.setStartdate(p.getStartdate());
+                surrenderPermission.setTerminatedid(p.getId());
+                surrenderPermission.setTransactionid(null);
+                surrenderPermission.setUsage(p.getUsage());
+                surrenderPermission.setActive(true);
+
+                return regRecordsService.savePermission(surrenderPermission);
+            }
+
+            NaturalPerson applicant = new NaturalPerson();
+            Permission permission = null;
+
+            String firstName = ServletRequestUtils.getRequiredStringParameter(request, "perm_firstname");
+            String middleName = ServletRequestUtils.getRequiredStringParameter(request, "perm_middlename");
+            String lastName = ServletRequestUtils.getRequiredStringParameter(request, "perm_lastname");
+            String placeOfBirth = ServletRequestUtils.getRequiredStringParameter(request, "perm_place_of_birth");
+            String profession = ServletRequestUtils.getRequiredStringParameter(request, "perm_profession");
+            String idDate = ServletRequestUtils.getRequiredStringParameter(request, "perm_id_date");
+            String father = ServletRequestUtils.getRequiredStringParameter(request, "perm_father_name");
+            String mother = ServletRequestUtils.getRequiredStringParameter(request, "perm_mother_name");
+            int nopId = ServletRequestUtils.getRequiredIntParameter(request, "perm_nop");
+            String mandateDate = ServletRequestUtils.getRequiredStringParameter(request, "perm_mandate_date");
+            String mandateLoc = ServletRequestUtils.getRequiredStringParameter(request, "perm_mandate_loc");
+            String idNumber = ServletRequestUtils.getRequiredStringParameter(request, "perm_id_num");
+            int genderId = ServletRequestUtils.getRequiredIntParameter(request, "perm_gender");
+            String address = ServletRequestUtils.getRequiredStringParameter(request, "perm_address");
+            String dobstr = ServletRequestUtils.getRequiredStringParameter(request, "perm_dob");
+            int maritalStatusId = ServletRequestUtils.getRequiredIntParameter(request, "perm_marital_status");
+            Long landId = ServletRequestUtils.getRequiredLongParameter(request, "landidhide");
+
+            PersonType personType = regRecordsService.getPersonTypeById(1);
+            MaritalStatus maritalStatus = regRecordsService.getMaritalStatusByID(maritalStatusId);
+
+            DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
+            Date dateOfBirth = null;
+            Date dtIdDate = null;
+            Date dtMandateDate = null;
+
+            try {
+                if (StringUtils.isNotEmpty(dobstr)) {
+                    dateOfBirth = dateformat.parse(dobstr);
+                }
+                if (StringUtils.isNotEmpty(idDate)) {
+                    dtIdDate = dateformat.parse(idDate);
+                }
+                if (StringUtils.isNotEmpty(mandateDate)) {
+                    dtMandateDate = dateformat.parse(mandateDate);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            if (permissionId > 0) {
+                permission = regRecordsService.getPermissionById(permissionId);
+                applicant = (NaturalPerson) laPartyDao.getPartyIdByID((long) permission.getApplicantid());
+            }
+
+            applicant.setDateofbirth(dateOfBirth);
+            applicant.setFirstname(firstName);
+            applicant.setMiddlename(middleName);
+            applicant.setLastname(lastName);
+            applicant.setIsactive(true);
+            applicant.setGenderid(genderId);
+            applicant.setLaPartygroupMaritalstatus(maritalStatus);
+            applicant.setAddress(address);
+            applicant.setIdentityno(idNumber);
+            applicant.setOwnertype(2);
+            applicant.setLaSpatialunitgroup1(regRecordsService.findLaSpatialunitgroupById(1));
+            applicant.setLaSpatialunitgroup2(regRecordsService.findLaSpatialunitgroupById(2));
+            applicant.setLaSpatialunitgroup3(regRecordsService.findLaSpatialunitgroupById(3));
+            applicant.setLaSpatialunitgroupHierarchy1(regRecordsService.findProjectRegionById(1));
+            applicant.setLaSpatialunitgroupHierarchy2(regRecordsService.findProjectRegionById(2));
+            applicant.setLaSpatialunitgroupHierarchy3(regRecordsService.findProjectRegionById(3));
+            applicant.setLaPartygroupPersontype(personType);
+            if (nopId > 0) {
+                applicant.setNopId(nopId);
+            }
+            applicant.setIdCardDate(dtIdDate);
+            applicant.setFathername(father);
+            applicant.setMothername(mother);
+            applicant.setMandateDate(dtMandateDate);
+            applicant.setMandateLocation(mandateLoc);
+            applicant.setBirthPlace(placeOfBirth);
+            applicant.setProfession(profession);
+
+            if (permission != null) {
+                applicant.setModifiedby(userId.intValue());
+                applicant.setModifieddate(Calendar.getInstance().getTime());
+                regRecordsService.saveNaturalPerson(applicant);
+            } else {
+                Long ownerid;
+                SocialTenureRelationship ownerRight = regRecordsService.getSocialTenureRelationshipByLandId(landId);
+
+                if (ownerRight != null) {
+                    ownerid = ownerRight.getPartyid();
+                } else {
+                    return null;
+                }
+
+                applicant.setCreatedby(userId.intValue());
+                applicant.setCreateddate(new Date());
+                applicant = regRecordsService.saveNaturalPerson(applicant);
+
+                permission = new Permission();
+                permission.setApplicantid(applicant.getPartyid());
+                permission.setCreatedby(userId.intValue());
+                permission.setCreateddate(Calendar.getInstance().getTime());
+                permission.setLandid(landId);
+                permission.setOwnerid(ownerid);
+                permission.setRegnum("");
+                permission.setTransactionid(null);
+                permission.setActive(true);
+
+                permission = regRecordsService.savePermission(permission);
+            }
+
+            // Re-write permission object with the one containg application object
+            return regRecordsService.getPermissionById(permission.getId());
+
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
 }

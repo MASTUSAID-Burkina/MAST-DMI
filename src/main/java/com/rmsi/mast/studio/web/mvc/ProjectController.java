@@ -65,6 +65,7 @@ import com.rmsi.mast.studio.service.UserService;
 import com.rmsi.mast.studio.util.FileUtils;
 import com.rmsi.mast.studio.util.StringUtils;
 import com.rmsi.mast.viewer.service.LandRecordsService;
+import java.text.DateFormat;
 
 @Controller
 public class ProjectController {
@@ -234,7 +235,9 @@ public class ProjectController {
             String communeid = "";
             String id = "";
             String mayorName = "";
-           
+            String mayorElectionDateStr = "";
+            Date mayorElectionDate = null;
+
             try {
                 try {
                     countryId = ServletRequestUtils.getRequiredStringParameter(request, "countryId");
@@ -285,15 +288,26 @@ public class ProjectController {
                 } catch (Exception e) {
                     logger.error(e);
                 }
-            
+
                 try {
                     id = ServletRequestUtils.getRequiredStringParameter(request, "hid_id");
                 } catch (Exception e) {
                     logger.error(e);
                 }
-              
+
                 try {
                     mayorName = ServletRequestUtils.getRequiredStringParameter(request, "mayorname");
+                } catch (Exception e) {
+                    logger.error(e);
+                }
+
+                mayorElectionDateStr = ServletRequestUtils.getStringParameter(request, "mayorElectionDate", null);
+
+                try {
+                    if (mayorElectionDateStr != null && !mayorElectionDateStr.equals("")) {
+                        DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
+                        mayorElectionDate = dateformat.parse(mayorElectionDateStr);
+                    }
                 } catch (Exception e) {
                     logger.error(e);
                 }
@@ -308,8 +322,9 @@ public class ProjectController {
                 projectArea.setCreatedby(user_id.intValue());
                 projectArea.setCreateddate(new Date());
                 projectArea.setMayorname(mayorName);
+                projectArea.setMayorelectiondate(mayorElectionDate);
                 projectArea.setLogo(ServletRequestUtils.getStringParameter(request, "hProjectLogo", ""));
-                
+
                 projectArea.setProject(project);
                 projectAreaset.add(projectArea);
             } catch (Exception e) {
@@ -571,7 +586,7 @@ public class ProjectController {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            
+
             path = Paths.get(FileUtils.getFielsFolder(request) + "resources" + File.separator + "signatures" + File.separator + fileName + ".jpg");
 
             try {
