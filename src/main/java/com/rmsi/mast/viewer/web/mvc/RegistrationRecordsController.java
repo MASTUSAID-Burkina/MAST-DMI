@@ -61,6 +61,7 @@ import com.rmsi.mast.studio.domain.PersonType;
 import com.rmsi.mast.studio.domain.Project;
 import com.rmsi.mast.studio.domain.ProjectRegion;
 import com.rmsi.mast.studio.domain.RelationshipType;
+import com.rmsi.mast.studio.domain.ResourceClassification;
 import com.rmsi.mast.studio.domain.ShareType;
 import com.rmsi.mast.studio.domain.SocialTenureRelationship;
 import com.rmsi.mast.studio.domain.SourceDocument;
@@ -70,6 +71,7 @@ import com.rmsi.mast.studio.domain.User;
 import com.rmsi.mast.studio.domain.fetch.PoiReport;
 import com.rmsi.mast.studio.mobile.dao.LandUseTypeDao;
 import com.rmsi.mast.studio.mobile.dao.SpatialUnitPersonWithInterestDao;
+import com.rmsi.mast.studio.mobile.service.ResourceClassificationServise;
 import com.rmsi.mast.studio.service.UserService;
 import com.rmsi.mast.studio.util.FileUtils;
 import com.rmsi.mast.studio.util.StringUtils;
@@ -157,7 +159,7 @@ public class RegistrationRecordsController {
             Integer projectId = objproject.getProjectnameid();
             int workflowId = -1;
 
-            return landRecordsService.search(lang, 0, projectId, "", "", "", "", "", 0, 7, workflowId, startfrom);
+            return landRecordsService.search(lang, 0, projectId, "", 0, "", "", "", "", 0, 7, workflowId, startfrom);
         }
     }
 
@@ -171,7 +173,7 @@ public class RegistrationRecordsController {
             Integer projectId = objproject.getProjectnameid();
             int workflowId = -1;
 
-            return landRecordsService.searchCount(0, projectId, "", "", "", "", "", 0, workflowId, 7);
+            return landRecordsService.searchCount(0, projectId, "", 0, "", "", "", "", 0, workflowId, 7);
         }
     }
 
@@ -1485,8 +1487,7 @@ public class RegistrationRecordsController {
     @ResponseBody
     public List<LaSpatialunitLand> searchUnitList(HttpServletRequest request, @PathVariable String project, @PathVariable Integer startfrom) {
         String parcelId = ServletRequestUtils.getStringParameter(request, "txt_parcel_id", "");
-        String appNum = ServletRequestUtils.getStringParameter(request, "txt_app_num", "");
-        String pvNum = ServletRequestUtils.getStringParameter(request, "txt_pv_num", "");
+        int villageId = ServletRequestUtils.getIntParameter(request, "cbxRegVillage", 0);
         String apfrNum = ServletRequestUtils.getStringParameter(request, "txt_apfr_num", "");
         String firstName = ServletRequestUtils.getStringParameter(request, "txt_first_name", "");
         int appType = ServletRequestUtils.getIntParameter(request, "cbx_app_type", 0);
@@ -1500,7 +1501,7 @@ public class RegistrationRecordsController {
             Project objproject = projectDAO.findByName(project);
             projectId = objproject.getProjectnameid();
 
-            return landRecordsService.search(lang, 0, projectId, parcelId, appNum, pvNum, apfrNum, firstName, appType, appStatus, workflowId, startfrom);
+            return landRecordsService.search(lang, 0, projectId, parcelId, villageId, "", "", apfrNum, firstName, appType, appStatus, workflowId, startfrom);
 
         } catch (Exception e) {
             logger.error(e);
@@ -1512,8 +1513,7 @@ public class RegistrationRecordsController {
     @ResponseBody
     public Integer searchUnitCount(HttpServletRequest request, HttpServletResponse response, @PathVariable String project) {
         String parcelId = ServletRequestUtils.getStringParameter(request, "txt_parcel_id", "");
-        String appNum = ServletRequestUtils.getStringParameter(request, "txt_app_num", "");
-        String pvNum = ServletRequestUtils.getStringParameter(request, "txt_pv_num", "");
+        int villageId = ServletRequestUtils.getIntParameter(request, "cbxRegVillage", 0);
         String apfrNum = ServletRequestUtils.getStringParameter(request, "txt_apfr_num", "");
         String firstName = ServletRequestUtils.getStringParameter(request, "txt_first_name", "");
         int appType = ServletRequestUtils.getIntParameter(request, "cbx_app_type", 0);
@@ -1526,7 +1526,7 @@ public class RegistrationRecordsController {
             Project objproject = projectDAO.findByName(project);
             projectId = objproject.getProjectnameid();
 
-            return landRecordsService.searchCount(0, projectId, parcelId, appNum, pvNum, apfrNum, firstName, appType, workflowId, appStatus);
+            return landRecordsService.searchCount(0, projectId, parcelId, villageId, "", "", apfrNum, firstName, appType, workflowId, appStatus);
 
         } catch (Exception e) {
             logger.error(e);
@@ -2968,7 +2968,7 @@ public class RegistrationRecordsController {
             return null;
         }
     }
-    
+
     @RequestMapping(value = "/viewer/registration/getPermissionByTransaction/{transactionId}", method = RequestMethod.GET)
     @ResponseBody
     public Permission getPermissionByTransactionId(HttpServletRequest request, @PathVariable int transactionId) {
@@ -3021,7 +3021,7 @@ public class RegistrationRecordsController {
             String startDateStr = ServletRequestUtils.getStringParameter(request, "permStartDate", "");
             String endDateStr = ServletRequestUtils.getStringParameter(request, "permEndDate", "");
             String usage = ServletRequestUtils.getStringParameter(request, "permUsage", "");
-            
+
             DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
             Date appDate = null;
             Date startDate = null;
@@ -3040,7 +3040,7 @@ public class RegistrationRecordsController {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            
+
             Permission p = regRecordsService.getPermissionById(permissionId);
             p.setRegnum(regNum);
             p.setAppnum(appNum);
@@ -3050,7 +3050,7 @@ public class RegistrationRecordsController {
             p.setUsage(usage);
             p.setModifiedby(userId.intValue());
             p.setModifieddate(Calendar.getInstance().getTime());
-            
+
             return regRecordsService.registerPermission(p);
         } catch (Exception e) {
             logger.error(e);
@@ -3065,10 +3065,10 @@ public class RegistrationRecordsController {
         try {
             Integer permissionId = ServletRequestUtils.getIntParameter(request, "surrenderPermissionId", 0);
             Long userId = userService.findByUniqueName(principal.getName()).getId();
-            
+
             Permission p = regRecordsService.getPermissionById(permissionId);
             p.setModifiedby(userId.intValue());
-            
+
             return regRecordsService.registerPermission(p);
         } catch (Exception e) {
             logger.error(e);

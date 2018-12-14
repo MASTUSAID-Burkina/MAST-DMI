@@ -1,7 +1,7 @@
 var selectedItem_R = null;
 var dataList = null;
 var landId = null;
-var totalRecords_Res = null;
+var totalResourceRecords = 0;
 var records_from_Res = 0;
 var LandId = 0;
 var Firstname = "";
@@ -52,132 +52,149 @@ var poiRelation = "";
 var poiGender = "";
 var isAddPerson = 0;
 var geomName = "";
-
-
-
-
+var classificationsList = null;
+var resourceCategories = null;
 
 function resource(_selectedItem) {
     selectedItem_R = _selectedItem;
-
-    jQuery.ajax({
-        url: "resource/getAllresouceCount/" + activeProject,
-        async: false,
-        success: function (data) {
-            totalRecords_Res = data;
-        }
-
-    });
-
-    displayRefreshedResourceRecords();
-
-
+    loadResourcesTemplate();
 }
 
-function displayRefreshedResourceRecords() {
-
+function loadResourcesTemplate() {
     records_from_Res = 0;
+    jQuery("#landresource-div").empty();
+    $.get("resources/templates/viewer/" + selectedItem_R + ".html", function (template) {
 
-    jQuery.ajax({
-        url: "resource/getAllresouce/" + activeProject + "/" + 0,
-        async: false,
-        success: function (data) {
-            dataList = data;
-            if (null == dataList || dataList == "" || dataList.length <= 0) {
+        jQuery("#landresource-div").append(template);
+        $("#landresource-div").i18n();
+        jQuery('#resourceRecordsFormdiv').css("visibility", "visible");
+        jQuery("#registryRecordsTable").show();
+        jQuery("#resourceRecordsRowData1").empty();
 
-            } else {
-                projectId = dataList[0].projectId;
-            }
+        if (classificationsList === null) {
+            jQuery.ajax({
+                url: "resource/getclassifications",
+                async: false,
+                success: function (data) {
+                    classificationsList = data;
 
+                    $("#cbxResClassType").empty();
+                    $("#cbxResClassType").append(jQuery("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
 
-            jQuery("#landresource-div").empty();
-            jQuery.get("resources/templates/viewer/" + selectedItem_R + ".html", function (template) {
-
-                jQuery("#landresource-div").append(template);
-                $("#landresource-div").i18n();
-                jQuery('#resourceRecordsFormdiv').css("visibility", "visible");
-                jQuery("#registryRecordsTable").show();
-                jQuery("#resourceRecordsRowData1").empty();
-
-                if (dataList.length != 0 && dataList.length != undefined) {
-                    jQuery("#resourceRecordsAttrTemplate1").tmpl(dataList).appendTo("#resourceRecordsRowData1");
-                    jQuery("#resourceRecordsRowData1").i18n();
-                    $('#records_from_Res').val(records_from_Res + 1);
-                    $('#records_to_Res').val(totalRecords_Res);
-                    if (records_from_Res + 10 <= totalRecords_Res)
-                        $('#records_to_Res').val(records_from_Res + 10);
-                    $('#records_all_Res').val(totalRecords_Res);
-                } else {
-                    $('#records_from_Res').val(0);
-                    $('#records_to_Res').val(0);
-                    $('#records_all_Res').val(0);
+                    $.each(classificationsList, function (i, item) {
+                        jQuery("#cbxResClassType").append(jQuery("<option></option>").attr("value", item.classificationid).text(item.classificationname));
+                    });
                 }
-
             });
-
-
         }
 
+        if (resourceCategories === null) {
+            jQuery.ajax({
+                url: "landrecords/resourcecategories/",
+                async: false,
+                success: function (data) {
+                    resourceCategories = data;
+
+                    $("#cbxResTenureType").empty();
+                    $("#cbxResTenureType").append(jQuery("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
+
+                    $.each(resourceCategories, function (i, item) {
+                        var displayName = item.categoryName;
+                        if (Global.LANG === "en") {
+                            displayName = item.categoryNameEn;
+                        }
+                        jQuery("#cbxResTenureType").append(jQuery("<option></option>").attr("value", item.attributecategoryid).text(displayName));
+                    });
+                }
+            });
+        }
+
+        resourceSearch(0);
     });
-
-
 }
 
 function previousRecords_Res() {
-
     records_from_Res = $('#records_from_Res').val();
     records_from_Res = parseInt(records_from_Res);
     records_from_Res = records_from_Res - 11;
     if (records_from_Res >= 0) {
-        RegistrationRecords_Res(records_from_Res);
-    } else {
-        alert($.i18n("err-no-records"));
+        resourceSearch(records_from_Res);
     }
-
 }
 
 function nextRecords_Res() {
-
     records_from_Res = $('#records_from_Res').val();
     records_from_Res = parseInt(records_from_Res);
     records_from_Res = records_from_Res + 9;
 
-    if (records_from_Res <= totalRecords_Res - 1) {
-        RegistrationRecords_Res(records_from_Res);
-
-    } else {
-        alert($.i18n("err-no-records"));
+    if (records_from_Res <= totalResourceRecords - 1) {
+        resourceSearch(records_from_Res);
     }
-
 }
 
+function firstRecordsRes() {
+    records_from_Res = $('#records_from_Res').val();
+    records_from_Res = parseInt(records_from_Res);
+    if (records_from_Res > 1) {
+        resourceSearch(0);
+    }
+}
 
-function RegistrationRecords_Res(records_from_Res) {
+function lastRecordsRes() {
+    if ((totalResourceRecords % 10) > 0) {
+        records_from_Res = totalResourceRecords - (totalResourceRecords % 10);
+    } else {
+        records_from_Res = totalResourceRecords - 10;
+    }
+    var curretFrom = $('#records_from_Res').val();
+    curretFrom = parseInt(curretFrom);
 
+    if (records_from_Res > curretFrom - 1) {
+        resourceSearch(records_from_Res);
+    }
+}
+
+function resourceSearch(searchFrom) {
     jQuery.ajax({
-        url: "resource/getAllresouce/" + activeProject + "/" + records_from_Res,
+        url: "resource/searchResouces/" + activeProject + "/" + searchFrom,
         async: false,
+        type: "POST",
+        data: $("#formResSearchParams").serialize(),
         success: function (data) {
-            dataList = data;
+            dataList = data.result;
+            totalResourceRecords = data.count;
+
+            if (null == dataList || dataList == "" || dataList.length <= 0) {
+            } else {
+                projectId = dataList[0].projectId;
+            }
+
             jQuery("#resourceRecordsRowData1").empty();
 
-            if (data.length != 0 && data.length != undefined) {
-                jQuery("#resourceRecordsAttrTemplate1").tmpl(data).appendTo("#resourceRecordsRowData1");
+            if (totalResourceRecords > 0) {
+                jQuery("#resourceRecordsAttrTemplate1").tmpl(dataList).appendTo("#resourceRecordsRowData1");
                 jQuery("#resourceRecordsRowData1").i18n();
-                $('#records_from_Res').val(records_from_Res + 1);
-                $('#records_to_Res').val(totalRecords_Res);
-                if (records_from_Res + 10 <= totalRecords_Res)
-                    $('#records_to_Res').val(records_from_Res + 10);
-                $('#records_all_Res').val(totalRecords_Res);
+
+                $('#records_from_Res').val(searchFrom + 1);
+                $('#records_to_Res').val(totalResourceRecords);
+                if (searchFrom + 10 <= totalResourceRecords)
+                    $('#records_to_Res').val(searchFrom + 10);
+                $('#records_all_Res').val(totalResourceRecords);
             } else {
                 $('#records_from_Res').val(0);
                 $('#records_to_Res').val(0);
                 $('#records_all_Res').val(0);
             }
         }
-
     });
+}
 
+function clearSearchResourse() {
+    $("#cbxChartered").val(-1);
+    $("#cbxResTenureType").val(0);
+    $("#cbxResClassType").val(0);
+    $("#txtResOwner").val("");
+    resourceSearch(0);
 }
 
 function ActionfillResource(landid, geomType) {
@@ -360,12 +377,9 @@ function viewAttribute(usin)
         url: "resource/landdata/" + landId,
         async: false,
         success: function (data1) {
-
-//			$("#reg_date").val(formatDate_R(data1[0]));
             $("#reg_date").val(data1[0][0]);
             $("#size_id").val(data1[0][1]);
             data = data1;
-            console.log(data);
         }
     });
 
@@ -381,18 +395,46 @@ function viewAttribute(usin)
             $("#subClassification_id").val(dataList[i].subclassificationName);
             $("#tenure_type_res").val(dataList[i].categoryName);
             $("#landid").val(dataList[i].landid);
+
+            if (dataList[i].validationDate === null || dataList[i].validationDate === "") {
+                $("#txtValidationDate").val("");
+            } else {
+                $("#txtValidationDate").val(dataList[i].validationDate);
+            }
+
+            if (dataList[i].chartered === null || !dataList[i].chartered) {
+                $("#chbxChartered").prop('checked', false);
+            } else {
+                $("#chbxChartered").prop('checked', true);
+            }
+
+            if (dataList[i].validatedByCouncil === null || !dataList[i].validatedByCouncil) {
+                $("#chbxValidatedByCouncil").prop('checked', false);
+            } else {
+                $("#chbxValidatedByCouncil").prop('checked', true);
+            }
+
+            if (dataList[i].inExploitation === null || !dataList[i].inExploitation) {
+                $("#chbxInExploitation").prop('checked', false);
+            } else {
+                $("#chbxInExploitation").prop('checked', true);
+            }
+
+            if (dataList[i].comment === null || dataList[i].comment === "") {
+                $("#txtResComment").val("");
+            } else {
+                $("#txtResComment").val(dataList[i].comment);
+            }
+
+            dataList[i].classificationName
+
             geomName = dataList[i].geometryName;
-
-
         }
     }
-
-
 
     FillResourcePersonDataNew();
     FillResourceCustoAttributes();
     loadResourcePersonsOfEditingForEditing();
-
 
     attributeHistoryDialog = $("#editattribute-res-dialog-form").dialog({
         autoOpen: false,
@@ -410,20 +452,15 @@ function viewAttribute(usin)
                 "id": "comment_Save",
                 click: function ()
                 {
-
                     saveInstitute();
-
                 }
-
             },
             {
                 text: $.i18n("gen-save"),
                 "id": "Custom_Save",
                 click: function ()
                 {
-
                     saveCustomAttributes();
-
                 }
 
             },
@@ -437,18 +474,14 @@ function viewAttribute(usin)
                     jQuery('#attributeHistoryTableBody').empty();
                     jQuery("#attributeTable").hide();
                     attributeHistoryDialog.dialog("close");
-
                 }
 
             }],
         Cancel: function () {
-
             jQuery('#attributeHistoryTableBody').empty();
             jQuery("#attributeTable").hide();
             $("input,select,textarea").removeClass('addBg');
             attributeHistoryDialog.dialog("close");
-
-
         }
     });
     $("#comment_cancel").html('<span class="ui-button-text">' + $.i18n("gen-cancel") + '</span>');
@@ -457,9 +490,6 @@ function viewAttribute(usin)
     $("#Custom_Save").prop("disabled", false).hide();
     $("#tabs").tabs({active: 0});
 }
-
-
-
 
 function FillResourcePersonDataNew()
 {
@@ -475,7 +505,6 @@ function FillResourcePersonDataNew()
         async: false,
         success: function (data1) {
             data = data1;
-            console.log(data);
             if (data == "") {
                 $("#ResourcepersonsEditingGrid0").hide();
             } else {
@@ -632,9 +661,6 @@ function FillResourcePersonDataNew()
     $("#ResourcepersonsEditingGrid0 .jsgrid-table th:first-child :button").click();
     $("#ResourcepersonsEditingGrid0").jsGrid("loadData");
 }
-
-
-
 
 var personsEditingControllerForResourcePerson = {
     loadData: function (filter) {
@@ -857,8 +883,6 @@ function FillResourceCustoAttributes()
                 $("#CustomAttributeEditingGrid0").show();
 
                 data = data1;
-                console.log(data);
-
                 var ctr = 2;
 
                 var lastsel;
@@ -979,7 +1003,6 @@ function loadResourcePersonsOfEditingForEditing() {
                 $("#ResourcePOIGrid").show();
                 $("#ResourcePOI").show();
                 data = data1;
-                console.log(data);
 
                 var ctr = 2;
                 var groupfinalid = 0;

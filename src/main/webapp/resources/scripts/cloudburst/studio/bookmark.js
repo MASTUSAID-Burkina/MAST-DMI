@@ -262,19 +262,15 @@ function previousRecords() {
 
     if (records_from >= 0)
     {
-        if (searchRecords !== null)
-        {
-            spatialSearch(records_from);
-        } else {
-            spatialSearch(records_from);
-        }
-    } else {
-        alert($.i18n("err-failed-handling-request"));
-    }
+        spatialSearch(records_from);
+    } 
 }
 
-function nextRecords()
-{
+function firstRecords(){
+    spatialSearch(0);
+}
+
+function nextRecords() {
     records_from = $('#records_from').val();
     records_from = parseInt(records_from);
     records_from = records_from + 9;
@@ -285,16 +281,26 @@ function nextRecords()
         {
             if (records_from <= searchRecords - 1)
                 spatialSearch(records_from);
-            else
-                alert($.i18n("err-failed-handling-request"));
         } else {
             spatialSearch(records_from);
         }
-    } else
-    {
-        alert($.i18n("err-failed-handling-request"));
     }
+}
 
+function lastRecords(){
+    recordsAll = $('#records_all').val();
+    recordsAll = parseInt(recordsAll);
+
+    if ((recordsAll % 10) > 0) {
+        records_from = recordsAll - (recordsAll % 10);
+    } else {
+        records_from = recordsAll - 10;
+    }
+    
+    if (recordsAll > 10)
+    {
+        spatialSearch(records_from);
+    }
 }
 
 function spatialSearch(records_from)

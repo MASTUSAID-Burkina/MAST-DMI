@@ -69,6 +69,9 @@ import com.rmsi.mast.studio.domain.fetch.SpatialunitPersonwithinterest;
 import com.rmsi.mast.studio.domain.fetch.TransactionHistoryForFetch;
 import com.rmsi.mast.studio.domain.fetch.UploadedDocumentDetailsForFetch;
 import com.rmsi.mast.studio.domain.fetch.Usertable;
+import com.rmsi.mast.studio.domain.fetch.ApfrStatSummary;
+import com.rmsi.mast.studio.domain.fetch.ResourcesStatSummary;
+import com.rmsi.mast.studio.domain.fetch.TransactionsStatSummary;
 
 public interface LandRecordsService {
 
@@ -468,6 +471,8 @@ public interface LandRecordsService {
      */
     List<AttributeCategory> findAllAttributeCategories();
 
+    List<AttributeCategory> getResourceCategories();
+    
     /**
      *
      * @param parentid
@@ -853,7 +858,7 @@ public interface LandRecordsService {
 
     List<SpatialUnitTemp> AllSpatialUnitTemp(Integer id);
 
-    List<LaSpatialunitLand> search(String lang, Integer claimType, int project, String parcelId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int appStatus, int workflowId, Integer startpos);
+    List<LaSpatialunitLand> search(String lang, Integer claimType, int project, String parcelId, int villageId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int appStatus, int workflowId, Integer startpos);
 
     List<ReportCertificateFetch> getCertificatedetailsbytransactionid(Long usin);
 
@@ -875,7 +880,7 @@ public interface LandRecordsService {
 
     Integer getTotalrecordByProject(int project, int workflowId);
 
-    Integer searchCount(Integer claimType, int project, String parcelId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int workflowId, int appStatus);
+    Integer searchCount(Integer claimType, int project, String parcelId, int villageId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int workflowId, int appStatus);
 
     Integer spatialUnitWorkflowCount(int[] workflow_ids, int project);
 
@@ -943,4 +948,10 @@ public interface LandRecordsService {
     MutationType getMutationType(int id);
     
     List<GeometryPoint> getGeometryPoints(int landid);
+    
+    List<ApfrStatSummary> getApfrStatSummary(int projectId, int villageId);
+    
+    List<TransactionsStatSummary> getTransactionStatSummary(int projectId, int villageId);
+    
+    List<ResourcesStatSummary> getResourcesStatSummary(int projectId);
 }

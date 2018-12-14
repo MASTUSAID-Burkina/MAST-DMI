@@ -1,5 +1,3 @@
-
-
 var map;
 var selectedMeasure = 1;
 var sketch;
@@ -9,8 +7,7 @@ var typeSelect;
 var geodesicCheckbox;
 var source;
 var wgs84Sphere = new ol.Sphere(6378137);
-
-
+var isMeters = false;
 
 Cloudburst.Measure = function (map, _searchdiv) {
 
@@ -53,8 +50,6 @@ Cloudburst.Measure = function (map, _searchdiv) {
             })
         });
         vector.set('aname', 'measure');
-
-
         map.addLayer(vector);
         createHelpTooltip();
         createMeasureTooltip();
@@ -88,16 +83,6 @@ Cloudburst.Measure = function (map, _searchdiv) {
         addInteraction();
 
     });
-
-
-
-
-
-
-
-
-
-    //}
 };
 
 
@@ -109,17 +94,23 @@ function Typechange()
 
 
 function addInteraction() {
-
     typeSelect = $("#type").val();
     geodesicCheckbox = document.getElementById('geodesic');
     //var type = (typeSelect.value == 'area' ? 'Polygon' : 'LineString');
     var type;
-    if (typeSelect == 'area')
-    {
+
+    if (typeSelect == 'area') {
         type = "Polygon";
-    } else
-    {
+        isMeters = false;
+    } else if (typeSelect == 'area-meters') {
+        type = "Polygon";
+        isMeters = true;
+    } else if (typeSelect == 'length') {
         type = "LineString";
+        isMeters = false;
+    } else if (typeSelect == 'length-meters') {
+        type = "LineString";
+        isMeters = true;
     }
 
     measure_draw = new ol.interaction.Draw({
@@ -145,8 +136,8 @@ function addInteraction() {
             })
         })
     });
-    map.addInteraction(measure_draw);
 
+    map.addInteraction(measure_draw);
 
     var listener;
     measure_draw.on('drawstart', function (evt) {
@@ -161,7 +152,6 @@ function addInteraction() {
             var output;
             if (geom instanceof ol.geom.Polygon) {
                 output = formatArea(geom) + " " + formatLength(new ol.geom.LineString(geom.getLinearRing(0).getCoordinates()));
-
                 tooltipCoord = geom.getInteriorPoint().getCoordinates();
             } else if (geom instanceof ol.geom.LineString) {
                 output = formatLength(geom);
@@ -213,66 +203,56 @@ function createMeasureTooltip() {
     map.addOverlay(measureTooltip);
 }
 
-
-
-
-
 var formatLength = function (line) {
     var length;
-    if (geodesicCheckbox.checked) {
-        var coordinates = line.getCoordinates();
-        length = 0;
-        var sourceProj = map.getView().getProjection();
-        for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
-            var c1 = ol.proj.transform(coordinates[i], sourceProj, 'EPSG:4326');
-            var c2 = ol.proj.transform(coordinates[i + 1], sourceProj, 'EPSG:4326');
-            length += wgs84Sphere.haversineDistance(c1, c2);
-        }
-    } else {
-        var coordinates = line.getCoordinates();
-        length = 0;
-        var sourceProj = map.getView().getProjection();
-        for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
-            var c1 = ol.proj.transform(coordinates[i], sourceProj, 'EPSG:4326');
-            var c2 = ol.proj.transform(coordinates[i + 1], sourceProj, 'EPSG:4326');
-            length += wgs84Sphere.haversineDistance(c1, c2);
-        }
-
+//    if (geodesicCheckbox.checked) {
+    var coordinates = line.getCoordinates();
+    length = 0;
+    var sourceProj = map.getView().getProjection();
+    for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
+        var c1 = ol.proj.transform(coordinates[i], sourceProj, 'EPSG:4326');
+        var c2 = ol.proj.transform(coordinates[i + 1], sourceProj, 'EPSG:4326');
+        length += wgs84Sphere.haversineDistance(c1, c2);
     }
+//    } else {
+//        var coordinates = line.getCoordinates();
+//        length = 0;
+//        var sourceProj = map.getView().getProjection();
+//        for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
+//            var c1 = ol.proj.transform(coordinates[i], sourceProj, 'EPSG:4326');
+//            var c2 = ol.proj.transform(coordinates[i + 1], sourceProj, 'EPSG:4326');
+//            length += wgs84Sphere.haversineDistance(c1, c2);
+//        }
+//    }
     var output;
-    if (length > 100) {
-        output = (Math.round(length / 1000 * 100) / 100) +
-                ' ' + 'km';
-    } /*else {
-     output = (Math.round(length * 100) / 100) +
-     ' ' + 'm';
-     }*/
+
+    if (!isMeters) {
+        output = (Math.round(length / 1000 * 100) / 100) + ' ' + 'km';
+    } else {
+        output = Math.round(length) + ' ' + 'm';
+    }
     return output;
 };
 
 var formatArea = function (polygon) {
     var area;
-    if (geodesicCheckbox.checked) {
-        var sourceProj = map.getView().getProjection();
-        var geom = /** @type {ol.geom.Polygon} */(polygon.clone().transform(
-                sourceProj, 'EPSG:4326'));
-        var coordinates = geom.getLinearRing(0).getCoordinates();
-        area = Math.abs(wgs84Sphere.geodesicArea(coordinates));
-    } else {
-        area = polygon.getArea();
-    }
+//    if (geodesicCheckbox.checked) {
+    var sourceProj = map.getView().getProjection();
+    var geom = (polygon.clone().transform(sourceProj, 'EPSG:4326'));
+    var coordinates = geom.getLinearRing(0).getCoordinates();
+    area = Math.abs(wgs84Sphere.geodesicArea(coordinates));
+//    } else {
+//        area = polygon.getArea();
+//    }
     var output;
-    if (area > 10000) {
-        output = (Math.round(area / 1000000 * 100) / 100) +
-                ' ' + 'km<sup>2</sup>';
+
+    if (!isMeters) {
+        output = (Math.round(area / 1000000 * 100) / 100) + ' km<sup>2</sup>';
     } else {
-        output = (Math.round(area * 100) / 100) +
-                ' ' + 'm<sup>2</sup>';
+        output = Math.round(area) + ' m<sup>2</sup>';
     }
     return output;
 };
-
-
 
 function translateMeasureStrings() {
     $('#measure_unit').html($.i18n('measure_unit') + ":");
@@ -346,41 +326,11 @@ function getUnitChangeValue(_currentMeasure, _applyedUnit, _selected_unit) {
     return currMeasure;
 }
 
-
-
 var segVal = 0.000;
 var applyedUnit;
 var selected_unit;
 var currentMeasure = 0.000;
 var evtOrder;
-/*
- function getActualMeasure(measure,unit,order,val){
- if(measure>0){
- if(order){evtOrder=order};
- var factor=1;
- var out = "";    
- selected_unit = $("#measureUnit").val();
- applyedUnit=unit;
- currentMeasure = getUnitChangeValue(measure,applyedUnit,selected_unit);
- 
- 
- if (evtOrder == 1) {
- 
- out=currentMeasure.toFixed(3)+" "+ selected_unit;		
- 
- } else if (evtOrder == 2) {
- 
- out=currentMeasure.toFixed(3)+" "+ selected_unit +"2".sup();
- }
- 
- 
- $("#totValue").html(out);
- applyedUnit = selected_unit;
- 
- }
- }
- 
- */
 
 var lastMeasure = 0.0;
 
@@ -414,13 +364,9 @@ function handleFinalMeasurement(event) {
         }
 
     } else if (evtOrder == 2) {
-
-        //outFinal=measure.toFixed(3) + " " + units +"2".sup();
-
         outFinal = getUnitChangeValue(measure, applyedUnit, selected_unit);
         finalmeasure = outFinal;
         $('#totValue').html(outFinal.toFixed(3) + " " + selected_unit + "2".sup());
-
 
         if (lastMeasure > 0) {
             //out += "    last segment: " + (measure-lastMeasure).toFixed(3) + " " + units;
@@ -429,19 +375,13 @@ function handleFinalMeasurement(event) {
 
             //$('#segValue').html(outSegment.toFixed(3)+" " + selected_unit);
         }
-
-
     }
     lastMeasure = 0.0;
     applyedUnit = selected_unit;
-    //segmeasure=measure-lastMeasure;
-    //finalmeasure=measure;
 }
 
 var segmeasure = 0.000;
 var finalmeasure = 0.000;
-
-
 
 function handlePartialMeasurement(event) {
     var units = event.units;
@@ -466,8 +406,6 @@ function handlePartialMeasurement(event) {
             segmeasure = outSegment;
             $('#segValue').html(outSegment.toFixed(3) + " " + selected_unit);
         }
-
-
     } else if (evtOrder == 2) {
 
         //outFinal=measure.toFixed(3) + " " + units +"2".sup();
@@ -483,14 +421,10 @@ function handlePartialMeasurement(event) {
 
             //$('#segValue').html(outSegment.toFixed(3)+" " + selected_unit);
         }
-
-
     }
 
     lastMeasure = measure;
     applyedUnit = selected_unit;
-    //segmeasure=measure-lastMeasure;
-    //finalmeasure=measure;
 }
 
 

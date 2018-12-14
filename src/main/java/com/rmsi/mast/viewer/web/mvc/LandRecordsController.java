@@ -71,6 +71,7 @@ import com.rmsi.mast.studio.dao.OutputformatDAO;
 import com.rmsi.mast.studio.dao.PaymentInfoDAO;
 import com.rmsi.mast.studio.dao.ProjectAreaDAO;
 import com.rmsi.mast.studio.dao.ProjectDAO;
+import com.rmsi.mast.studio.dao.ProjectRegionDAO;
 import com.rmsi.mast.studio.dao.ResourceCustomAttributesDAO;
 import com.rmsi.mast.studio.dao.ShareTypeDAO;
 import com.rmsi.mast.studio.dao.SocialTenureRelationshipDAO;
@@ -157,6 +158,9 @@ import com.rmsi.mast.studio.mobile.dao.NaturalPersonDao;
 import com.rmsi.mast.studio.mobile.dao.SpatialUnitPersonWithInterestDao;
 import com.rmsi.mast.studio.mobile.service.SpatialUnitService;
 import com.rmsi.mast.studio.mobile.service.UserDataService;
+import com.rmsi.mast.studio.domain.fetch.ApfrStatSummary;
+import com.rmsi.mast.studio.domain.fetch.ResourcesStatSummary;
+import com.rmsi.mast.studio.domain.fetch.TransactionsStatSummary;
 import com.rmsi.mast.studio.service.ClaimBasicService;
 import com.rmsi.mast.studio.service.ProjectRegionService;
 import com.rmsi.mast.studio.service.ProjectService;
@@ -189,6 +193,8 @@ import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.Set;
+import org.apache.poi.common.usermodel.fonts.FontCharset;
+import org.apache.poi.ss.usermodel.Font;
 import org.json.JSONException;
 
 /**
@@ -344,6 +350,9 @@ public class LandRecordsController {
 
     @Autowired
     private ProjectRegionService projRegionService;
+
+    @Autowired
+    ProjectRegionDAO projectRegion;
 
     public static final String RESPONSE_OK = "OK";
 
@@ -543,9 +552,13 @@ public class LandRecordsController {
     @RequestMapping(value = "/viewer/landrecords/editattribute/{id}", method = RequestMethod.GET)
     @ResponseBody
     public List<ClaimBasic> editAttribute(@PathVariable Long id) {
-
         return spatialUnitService.getClaimsBasicByLandId(id);
+    }
 
+    @RequestMapping(value = "/viewer/landrecords/projectvillages/{projectName}", method = RequestMethod.GET)
+    @ResponseBody
+    public List<ProjectRegion> getProjectVillages(@PathVariable String projectName) {
+        return projectRegion.getVillagesByProjectName(projectName);
     }
 
     @RequestMapping(value = "/viewer/landrecords/updateattributes", method = RequestMethod.POST)
@@ -555,6 +568,7 @@ public class LandRecordsController {
             long Usin = ServletRequestUtils.getRequiredLongParameter(request, "primary");
 
             int appNature = ServletRequestUtils.getIntParameter(request, "cbxAppNature", -1);
+            int villageCode = ServletRequestUtils.getIntParameter(request, "cbxVillage", -1);
             String regNum = ServletRequestUtils.getStringParameter(request, "txtRegNumber", null);
             //Double parcelArea = ServletRequestUtils.getDoubleParameter(request, "area", 0);
 
@@ -584,6 +598,14 @@ public class LandRecordsController {
             } else {
                 su.setNoaId(null);
             }
+
+            if (villageCode > -1) {
+                ProjectRegion village = projectRegion.findProjectRegionById(villageCode);
+                if (village != null) {
+                    su.setLaSpatialunitgroupHierarchy5(village);
+                }
+            }
+
             //su.setArea(parcelArea);
             su.setRegistrationNum(regNum);
 
@@ -1785,6 +1807,12 @@ public class LandRecordsController {
     @ResponseBody
     public List<AttributeCategory> attribList() {
         return landRecordsService.findAllAttributeCategories();
+    }
+
+    @RequestMapping(value = "/viewer/landrecords/resourcecategories/", method = RequestMethod.GET)
+    @ResponseBody
+    public List<AttributeCategory> getResourceCategories() {
+        return landRecordsService.getResourceCategories();
     }
 
     @RequestMapping(value = "/viewer/landrecords/getCCRO/{id}", method = RequestMethod.GET)
@@ -3923,7 +3951,7 @@ public class LandRecordsController {
             if (role == Role.DPI) {
                 workflowId = 4;
             }
-            return landRecordsService.search(lang, 0, projectId, "", "", "", "", "", 0, 0, workflowId, startfrom);
+            return landRecordsService.search(lang, 0, projectId, "", 0, "", "", "", "", 0, 0, workflowId, startfrom);
         }
     }
 
@@ -4090,7 +4118,7 @@ public class LandRecordsController {
             if (role == Role.DPI) {
                 workflowId = 4;
             }
-            return landRecordsService.searchCount(0, projectId, parcelId, appNum, pvNum, apfrNum, firstName, appType, workflowId, appStatus);
+            return landRecordsService.searchCount(0, projectId, parcelId, 0, appNum, pvNum, apfrNum, firstName, appType, workflowId, appStatus);
 
         } catch (Exception e) {
             logger.error(e);
@@ -4134,7 +4162,7 @@ public class LandRecordsController {
                 workflowId = 4;
             }
 
-            return landRecordsService.search(lang, 0, projectId, parcelId, appNum, pvNum, apfrNum, firstName, appType, appStatus, workflowId, startpos);
+            return landRecordsService.search(lang, 0, projectId, parcelId, 0, appNum, pvNum, apfrNum, firstName, appType, appStatus, workflowId, startpos);
 
         } catch (Exception e) {
             logger.error(e);
@@ -4268,6 +4296,207 @@ public class LandRecordsController {
         }
     }
 
+    @RequestMapping(value = "/viewer/landrecords/apfrstatsummary/{projectName}/{villageId}", method = RequestMethod.GET)
+    @ResponseBody
+    public void getApfrStatSummary(HttpServletRequest request, HttpServletResponse response, @PathVariable String projectName, @PathVariable Integer villageId)
+            throws FileNotFoundException, IOException {
+
+        Workbook wb = new HSSFWorkbook();
+        Project project = projectDAO.findByName(projectName);
+
+        String filename = "APFRSummary.xls";
+
+        // Create a blank sheet
+        Sheet sheet = wb.createSheet("new sheet");
+        List<ApfrStatSummary> records = landRecordsService.getApfrStatSummary(project.getProjectnameid(), villageId);
+
+        // Headers
+        Row row = sheet.createRow(0);
+
+        Cell cell = row.createCell(0);
+        cell.setCellValue("");
+
+        cell = row.createCell(1);
+        cell.setCellValue("Male");
+
+        cell = row.createCell(2);
+        cell.setCellValue("Female");
+
+        cell = row.createCell(3);
+        cell.setCellValue("Collective");
+
+        try {
+            if (records != null) {
+                for (int i = 0; i < records.size(); i++) {
+                    row = sheet.createRow(i + 1);
+                    ApfrStatSummary rec = records.get(i);
+
+                    cell = row.createCell(0);
+                    cell.setCellValue(rec.getName());
+
+                    cell = row.createCell(1);
+                    cell.setCellValue(rec.getMales());
+
+                    cell = row.createCell(2);
+                    cell.setCellValue(rec.getFemales());
+
+                    cell = row.createCell(3);
+                    cell.setCellValue(rec.getCollective());
+                }
+                sheet.autoSizeColumn(0);
+            }
+        } catch (Exception e) {
+            logger.error(e);
+        }
+
+        response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+        response.setContentType("application/xls; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        try (OutputStream out = response.getOutputStream()) {
+            wb.write(out);
+            out.flush();
+        }
+    }
+
+    @RequestMapping(value = "/viewer/landrecords/transstatsummary/{projectName}/{villageId}", method = RequestMethod.GET)
+    @ResponseBody
+    public void getTransactionsStatSummary(HttpServletRequest request, HttpServletResponse response, @PathVariable String projectName, @PathVariable Integer villageId)
+            throws FileNotFoundException, IOException {
+
+        Workbook wb = new HSSFWorkbook();
+        Project project = projectDAO.findByName(projectName);
+
+        String filename = "TransactionsSummary.xls";
+
+        // Create a blank sheet
+        Sheet sheet = wb.createSheet("new sheet");
+        List<TransactionsStatSummary> records = landRecordsService.getTransactionStatSummary(project.getProjectnameid(), villageId);
+
+        // Headers
+        Row row = sheet.createRow(0);
+
+        Cell cell = row.createCell(0);
+        cell.setCellValue("");
+
+        cell = row.createCell(1);
+        cell.setCellValue("Male");
+
+        cell = row.createCell(2);
+        cell.setCellValue("Male (ha)");
+
+        cell = row.createCell(3);
+        cell.setCellValue("Female");
+
+        cell = row.createCell(4);
+        cell.setCellValue("Female (ha)");
+
+        cell = row.createCell(5);
+        cell.setCellValue("Collective");
+
+        cell = row.createCell(6);
+        cell.setCellValue("Collective (ha)");
+
+        try {
+            if (records != null) {
+                for (int i = 0; i < records.size(); i++) {
+                    row = sheet.createRow(i + 1);
+                    TransactionsStatSummary rec = records.get(i);
+
+                    cell = row.createCell(0);
+                    cell.setCellValue(rec.getName());
+
+                    cell = row.createCell(1);
+                    cell.setCellValue(rec.getMales());
+                    
+                    cell = row.createCell(2);
+                    cell.setCellValue(rec.getMalesArea());
+
+                    cell = row.createCell(3);
+                    cell.setCellValue(rec.getFemales());
+                    
+                    cell = row.createCell(4);
+                    cell.setCellValue(rec.getFemalesArea());
+
+                    cell = row.createCell(5);
+                    cell.setCellValue(rec.getCollective());
+                    
+                    cell = row.createCell(6);
+                    cell.setCellValue(rec.getCollectiveArea());
+                }
+                sheet.autoSizeColumn(0);
+                sheet.autoSizeColumn(2);
+                sheet.autoSizeColumn(4);
+                sheet.autoSizeColumn(6);
+            }
+        } catch (Exception e) {
+            logger.error(e);
+        }
+
+        response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+        response.setContentType("application/xls; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        try (OutputStream out = response.getOutputStream()) {
+            wb.write(out);
+            out.flush();
+        }
+    }
+
+    @RequestMapping(value = "/viewer/landrecords/resoursestatsummary/{projectName}", method = RequestMethod.GET)
+    @ResponseBody
+    public void getResourcesStatSummary(HttpServletRequest request, HttpServletResponse response, @PathVariable String projectName)
+            throws FileNotFoundException, IOException {
+
+        Workbook wb = new HSSFWorkbook();
+        Project project = projectDAO.findByName(projectName);
+
+        String filename = "ResourcesSummary.xls";
+
+        // Create a blank sheet
+        Sheet sheet = wb.createSheet("new sheet");
+        List<ResourcesStatSummary> records = landRecordsService.getResourcesStatSummary(project.getProjectnameid());
+
+        // Headers
+        Row row = sheet.createRow(0);
+
+        Cell cell = row.createCell(0);
+        cell.setCellValue("Total");
+
+        cell = row.createCell(1);
+        cell.setCellValue("Chartered");
+
+        cell = row.createCell(2);
+        cell.setCellValue("Adopted");
+
+        try {
+            if (records != null) {
+                for (int i = 0; i < records.size(); i++) {
+                    row = sheet.createRow(i + 1);
+                    ResourcesStatSummary rec = records.get(i);
+
+                    cell = row.createCell(0);
+                    cell.setCellValue(rec.getTotal());
+
+                    cell = row.createCell(1);
+                    cell.setCellValue(rec.getChartered());
+
+                    cell = row.createCell(2);
+                    cell.setCellValue(rec.getAdopted());
+                }
+                sheet.autoSizeColumn(0);
+            }
+        } catch (Exception e) {
+            logger.error(e);
+        }
+
+        response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+        response.setContentType("application/xls; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        try (OutputStream out = response.getOutputStream()) {
+            wb.write(out);
+            out.flush();
+        }
+    }
+    
     @RequestMapping(value = "/viewer/landrecords/parcelcountbygender/{projectName}/{tag}/{villageId}", method = RequestMethod.GET)
     @ResponseBody
     public void report2(HttpServletRequest request, HttpServletResponse response, @PathVariable String projectName, @PathVariable String tag, @PathVariable Integer villageId)
@@ -5425,6 +5654,7 @@ public class LandRecordsController {
             String dateofbirth = ServletRequestUtils.getStringParameter(request, "dateofbirth", null);
             String birthplace = ServletRequestUtils.getStringParameter(request, "birthplace", null);
             String address = ServletRequestUtils.getStringParameter(request, "address", null);
+            String contactno = ServletRequestUtils.getStringParameter(request, "contactno", null);
             String profession = ServletRequestUtils.getStringParameter(request, "profession", null);
             Integer Gender = ServletRequestUtils.getIntParameter(request, "genderid", 0);
             Integer maritalstatusid = ServletRequestUtils.getIntParameter(request, "maritalstatusid", 0);
@@ -5447,6 +5677,7 @@ public class LandRecordsController {
             person.setMiddlename(middlename);
             person.setLastname(lastname);
             person.setAddress(address);
+            person.setContactno(contactno);
             person.setIdentityno(identityno);
             person.setGenderid(Gender);
             person.setBirthPlace(birthplace);
@@ -7344,7 +7575,7 @@ public class LandRecordsController {
             dto.setPv_no(su.getPvNum());
             dto.setRefrence_id_card(person.getIdentityno());
             dto.setIdDate(person.getIdCardDate());
-            
+
             if (person.getGenderid() != null && person.getGenderid() > 0) {
                 dto.setSex(Genderdao.getGenderById(person.getGenderid()).getGender());
             }
@@ -7352,32 +7583,32 @@ public class LandRecordsController {
             dto.setOther_use(su.getOther_use());
             dto.setApfrno(right.getCertNumber());
             dto.setApfr_date(right.getCreateddate());
-            
+
             if (right.getMutationId() != null) {
                 MutationType mt = landRecordsService.getMutationType(right.getMutationId());
                 dto.setMutationType(mt.getName());
-                
+
                 // Search for previous APFR number
                 int tranId = 0;
                 RightBasic previousRight = null;
                 for (RightBasic r : su.getRights()) {
-                    if(r.getPersonlandid().compareTo(right.getPersonlandid()) != 0 && 
-                            r.getLaExtTransactiondetail().getTransactionid() < right.getLaExtTransactiondetail().getTransactionid() &&
-                            r.getLaExtTransactiondetail().getTransactionid() > tranId){
+                    if (r.getPersonlandid().compareTo(right.getPersonlandid()) != 0
+                            && r.getLaExtTransactiondetail().getTransactionid() < right.getLaExtTransactiondetail().getTransactionid()
+                            && r.getLaExtTransactiondetail().getTransactionid() > tranId) {
                         tranId = r.getLaExtTransactiondetail().getTransactionid();
                         previousRight = r;
                     }
                 }
-                if(previousRight != null){
+                if (previousRight != null) {
                     dto.setPreviousApfr(previousRight.getCertNumber());
                     dto.setPreviousApfrDate(previousRight.getCertIssueDate());
                 }
             }
-            
+
             dto.setContractName(right.getTransferContractName());
             dto.setContractDate(right.getTransferContractDate());
             dto.setContractNum(right.getTransferContractNum());
-            
+
             // Added for date pv+47
             if (su.getPublicNoticeStartDate() != null) {
                 Calendar c = Calendar.getInstance();
@@ -7398,10 +7629,10 @@ public class LandRecordsController {
         Form43Dto dto = new Form43Dto();
         try {
             Permission perm = registrationRecordsService.getRegisteredPermissionByPropId(usin);
-            if(perm == null){
+            if (perm == null) {
                 return null;
             }
-            
+
             ClaimBasic su = spatialUnitService.getClaimsBasicByLandId(usin).get(0);
             RightBasic right = getOwnershipRight(su);
             LaPartyPerson person = perm.getApplicant();
@@ -7409,7 +7640,7 @@ public class LandRecordsController {
 
             String mayorname = project.getProjectArea().iterator().next().getMayorname();
             Date electionDate = project.getProjectArea().iterator().next().getMayorelectiondate();
-            
+
             if (su.getLaSpatialunitgroupHierarchy5() != null) {
                 dto.setVillage(su.getLaSpatialunitgroupHierarchy5().getName());
             }
@@ -7448,7 +7679,7 @@ public class LandRecordsController {
         }
         return dto;
     }
-    
+
     @RequestMapping(value = "/viewer/landrecords/spatialunit/form8/{usin}", method = RequestMethod.GET)
     @ResponseBody
     public Form8Dto getForm8(@PathVariable Long usin) {
@@ -7523,28 +7754,28 @@ public class LandRecordsController {
             if (right.getMutationId() != null) {
                 MutationType mt = landRecordsService.getMutationType(right.getMutationId());
                 dto.setMutationType(mt.getName());
-                
+
                 // Search for previous APFR number
                 int tranId = 0;
                 RightBasic previousRight = null;
                 for (RightBasic r : su.getRights()) {
-                    if(r.getPersonlandid().compareTo(right.getPersonlandid()) != 0 && 
-                            r.getLaExtTransactiondetail().getTransactionid() < right.getLaExtTransactiondetail().getTransactionid() &&
-                            r.getLaExtTransactiondetail().getTransactionid() > tranId){
+                    if (r.getPersonlandid().compareTo(right.getPersonlandid()) != 0
+                            && r.getLaExtTransactiondetail().getTransactionid() < right.getLaExtTransactiondetail().getTransactionid()
+                            && r.getLaExtTransactiondetail().getTransactionid() > tranId) {
                         tranId = r.getLaExtTransactiondetail().getTransactionid();
                         previousRight = r;
                     }
                 }
-                if(previousRight != null){
+                if (previousRight != null) {
                     dto.setPreviousApfr(previousRight.getCertNumber());
                     dto.setPreviousApfrDate(previousRight.getCertIssueDate());
                 }
             }
-            
+
             dto.setContractName(right.getTransferContractName());
             dto.setContractDate(right.getTransferContractDate());
             dto.setContractNum(right.getTransferContractNum());
-            
+
             dto.setMandateDate(person.getMandateDate());
 
         } catch (Exception e) {

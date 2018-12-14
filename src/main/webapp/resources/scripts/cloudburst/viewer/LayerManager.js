@@ -62,12 +62,6 @@ Cloudburst.LayerManager = function (_map, _searchdiv) {
                     $('#Visibility__Cosmetic').attr('checked', false);
 
                 }
-                //check overlay checkbox if layer exists
-                //if($('#overlaysBody').children().length>1){
-                //	$('#grpVisibility__overlays').attr('checked', true);
-                //}
-
-
 
                 for (x in projects.projectLayergroups) {
 
@@ -92,11 +86,6 @@ Cloudburst.LayerManager = function (_map, _searchdiv) {
                                 _layer.setOpacity(ui.value / 10);
                             }
                         });
-
-                        //checkbox enabled/disabled accoding to scale
-                        //		if(!map.getLayersByName(projects.projectLayergroups[x].layergroups.layers[y].layer)[0].visibility){
-                        //$('#Visibility__'+projects.projectLayergroups[x].layergroups.layers[y].layer).attr("disabled", "disabled");;
-                        //	}
 
                         //set image   
 
@@ -199,8 +188,6 @@ function refreshLegends() {
             var _url = replaceString(layer.values_.url, /wfs/, 'wms')
             legendurl = _url + "&request=GetLegendGraphic&service=WMS&version=1.0.0&Layer=" + layer.values_.name + "&Format=image/png&WIDTH=20&HEIGHT=20";
             //$("#" + layer.values_.aname + "_legend").attr('src', legendurl);
-
-
         }
     }
 }
@@ -217,36 +204,6 @@ function manageLayer(_layer) {
     } else {
         _layer.setVisible(false);
     }
-
-
-
-    /*
-     var tolLen=$('.'+clsname).length;
-     var anyLayerOn = false;
-     for(var i=0;i<tolLen;i++){
-     if($('.'+clsname)[i].checked)
-     {
-     anyLayerOn = true;
-     }
-     }
-     if(anyLayerOn){
-     
-     $('#grpVisibility__'+clsname).attr('checked', true);
-     }
-     else {
-     map.getLayersByName(layername)[0].setVisibility(_layer.checked);
-     $('#grpVisibility__'+clsname).attr('checked', false);
-     }
-     
-     if($('#grpVisibility__'+clsname)[0].checked==true){
-     if(clsname.toUpperCase() == "OVERLAYS"){
-     map.getLayersByName(layername)[0].setVisibility(_layer.checked);
-     }
-     ScaleRangeView();
-     }
-     
-     */
-
 }
 
 function getLayerByAliesName(layer) {

@@ -93,7 +93,6 @@ public class AttributeMasterController {
 
         AttributeMaster attributemaster = new AttributeMaster();
         try {
-
             dataTypeId = ServletRequestUtils.getRequiredIntParameter(request, "type");
             alias = ServletRequestUtils.getRequiredStringParameter(request, "alias");
             size = ServletRequestUtils.getRequiredStringParameter(request, "size");
@@ -107,7 +106,8 @@ public class AttributeMasterController {
                 logger.error(e);
             }
 
-            attributemaster.setFieldaliasname(alias);
+            attributemaster.setFieldaliasnameEn(alias);
+            attributemaster.setFieldaliasname(alias_otherlang);
             attributemaster.setIsactive(true);
             attributemaster.setReferencetable("custom");
             attributemaster.setSize(size);

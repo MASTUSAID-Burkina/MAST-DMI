@@ -7,9 +7,9 @@ import com.rmsi.mast.studio.domain.DatatypeId;
 
 public interface AttributeCategoryDAO extends GenericDAO<AttributeCategory, Long> {
 
+    List<AttributeCategory> findAttributeCategoryByTypeId(Integer id);
 
-	
-	List<AttributeCategory> findAttributeCategoryByTypeId(Integer id);
-	
-	List<AttributeCategory> findAllAttributeCategory();
+    List<AttributeCategory> findAllAttributeCategory();
+    
+    List<AttributeCategory> getResourceCategories();
 }

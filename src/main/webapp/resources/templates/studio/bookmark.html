@@ -46,18 +46,24 @@
                 <tr id="bookmark_pagerDiv" class="tblFooter">
                     <td colspan="9">
                         <div id="spatialunitDiv">
+                            <a href="javascript:firstRecords();">
+                                <img src="resources/images/studio/first.png" class="first" data-i18n="[title]gen-first">
+                            </a>
                             <a href="javascript:previousRecords();">
-                                <img class="img-prev" src="resources/images/studio/previous.png" data-i18n="[title]gen-previous" /></a> 
-                            <input type="text" readonly="readonly"
-                                   name="records_from" id="records_from" value=""
+                                <img class="img-prev" src="resources/images/studio/previous.png" data-i18n="[title]gen-previous" />
+                            </a> 
+                            <input type="text" readonly="readonly" name="records_from" id="records_from" value=""
                                    class="input-medium"> <span data-i18n="gen-to"></span> 
-                            <input type="text"
-                                   name="records_to" id="records_to" value=""
+                            <input type="text" name="records_to" id="records_to" value=""
                                    class="input-medium" readonly="readonly"> <span data-i18n="gen-of"></span> 
                             <input type="text" name="records_all" id="records_all" value=""
                                 class="input-medium" readonly="readonly">
                             <a href="javascript:nextRecords();">
-                                <img class="img-next" src="resources/images/studio/next.png" data-i18n="[title]gen-next" /></a>
+                                <img class="img-next" src="resources/images/studio/next.png" data-i18n="[title]gen-next" />
+                            </a>
+                            <a href="javascript:lastRecords();">
+                                <img src="resources/images/studio/last.png" class="last" data-i18n="[title]gen-last">
+                            </a>
                         </div>
                     </td>
                 </tr>

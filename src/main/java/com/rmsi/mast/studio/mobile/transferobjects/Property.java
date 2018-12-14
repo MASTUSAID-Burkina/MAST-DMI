@@ -44,6 +44,12 @@ public class Property implements Serializable {
     private ResourceLandClassificationMapping resourceLandClassification;
     private Integer villageId;
 
+    private Boolean chartered;
+    private String comment;
+    private Boolean validatedByCouncil;
+    private String validationDate;
+    private Boolean inExploitation;
+    
     private Dispute dispute;
 
     public Property() {
@@ -276,13 +282,47 @@ public class Property implements Serializable {
         this.deceasedPerson = deceasedPerson;
     }
 
-//    public List<NaturalPersonBasic> getPersonOfInterests() {
-//        return personOfInterests;
-//    }
-//
-//    public void setPersonOfInterests(List<NaturalPersonBasic> personOfInterests) {
-//        this.personOfInterests = personOfInterests;
-//    }
+    public Boolean getChartered() {
+        return chartered;
+    }
+
+    public void setChartered(Boolean chartered) {
+        this.chartered = chartered;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public Boolean getValidatedByCouncil() {
+        return validatedByCouncil;
+    }
+
+    public void setValidatedByCouncil(Boolean validatedByCouncil) {
+        this.validatedByCouncil = validatedByCouncil;
+    }
+
+    public Boolean getInExploitation() {
+        return inExploitation;
+    }
+
+    public void setInExploitation(Boolean inExploitation) {
+        this.inExploitation = inExploitation;
+    }
+
+
+    public String getValidationDate() {
+        return validationDate;
+    }
+
+    public void setValidationDate(String validationDate) {
+        this.validationDate = validationDate;
+    }
+
     public List<Attribute> getAttributes() {
         return attributes;
     }

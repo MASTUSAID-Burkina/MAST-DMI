@@ -2,6 +2,8 @@ function mapImage(ID, callbackFunc) {
     var bbox;
     var wfsurl = "http://" + location.host + "/geoserver/wfs?";
     var wmsurl = "http://" + location.host + "/geoserver/wms?";
+    var imageWidth = 350;
+    var boxIncrease = 0.00017;
     
     var featureRequest = new ol.format.WFS().writeGetFeature({
         srsName: 'EPSG:4326',
@@ -32,6 +34,20 @@ function mapImage(ID, callbackFunc) {
             }
         }
 
+        var newExtent = ol.extent.buffer(parcelExtent, boxIncrease);
+        newExtent = ol.proj.transformExtent(newExtent, "EPSG:4326", "EPSG:32630");
+        var extentWidth = ol.extent.getWidth(newExtent);
+        
+        var dpi = 96;
+        var spi = dpi / 2.54;
+        var smInPixel = (extentWidth * 100) / imageWidth;
+        scaleSize = Math.round(smInPixel * spi);
+        
+        // Round to nice number
+        if(scaleSize % 10 > 0){
+            scaleSize = (scaleSize - scaleSize % 10) + 10;
+        }
+        
         features[0].getGeometry().transform("EPSG:4326", "EPSG:32630");
         vertexlist = features[0].getGeometry().getCoordinates()[0];
 
@@ -49,17 +65,10 @@ function mapImage(ID, callbackFunc) {
         $("#area_id").text(area);
         $("#_idarea").text(area);
 
-        bbox = (parcelExtent[0] - 0.00017) + ',' + (parcelExtent[1] - 0.00017) + ','
-                + (parcelExtent[2] + 0.00017) + ',' + (parcelExtent[3] + 0.00017);
+        bbox = (parcelExtent[0] - boxIncrease) + ',' + (parcelExtent[1] - boxIncrease) + ','
+                + (parcelExtent[2] + boxIncrease) + ',' + (parcelExtent[3] + boxIncrease);
 
-        //var layerurl_ccro = wmsurl + "bbox=" + bbox + "&FORMAT=image/png&REQUEST=GetMap&layers=" + lyrs + ",mast:vertexlabel&width=250&height=250&srs=EPSG:4326" + "&cql_filter=usin=" + ID + ";INCLUDE";
-        //var layerurl_adj = wmsurl + "bbox=" + bbox + "&FORMAT=image/png&REQUEST=GetMap&layers=" + lyrs + ",mast:vertexlabel&width=180&height=180&srs=EPSG:4326" + "&cql_filter=usin=" + ID + ";INCLUDE";
-        var parcelMapUrl = wmsurl + "bbox=" + bbox + "&styles=generate_map,vertexlabel&FORMAT=image/png&REQUEST=GetMap&layers=Mast:la_spatialunit_land,Mast:vertexlabel&width=350&height=350&srs=EPSG:4326&cql_filter=landid=" + ID + ";INCLUDE";
-
-        //$('#noth_coord').text(meterGeom.getBounds().getCenterLonLat().lat.toFixed(3));
-        //$('#east_coord').text(meterGeom.getBounds().getCenterLonLat().lon.toFixed(3));
-        //$('#map1').append('<img id="theImg" src=' + layerurl_adj + '>');
-        //$('#map-ccro').append('<img id="theImg" src=' + layerurl_ccro + '>');
+        var parcelMapUrl = wmsurl + "bbox=" + bbox + "&styles=generate_map,vertexlabel&FORMAT=image/png&REQUEST=GetMap&layers=Mast:la_spatialunit_land,Mast:vertexlabel&width=" + imageWidth + "&height=350&srs=EPSG:4326&cql_filter=landid=" + ID + ";INCLUDE";
 
         $('#boundary_map').empty();
         $('#boundary_map').append('<img id="theImg" src=' + parcelMapUrl + '>');

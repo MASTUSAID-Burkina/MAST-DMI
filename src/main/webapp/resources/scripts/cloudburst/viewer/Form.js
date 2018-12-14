@@ -753,7 +753,7 @@ function generateform51(usin, dto) {
                     $("#transferType51").text(form51Obj.mutationType);
                     $("#prev_apfrno51").text(form51Obj.previousApfr);
                     $("#prev_apfrdate51").text(form51Obj.previousApfrDate);
-                    $("#contract_name51").text(form51Obj.contractName);
+                    $("#contract_name51").text(form51Obj.mutationType);
                     $("#contract_num51").text(form51Obj.contractNum);
                     $("#contract_date51").text(form51Obj.contractDate);
                     

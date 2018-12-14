@@ -21,99 +21,115 @@ html,body{font: normal 14px 'titilliumregular', sans-serif!important;}
     background:#362d59;
     border-bottom:2px solid #00b7bd;
     box-shadow: 0 3px 3px rgba(0,0,0,.5);
-	 
+
 }
 #usaid_logo {
-width: 128px;
-background: url(../../images/usaid_logo_300.png) no-repeat;
-height: 51px;
-float: left;
-margin-top: 20px;
-margin-left: 15px;
-display: inline-block;
-position: absolute;
-left: 15px;
+    width: 128px;
+    background: url(../../images/usaid_logo_300.png) no-repeat;
+    height: 51px;
+    float: left;
+    margin-top: 20px;
+    margin-left: 15px;
+    display: inline-block;
+    position: absolute;
+    left: 15px;
 }
 
+#onf_logo {
+    width: 70px;
+    height: 50px;
+    float: left;
+    margin-top: 20px;
+    margin-left: 15px;
+    display: inline-block;
+    position: absolute;
+    left: 178px;
+}
+
+#onf_logo_img {
+    width: 70px;
+    height: 50px;
+    border-width: 0;
+}
 
 .header_title {
- 
-font-size: 22px;
-padding-top: 15px;
-margin-left: 15px;
 
-color: #fff;
-text-align: center;
+    font-size: 22px;
+    padding-top: 15px;
+    margin-left: 15px;
+
+    color: #fff;
+    text-align: center;
 }
 
 .userinfo
 {
-background-image: url(../../images/userInfo.png);
-position:absolute;
-right:0px;
-top:0px;
-height:90px;
-background-repeat:no-repeat;
-padding:0.1em 0 0 2.5em;
-color: #fff;
+    background-image: url(../../images/userInfo.png);
+    position:absolute;
+    right:0px;
+    top:0px;
+    height:90px;
+    background-repeat:no-repeat;
+    padding:0.1em 0 0 2.5em;
+    color: #fff;
 }
 .userinfo ul {
-list-style:none;
-margin:0;
-padding:0;
+    list-style:none;
+    margin:0;
+    padding:0;
 }
 .userinfo ul li{
 
 
-  font-size: 16px;
-  color: #000;
-  margin: 10px;
-  border-bottom: 1px solid #000;
+    font-size: 16px;
+    color: #000;
+    margin: 10px;
+    border-bottom: 1px solid #000;
 }
 .userinfo ul li a{ text-decoration: none; color: #000;}
 
 .userinfo ul li:last-child {
-  border: none;
+    border: none;
 }
 .userinfo ul li span{
-  color: #393939;
-  padding: 0 6px;
+    color: #393939;
+    padding: 0 6px;
 }
 .userinfo ul li a{
-  color: #000;
-  padding: 0 6px;
+    color: #000;
+    padding: 0 6px;
 }
 .userinfo ul li a:hover{
-  color: #352d59;
-  
+    color: #352d59;
+
 
 }
 
 .username {
-  background: url(../../images/user.png) no-repeat;
-  margin-left: 20px!important;	
-  padding-left: 24px;
+    background: url(../../images/user.png) no-repeat;
+    margin-left: 20px!important;	
+    padding-left: 24px;
 }
 
 .home-separator {
-	background: url(../../images/home-separator.png) no-repeat center;
+    background: url(../../images/home-separator.png) no-repeat center;
 }
 .home{
-  background: url(../../images/home-icon.png) no-repeat;
-  display: inline-block;
-  width: 24px;
-  height: 24px;
-  padding: 0 !important;
+    background: url(../../images/home-icon.png) no-repeat;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    padding: 0 !important;
 }
 
 .logout{
-  background: #352d59 url(../../images/logout-icon.png) no-repeat 10px 5px;
-  display: inline-block;
-  padding: 0 10px 0 30px!important;
-  line-height: 24px;
-  color: #fff!important;
-  border-radius: 3px;
-  font-size: 14px;
+    background: #352d59 url(../../images/logout-icon.png) no-repeat 10px 5px;
+    display: inline-block;
+    padding: 0 10px 0 30px!important;
+    line-height: 24px;
+    color: #fff!important;
+    border-radius: 3px;
+    font-size: 14px;
 
 }
 

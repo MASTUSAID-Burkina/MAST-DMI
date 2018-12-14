@@ -627,8 +627,7 @@ public class MobileDataController {
             }.getType();
             List<Property> properties = gson.fromJson(jsonString, type);
 
-            return mobileUserService.saveResource(properties, projectName,
-                    userId);
+            return mobileUserService.saveResource(properties, projectName, userId);
         } catch (Exception e) {
             logger.error("Exception", e);
             e.printStackTrace();

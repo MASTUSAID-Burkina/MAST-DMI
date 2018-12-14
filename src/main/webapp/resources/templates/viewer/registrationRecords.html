@@ -61,13 +61,8 @@
                                 </td>
 
                                 <td>
-                                    <label data-i18n="reg-app-number"></label> 
-                                    <input type="text" name="txt_app_num" id="txt_app_num" value="" style="width:120px;">
-                                </td>
-
-                                <td>
-                                    <label data-i18n="reg-pv-number"></label> 
-                                    <input type="text" name="txt_pv_num" id="txt_pv_num" value=""  style="width:100px;">
+                                    <label data-i18n="reg-village"></label> 
+                                    <select name="cbxRegVillage" id="cbxRegVillage" class="read-tenure"></select>
                                 </td>
 
                                 <td>
@@ -104,8 +99,7 @@
                             <tr>
                                 <th class="no-sort" data-i18n="reg-parcel-id"></th>
                                 <th class="no-sort" data-i18n="reg-tran-type"></th>
-                                <th class="no-sort" data-i18n="reg-app-number"></th>
-                                <th class="no-sort" data-i18n="reg-pv-number"></th>
+                                <th class="no-sort" data-i18n="reg-village"></th>
                                 <th class="no-sort" data-i18n="reg-apfr-number"></th>
                                 <th class="no-sort" data-i18n="reg-land-occupant"></th>
                                 <th class="no-sort" data-i18n="reg-app-type"></th>
@@ -121,8 +115,12 @@
                             <tr class="tblFooter" id="registryRecords_pagerDiv">
                                 <td colspan="8">
                                     <div id="spatialunitDiv_R">
+                                        <a href="javascript:firstRecordsR();">
+                                            <img src="resources/images/studio/first.png" data-i18n="[title]gen-first" style="vertical-align: text-top;" />
+                                        </a>
                                         <a href="javascript:previousRecords_R();">
-                                            <img class="img-prev" src="resources/images/studio/previous.png" data-i18n="[title]gen-previous" /></a> 
+                                            <img src="resources/images/studio/previous.png" data-i18n="[title]gen-previous" style="vertical-align: text-top;" />
+                                        </a> 
                                         <input type="text" readonly="readonly"
                                                name="records_from_R" id="records_from_R" value=""
                                                class="input-medium"> <span data-i18n="gen-to"></span> <input type="text"
@@ -131,7 +129,10 @@
                                                type="text" name="records_all_R" id="records_all_R" value=""
                                                class="input-medium" readonly="readonly">
                                         <a href="javascript:nextRecords_R();"> 
-                                            <img class="img-next" src="resources/images/studio/next.png" data-i18n="[title]gen-next">
+                                            <img src="resources/images/studio/next.png" data-i18n="[title]gen-next" style="vertical-align: text-top;" />
+                                        </a>
+                                        <a href="javascript:lastRecordsR();">
+                                            <img src="resources/images/studio/last.png" data-i18n="[title]gen-last" style="vertical-align: text-top;" />
                                         </a>
                                     </div>
                                 </td>
@@ -149,11 +150,7 @@
                         </td>                     
 
                         <td>
-                        ${appNum}
-                        </td> 
-
-                        <td>
-                        ${pvNum}
+                        ${villageName}
                         </td> 
 
                         <td>
@@ -663,6 +660,20 @@
 
                                 <div id="Upload_Documents_Lease">
                                     <div style="padding: 7px;">
+                                        <div id="divReqDocsLoan">
+                                            <span style="font-weight: bold;" data-i18n="reg-attach-req-docs">:</span>
+                                            <div class="requiredDocs">
+                                                - <span data-i18n="reg-form-31"></span><br />
+                                                - <span data-i18n="reg-form-32"></span><br />
+                                            </div>
+                                        </div>
+                                        <div id="divReqDocsLease">
+                                            <span style="font-weight: bold;" data-i18n="reg-attach-req-docs">:</span>
+                                            <div class="requiredDocs">
+                                                - <span data-i18n="reg-form-35"></span><br />
+                                            </div>
+                                        </div>
+                                        
                                         <table style="width: 100%" id="tableupload_Lease" class="landrecords22 ">
                                             <tr>
                                                 <td><label data-i18n="reg-doc-name"></label>
@@ -1251,6 +1262,13 @@
                                         <hr size="1">
                                         <input type="hidden" name="sales_selectedlandid" id="sales_selectedlandid" value="">
 
+                                        <span style="font-weight: bold;" data-i18n="reg-attach-req-docs">:</span>
+                                        <div class="requiredDocs">
+                                            - <span data-i18n="reg-form-11"></span><br />
+                                            - <span data-i18n="reg-form-12"></span><br />
+                                            - <span data-i18n="reg-form-50"></span><br />
+                                        </div>
+                                        
                                         <table style="width: 100%" id="tableupload_sale" class="landrecords22 ">
                                             <tr>
                                                 <td><label data-i18n="reg-doc-name"></label>
@@ -1288,7 +1306,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div id="tabPermission" style="display: none">
                             <div id="tabs_permission">
                                 <ul>
@@ -1629,11 +1647,20 @@
                                             </script>	
                                         </div>
                                     </div>
-          
+
                                 </div>
-                                
+
                                 <div id="tabPermDocs">
                                     <div style="padding: 7px;">
+                                        <div id="divReqDocsDevPerm">
+                                            <span style="font-weight: bold;" data-i18n="reg-attach-req-docs">:</span>
+                                            <div class="requiredDocs">
+                                                - <span data-i18n="reg-form-41"></span><br />
+                                                - <span data-i18n="reg-form-42"></span><br />
+                                                - <span data-i18n="reg-form-43"></span><br />
+                                            </div>
+                                        </div>
+                                        
                                         <table style="width: 100%" id="tablePermDoc" class="landrecords22 ">
                                             <tr>
                                                 <td><label data-i18n="reg-doc-name"></label>
@@ -1669,7 +1696,7 @@
                                         </table>
                                     </div>
                                 </div>
-                                
+
                                 <div id="tabPermDetails">
                                     <div class="tab-pane landrecords22">
                                         <div style="margin: 10px; border: 1px solid #ccc; padding: 10px">
@@ -1723,7 +1750,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                             </div>
                         </div>
                     </div>
@@ -2201,7 +2228,7 @@
                 <tr>
                     <td><label data-i18n="reg-parcel-num"></label> <span id="parcelnovalue"> </span></td>
                     <td colspan="2"><label data-i18n="reg-apfr-number"></label> <span id="regnovalue"> </span></td>
-                    <td><Button onclick="initiateTransaction()" style="padding: 6px 8px;background: transparent;border: 1px solid #c5dbec;border-radius: 5px;font-weight: bold" data-i18n="reg-init-tran"></Button></td>
+                    <td><button id="btnInitTrans" onclick="initiateTransaction()" style="padding: 6px 8px;font-weight: bold" data-i18n="reg-init-tran"></button></td>
                 </tr>
                 <tr>
                     <td colspan="4"><h3>
@@ -2313,7 +2340,7 @@
     {{if (processid == 1 || processid == 10)}}	  
     <a href="javascript:viewleasedetail('${transactionid}','${landid}');"><img src="resources/images/studio/doc_view.png" data-i18n="[title]gen-view" /></a>
     {{/if}}
-            
+
     {{if (processid == 11 || processid == 12)}}	  
     <a href="javascript:viewPermissionSummary('${transactionid}');"><img src="resources/images/studio/doc_view.png" data-i18n="[title]gen-view" /></a>
     {{/if}}

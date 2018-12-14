@@ -128,7 +128,6 @@ UserDAO {
 	public User findUserByUserId(Integer id){
 		try {
 			List<User> user = getEntityManager().createQuery("Select u from User u where u.id = :id").setParameter("id", id.longValue()).getResultList();
-			System.out.println(user);
 			if(user.size() > 0)
 				return user.get(0);
 			else
@@ -144,7 +143,6 @@ UserDAO {
 	public List<User> findUserByRole() {
 		@SuppressWarnings("unchecked")
 		List<User> user = getEntityManager().createQuery("Select u from User u where u.roles = :role").getResultList();
-		System.out.println(user);
 		if(user.size() > 0)
 			return user;
 		else
@@ -241,7 +239,6 @@ UserDAO {
 		}
 		try {
 			List<User> user = getEntityManager().createQuery("Select u from User u where u.id in (:userid)").setParameter("userid", lstlong).getResultList();
-			System.out.println(user);
 			if(user.size() > 0)
 			{
 				return user;
@@ -288,7 +285,6 @@ UserDAO {
 		try {
 			@SuppressWarnings("unchecked")
 			List<User> user = getEntityManager().createQuery("Select u from User u where u.active = true").getResultList();
-			System.out.println(user);
 			if(user.size() > 0)
 				return user;
 			else

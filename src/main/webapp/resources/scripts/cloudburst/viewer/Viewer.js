@@ -26,8 +26,6 @@ Cloudburst.loadMap = function (mapdiv, options, callback) {
     $('#_loader').hide();
     $('#maptips').hide();
 
-
-
     project = options.project;
 
     var projection = new ol.proj.Projection({
@@ -35,7 +33,7 @@ Cloudburst.loadMap = function (mapdiv, options, callback) {
         units: 'degrees',
         axisOrientation: 'neu',
         global: true
-    })
+    });
 
 
     $.ajax({
@@ -66,7 +64,6 @@ Cloudburst.loadMap = function (mapdiv, options, callback) {
                                 })
                             })
                             arr_Layers.push(Google_Streets);
-
                         }
 
                         if (baseLayerName == "Google_Physical") {
@@ -188,20 +185,57 @@ Cloudburst.loadMap = function (mapdiv, options, callback) {
                             });
                 }
 
+                var newClaimStyle = new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: [235, 0, 27, 0.5]
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: '#000000',
+                        width: 1
+                    })
+                });
 
-                /// base layer end 
+                var processingClaimStyle = new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: [20, 207, 0, 0.5]
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: '#000000',
+                        width: 1
+                    })
+                });
+
+                var finalClaimStyle = new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: [135, 6, 173, 0.5]
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: '#000000',
+                        width: 1
+                    })
+                });
+
                 var highlightStyle = new ol.style.Style({
                     stroke: new ol.style.Stroke({
                         color: '#f00',
                         width: 2
                     })
-
                 });
 
                 var highlightStyle1 = new ol.style.Style({
                     stroke: new ol.style.Stroke({
                         color: '#FFFF00',
                         width: 2
+                    })
+                });
+
+                var pointStyle = new ol.style.Style({
+                    image: new ol.style.Circle({
+                        radius: 5,
+                        fill: new ol.style.Fill({color: 'red'}),
+                        stroke: new ol.style.Stroke({
+                            color: '#FFFF00', width: 2
+                        })
                     })
                 });
 
@@ -218,10 +252,6 @@ Cloudburst.loadMap = function (mapdiv, options, callback) {
                         width: 2
                     })
                 });
-
-
-
-
 
                 // wms wfs load start
 
@@ -241,8 +271,6 @@ Cloudburst.loadMap = function (mapdiv, options, callback) {
                                 displayInLayerMgr[data.alias] = data.displayinlayermanager;
                                 //******************* Load Layers ******************************************
                                 if (data.layertype.description == 'WMS') {
-
-
                                     var _wms = new ol.layer.Tile({
                                         name: data.name,
                                         source: new ol.source.TileWMS({
@@ -255,8 +283,7 @@ Cloudburst.loadMap = function (mapdiv, options, callback) {
                                             serverType: 'geoserver',
                                             crossOrigin: 'null',
                                         })
-                                    })
-
+                                    });
 
                                     _wms.set('aname', data.alias);
                                     _wms.set('url', data.url);
@@ -267,7 +294,6 @@ Cloudburst.loadMap = function (mapdiv, options, callback) {
 
 
                                 } else if (data.layertype.description == 'WFS') {
-
                                     var _mapStyle;
                                     var cqlFilter = 'isactive=true';
                                     var vectorSource = new ol.source.Vector({
@@ -276,14 +302,10 @@ Cloudburst.loadMap = function (mapdiv, options, callback) {
                                             var url1 = data.url + "&service=WFS&version=1.1.0&request=GetFeature&typename=" + data.name + '&outputFormat=application/json' + '&CQL_FILTER={{CQLFILTER}}';
                                             var url2 = url1.replace('{{CQLFILTER}}', cqlFilter);
                                             return url2;
-
-                                            //return data.url + "&service=WFS&version=1.1.0&request=GetFeature&typename=" + data.name +'&outputFormat=application/json' ;
-
                                         },
                                         crossOrigin: 'null',
                                         strategy: ol.loadingstrategy.bbox
                                     });
-
 
                                     var wms_vector = new ol.layer.Vector({
                                         name: data.name,
@@ -301,15 +323,16 @@ Cloudburst.loadMap = function (mapdiv, options, callback) {
                     }
                 }
 
-
                 // style function
-
                 function styleFunction(feature, resolution) {
-
                     if (feature.id_) {
                         if (feature.id_.split('.')[0] == "la_spatialunit_land") {
-
-                            return highlightStyle;
+                            if (feature.get('workflowstatusid') == 1 || feature.get('workflowstatusid') == 10) {
+                                return newClaimStyle;
+                            } else if (feature.get('workflowstatusid') == 9 || feature.get('workflowstatusid') == 14) {
+                                return finalClaimStyle;
+                            }
+                            return processingClaimStyle;
                         }
 
                         if (feature.id_.split('.')[0] == "la_spatialunit_resource_land") {
@@ -324,7 +347,7 @@ Cloudburst.loadMap = function (mapdiv, options, callback) {
 
                         if (feature.id_.split('.')[0] == "la_spatialunit_resource_point") {
 
-                            return highlightStyle1;
+                            return pointStyle;
                         }
 
                         if (feature.id_.split('.')[0] == "la_spatialunit_aoi") {
@@ -332,18 +355,11 @@ Cloudburst.loadMap = function (mapdiv, options, callback) {
                                 return highlightStyle3;
                             else
                                 return highlightStyle2;
-
                         }
-
                     } else {
                         return highlightStyle1;
                     }
-
                 }
-
-                // style function
-
-                // wms wfs load end 
 
                 // slider load start
 
@@ -382,16 +398,8 @@ Cloudburst.loadMap = function (mapdiv, options, callback) {
                 }).bind('keyup', function () {
                     $(this).ColorPickerSetColor(this.value);
                 });
-
-
                 // slider load end
-
-
-
             }
-
-            // temp add 
-
 
             map = new ol.Map({
                 layers: arr_Layers,
@@ -431,12 +439,8 @@ Cloudburst.loadMap = function (mapdiv, options, callback) {
 
             map.getView().fit(myextent, map.getSize());
             maploaded(map);   // this is method callback
-
         }
-
     });
-
-
 };
 
 var windowResize = function () {
@@ -467,7 +471,7 @@ jQuery(document).ready(function () {
     });
     $("#tab4").click(function (event) {
         hideMapComponents();
-        
+
         if (villageList === null) {
             $.ajax({
                 url: "village/getbyproject/" + activeProject,
@@ -475,15 +479,17 @@ jQuery(document).ready(function () {
                 success: function (data) {
                     villageList = data;
                     // report fields
-                    fillFieldWithVillages("cbxVillagesByTenure");
-                    fillFieldWithVillages("cbxVillagesByGender");
-                    fillFieldWithVillages("cbxVillagesByTenureAppReg");
-                    fillFieldWithVillages("cbxVillagesByGEnderAppReg");
-                    fillFieldWithVillages("cbxVillagesByTenureApfrReg");
-                    fillFieldWithVillages("cbxVillagesByGEnderApfrReg");
-                    fillFieldWithVillages("cbxVillagesByAppProccess");
-                    fillFieldWithVillages("cbxVillagesByAppPublish");
-                    fillFieldWithVillages("cbxVillagesByAppApfr");
+                    fillFieldWithVillages("cbxVillagesByTenure", false);
+                    fillFieldWithVillages("cbxVillagesByGender", false);
+                    fillFieldWithVillages("cbxVillagesByTenureAppReg", false);
+                    fillFieldWithVillages("cbxVillagesByGEnderAppReg", false);
+                    fillFieldWithVillages("cbxVillagesByTenureApfrReg", false);
+                    fillFieldWithVillages("cbxVillagesByGEnderApfrReg", false);
+                    fillFieldWithVillages("cbxVillagesByAppProccess", false);
+                    fillFieldWithVillages("cbxVillagesByAppPublish", false);
+                    fillFieldWithVillages("cbxVillagesByAppApfr", false);
+                    fillFieldWithVillages("cbxApfrSummaryVillages", true);
+                    fillFieldWithVillages("cbxTransSummaryVillages", true);
                 }
             });
         }
@@ -526,9 +532,14 @@ jQuery(document).ready(function () {
         $("#reportsAccordion").accordion();
     });
 
-    function fillFieldWithVillages(fieldId) {
+    function fillFieldWithVillages(fieldId, allowAll) {
+        var dummyText = $.i18n("gen-please-select");
+        if(allowAll){
+            dummyText = $.i18n("viewer-all-villages");
+        }
+        
         $("#" + fieldId).empty();
-        $("#" + fieldId).append(jQuery("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
+        $("#" + fieldId).append(jQuery("<option></option>").attr("value", 0).text(dummyText));
         if (villageList !== null) {
             jQuery.each(villageList, function (i, village) {
                 var displayName = village.name;

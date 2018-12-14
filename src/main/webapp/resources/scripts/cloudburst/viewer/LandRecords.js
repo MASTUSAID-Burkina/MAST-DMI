@@ -82,6 +82,7 @@ var communeList = null;
 var titleTypes = null;
 var natureOfPowers = null;
 var appNatures = null;
+var villages = null;
 
 function LandRecords(_selectedItem) {
     if (projList !== null && projList !== "") {
@@ -234,8 +235,8 @@ function displayRefreshedLandRecords(_selectedItem) {
                     $("#landRecordsRowData").i18n();
                     $('#records_from').val(records_from + 1);
                     $('#records_to').val(totalRecords);
-                    if (records_from + 15 <= totalRecords)
-                        $('#records_to').val(records_from + 15);
+                    if (records_from + 10 <= totalRecords)
+                        $('#records_to').val(records_from + 10);
                     $('#records_all').val(totalRecords);
                 } else {
                     $('#records_from').val(0);
@@ -399,6 +400,16 @@ function editAttribute(id, editable) {
             landUserList = data;
         }
     });
+    
+    if (villages === null) {
+        jQuery.ajax({
+            url: "landrecords/projectvillages/" + activeProject,
+            async: false,
+            success: function (data) {
+                villages = data;
+            }
+        });
+    }
 
     $("#primary").val(id);
     $('#liNonNatural').hide();
@@ -450,10 +461,10 @@ function editAttribute(id, editable) {
         async: false,
         success: function (data) {
             editList = data;
-
             $("#other_use").val("");
             $("#txtTitleNumber").val("");
             $("#txtTitleRegDate").val("");
+            $("#cbxVillage").empty();
             $("#txtRegNumber").val("");
             $("#txtParcelNumber").val("");
             $("#txtReconRightDate").val("");
@@ -463,7 +474,8 @@ function editAttribute(id, editable) {
             $("#neighbor_south").val(data[0].neighborSouth);
             $("#neighbor_east").val(data[0].neighborEast);
             $("#neighbor_west").val(data[0].neighborWest);
-
+            jQuery("#existing_use").empty();
+            
             if (data[0].other_use !== "") {
                 jQuery("#other_use").val(data[0].other_use);
             }
@@ -471,7 +483,6 @@ function editAttribute(id, editable) {
             jQuery("#area").val(((data[0].area) * area_constant).toFixed(2));
             $("#lblApfrNum").text("--");
 
-            jQuery("#existing_use").empty();
             jQuery.each(landUserList, function (i, landuseobj) {
                 var displayName = landuseobj.landusetype;
                 if (Global.LANG === "en") {
@@ -479,7 +490,21 @@ function editAttribute(id, editable) {
                 }
                 jQuery("#existing_use").append(jQuery("<option></option>").attr("value", landuseobj.landusetypeid).text(displayName));
             });
+            
+            jQuery.each(villages, function (i, village) {
+                var displayName = village.name;
+                if (Global.LANG === "en") {
+                    displayName = village.nameEn;
+                }
+                jQuery("#cbxVillage").append(jQuery("<option></option>").attr("value", village.hierarchyid).text(displayName));
+            });
 
+            if (data[0].laSpatialunitgroupHierarchy5 !== null) {
+                jQuery("#cbxVillage").val(data[0].laSpatialunitgroupHierarchy5.hierarchyid);
+            } else {
+                jQuery("#cbxVillage").val("");
+            }
+            
             if (data[0].noaId !== null) {
                 jQuery("#cbxAppNature").val(data[0].noaId);
             }
@@ -527,7 +552,7 @@ function editAttribute(id, editable) {
             } else {
                 jQuery("#existing_use").val("");
             }
-            
+                        
             $('#existing_use').multiselect({
                 columns: 1,
                 placeholder: $.i18n("gen-please-select")
@@ -615,6 +640,7 @@ function editAttribute(id, editable) {
         $("#txtTitleRegDate").prop("disabled", false);
         $("#addPoi").show();
         $("#cbxTitleType").prop("disabled", false);
+        $("#cbxVillage").prop("disabled", false);
         $("#genmultimediaRowData button").show();
         $("#genmultimediaRowData input").show();
     } else {
@@ -635,6 +661,7 @@ function editAttribute(id, editable) {
         $("#txtTitleNumber").prop("disabled", true);
         $("#txtTitleRegDate").prop("disabled", true);
         $("#cbxTitleType").prop("disabled", true);
+        $("#cbxVillage").prop("disabled", true);
         $("#addPoi").hide();
         $("#genmultimediaRowData button").hide();
         $("#genmultimediaRowData input").hide();
@@ -678,7 +705,8 @@ function updateattributesGen() {
             neighbor_east: "required",
             neighbor_west: "required",
             area: {required: true, number: true},
-            existing_use: "required"
+            existing_use: "required",
+            cbxVillage: "required"
         },
         messages: {
             neighbor_north: $.i18n("err-enter-neighbour-name"),
@@ -689,7 +717,8 @@ function updateattributesGen() {
                 required: $.i18n("err-enter-plot-area"),
                 number: jQuery.format($.i18n("err-only-numeric"))
             },
-            existing_use: $.i18n("err-select-existing-landuse")
+            existing_use: $.i18n("err-select-existing-landuse"),
+            cbxVillage: $.i18n("err-select-village")
         }
     });
 
@@ -1308,7 +1337,7 @@ function clearFilter() {
 function previousRecords() {
     records_from = $('#records_from').val();
     records_from = parseInt(records_from);
-    records_from = records_from - 16;
+    records_from = records_from - 11;
     if (records_from >= 0) {
         if (searchRecords != null) {
             spatialSearch(records_from);
@@ -1325,7 +1354,7 @@ function previousRecords() {
 function nextRecords() {
     records_from = $('#records_from').val();
     records_from = parseInt(records_from);
-    records_from = records_from + 14;
+    records_from = records_from + 9;
 
     if (records_from < totalRecords - 1) {
         if (searchRecords != null) {
@@ -1347,6 +1376,39 @@ function nextRecords() {
     }
 }
 
+function firstRecords() {
+    records_from = $('#records_from').val();
+    records_from = parseInt(records_from);
+    
+    if (records_from > 1) {
+        if (searchRecords != null) {
+            spatialSearch(0);
+        } else if (workflowRecords != null) {
+            spatialSearchWorkfow(0);
+        } else {
+            spatialRecords(0);
+        }
+    } 
+}
+
+function lastRecords() {
+    recordsAll = $('#records_all').val();
+    recordsAll = parseInt(recordsAll);
+    records_from = recordsAll - (recordsAll % 10);
+
+    if (recordsAll > 10) {
+        if (searchRecords != null) {
+            if (records_from <= searchRecords - 1)
+                spatialSearch(records_from);
+        } else if (workflowRecords != null) {
+            if (records_from <= workflowRecords - 1)
+                spatialSearchWorkfow(records_from);
+        } else {
+            spatialRecords(records_from);
+        }
+    } 
+}
+
 function spatialRecords(records_from) {
     jQuery.ajax({
         url: "landrecords/spatialunit/landrecord/" + activeProject + "/" + records_from + "/" + Global.LANG,
@@ -1360,8 +1422,8 @@ function spatialRecords(records_from) {
                 $("#landRecordsTable").trigger("update");
                 $('#records_from').val(records_from + 1);
                 $('#records_to').val(totalRecords);
-                if (records_from + 15 <= totalRecords)
-                    $('#records_to').val(records_from + 15);
+                if (records_from + 10 <= totalRecords)
+                    $('#records_to').val(records_from + 10);
                 $('#records_all').val(totalRecords);
             } else {
                 $('#records_from').val(0);
@@ -1389,8 +1451,8 @@ function spatialSearch(records_from) {
                 $("#landRecordsTable").trigger("update");
                 $('#records_from').val(records_from + 1);
                 $('#records_to').val(searchRecords);
-                if (records_from + 15 <= searchRecords)
-                    $('#records_to').val(records_from + 15);
+                if (records_from + 10 <= searchRecords)
+                    $('#records_to').val(records_from + 10);
                 $('#records_all').val(searchRecords);
             } else {
                 $('#records_from').val(0);
@@ -1418,8 +1480,8 @@ function spatialSearchWorkfow(records_from) {
                 $("#landRecordsTable").trigger("update");
                 $('#records_from').val(records_from + 1);
                 $('#records_to').val(workflowRecords);
-                if (records_from + 15 <= workflowRecords)
-                    $('#records_to').val(records_from + 15);
+                if (records_from + 10 <= workflowRecords)
+                    $('#records_to').val(records_from + 10);
                 $('#records_all').val(workflowRecords);
             } else {
                 $('#records_from').val(0);
@@ -2912,6 +2974,21 @@ function reportByTenureApfrReg() {
     reportsObj.ParcelCountByTenure("APFR", villageId, activeProject);
 }
 
+function reportSummaryApfrStat() {
+    var reportsObj = new reports();
+    reportsObj.ApfrStatSummary($("#cbxApfrSummaryVillages").val(), activeProject);
+}
+
+function reportSummaryTransactionsStat() {
+    var reportsObj = new reports();
+    reportsObj.TransStatSummary($("#cbxTransSummaryVillages").val(), activeProject);
+}
+
+function reportSummaryResourcesStat() {
+    var reportsObj = new reports();
+    reportsObj.ResourcesStatSummary(activeProject);
+}
+
 function reportByGender() {
     var villageId = $("#cbxVillagesByGender").val();
     if (isEmpty(villageId) || villageId < 1) {
@@ -2979,13 +3056,24 @@ reports.prototype.ParcelCountByTenure = function (tag, villageId, proj) {
     window.open("landrecords/parcelcountbytenure/" + proj + "/" + tag + "/" + villageId, 'popUp', 'height=500,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,titlebar=no,menubar=no,status=no,replace=false');
 };
 
-
 reports.prototype.ParcelCountByGender = function (tag, villageId) {
     window.open("landrecords/parcelcountbygender/" + activeProject + "/" + tag + "/" + villageId, 'popUp', 'height=500,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,titlebar=no,menubar=no,status=no,replace=false');
 };
 
 reports.prototype.RegistryParcel = function (tag, villageId) {
     window.open("landrecords/registrytable/" + activeProject + "/" + tag + "/" + villageId, 'popUp', 'height=500,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,titlebar=no,menubar=no,status=no,replace=false');
+};
+
+reports.prototype.ApfrStatSummary = function (villageId, proj) {
+    window.open("landrecords/apfrstatsummary/" + proj + "/" + villageId, 'popUp', 'height=500,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,titlebar=no,menubar=no,status=no,replace=false');
+};
+
+reports.prototype.TransStatSummary = function (villageId, proj) {
+    window.open("landrecords/transstatsummary/" + proj + "/" + villageId, 'popUp', 'height=500,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,titlebar=no,menubar=no,status=no,replace=false');
+};
+
+reports.prototype.ResourcesStatSummary= function (proj) {
+    window.open("landrecords/resoursestatsummary/" + proj, 'popUp', 'height=500,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,titlebar=no,menubar=no,status=no,replace=false');
 };
 
 function reportButtonClick() {
@@ -3321,8 +3409,7 @@ function makeDropdownArray(list, id, name, nameEn) {
     return result;
 }
 
-function FillPersonDataNew(editable)
-{
+function FillPersonDataNew(editable) {
     $("#personsEditingGrid1").jsGrid({
         width: "100%",
         height: "160px",
@@ -3344,6 +3431,7 @@ function FillPersonDataNew(editable)
             {name: "dateofbirth", title: $.i18n("reg-dob"), type: "date", validate: {validator: "required", message: $.i18n("err-enter-dob")}},
             {name: "birthPlace", title: $.i18n("reg-birth-place"), type: "text"},
             {name: "address", title: $.i18n("reg-address"), type: "text"},
+            {name: "contactno", title: $.i18n("reg-mobile-num"), type: "text"},
             {name: "profession", title: $.i18n("reg-profession"), type: "text"},
             {name: "genderid", title: $.i18n("reg-gender"), align: "left", type: "select", items: makeDropdownArray(genderList, "genderId", "gender", "gender_en"), valueField: "id", textField: "name", editing: true, filtering: false},
             {name: "laPartygroupMaritalstatus.maritalstatusid", title: $.i18n("reg-marital-status"), align: "left", type: "select", items: makeDropdownArray(maritalList, "maritalstatusid", "maritalstatus", "maritalstatusEn"), valueField: "id", textField: "name", editing: true, filtering: false},
@@ -3413,6 +3501,7 @@ var personController = {
             "dateofbirth": dob,
             "birthplace": item.birthPlace,
             "address": item.address,
+            "contactno": item.contactno,
             "profession": item.profession,
             "genderid": item.genderid,
             "maritalstatusid": item.laPartygroupMaritalstatus.maritalstatusid,

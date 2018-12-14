@@ -9,54 +9,56 @@ import com.rmsi.mast.studio.dao.AttributeCategoryDAO;
 import com.rmsi.mast.studio.domain.AttributeCategory;
 
 @Repository
-public class AttributeCategoryHibernateDAO extends GenericHibernateDAO<AttributeCategory, Long> implements 	AttributeCategoryDAO {
+public class AttributeCategoryHibernateDAO extends GenericHibernateDAO<AttributeCategory, Long> implements AttributeCategoryDAO {
+
     private static final Logger logger = Logger.getLogger(AttributeCategoryHibernateDAO.class);
 
-	@Override
-	public List<AttributeCategory> findAttributeCategoryByTypeId(Integer id) {
-		
-		try {
-			@SuppressWarnings("unchecked")
-			
-			
-			List<AttributeCategory> lstAttributeCat =	getEntityManager().createQuery("Select u from AttributeCategory u where   u.categorytype.categorytypeid = :id").setParameter("id", id ).getResultList();
+    @Override
+    public List<AttributeCategory> findAttributeCategoryByTypeId(Integer id) {
 
-			if(lstAttributeCat.size() > 0)
-			{
-				return lstAttributeCat;
-			}
-			else
-			{	return null;
-			}
-	
-		}catch(Exception e)
-		{
-			logger.error(e);
-			return null;
-		}
-	}
+        try {
+            @SuppressWarnings("unchecked")
 
-	@Override
-	public List<AttributeCategory> findAllAttributeCategory() {
-		
-		try {
-			@SuppressWarnings("unchecked")
-			
-			
-			List<AttributeCategory> lstAttributeCat =	getEntityManager().createQuery("Select u from AttributeCategory u ORDER BY u.categorydisplayorder").getResultList();
+            List<AttributeCategory> lstAttributeCat = getEntityManager().createQuery("Select u from AttributeCategory u where   u.categorytype.categorytypeid = :id").setParameter("id", id).getResultList();
 
-			if(lstAttributeCat.size() > 0)
-			{
-				return lstAttributeCat;
-			}
-			else
-			{	return null;
-			}
-	
-		}catch(Exception e)
-		{
-			logger.error(e);
-			return null;
-		}
-	}
+            if (lstAttributeCat.size() > 0) {
+                return lstAttributeCat;
+            } else {
+                return null;
+            }
+
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
+
+    @Override
+    public List<AttributeCategory> findAllAttributeCategory() {
+        try {
+            @SuppressWarnings("unchecked")
+
+            List<AttributeCategory> lstAttributeCat = getEntityManager().createQuery("Select u from AttributeCategory u ORDER BY u.categorydisplayorder").getResultList();
+
+            if (lstAttributeCat.size() > 0) {
+                return lstAttributeCat;
+            } else {
+                return null;
+            }
+
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
+    
+    @Override
+    public List<AttributeCategory> getResourceCategories(){
+        try {
+            return getEntityManager().createQuery("Select u from AttributeCategory u Where u.categorytype=2 ORDER BY u.categoryName").getResultList();
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
 }

@@ -42,6 +42,9 @@ import com.rmsi.mast.studio.domain.fetch.SpatialUnitBasic;
 import com.rmsi.mast.studio.domain.fetch.SpatialUnitTable;
 import com.rmsi.mast.studio.domain.fetch.TransactionHistoryForFetch;
 import com.rmsi.mast.studio.domain.fetch.UploadedDocumentDetailsForFetch;
+import com.rmsi.mast.studio.domain.fetch.ApfrStatSummary;
+import com.rmsi.mast.studio.domain.fetch.ResourcesStatSummary;
+import com.rmsi.mast.studio.domain.fetch.TransactionsStatSummary;
 import com.rmsi.mast.studio.util.ClaimsSorter;
 import com.rmsi.mast.studio.util.StringUtils;
 import com.rmsi.mast.viewer.dao.LaPartyDao;
@@ -220,7 +223,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
             }
 
             @SuppressWarnings("unchecked")
-            List<SpatialUnitTable> spatialUnit = query.setFirstResult(startpos).setMaxResults(20).getResultList();
+            List<SpatialUnitTable> spatialUnit = query.setFirstResult(startpos).setMaxResults(10).getResultList();
             if (spatialUnit.size() > 0) {
                 return spatialUnit;
             } else {
@@ -757,6 +760,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
             Integer claimType,
             int project,
             String parcelId,
+            int villageId,
             String appNum,
             String pvNum,
             String apfrNum,
@@ -779,6 +783,10 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
 
         if (workflowId > 0) {
             strWhere = strWhere + " and LD.workflowstatusid = " + workflowId;
+        }
+
+        if (villageId > 0) {
+            strWhere = strWhere + " and LD.hierarchyid5 = :villageId";
         }
 
         if (!"".equals(parcelId)) {
@@ -812,7 +820,8 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                 + "  LP.firstname||' '|| LP.lastname as fullname, LP.address,la.applicationstatusid ,LD.workflowstatusid,"
                 + "  (case when :lang = 'en' then lf.workflow_en else lf.workflow end) as workflow_status,"
                 + "  TR.transactionid, (case when :lang = 'en' then ST.landsharetype_en else ST.landsharetype end) as apptype, PL.share_type_id as apptypeid,"
-                + "  LD.application_no, LD.pv_no, PL.certificateno, LD.section, LD.parcel_no_in_section "
+                + "  LD.application_no, LD.pv_no, PL.certificateno, LD.section, LD.parcel_no_in_section, "
+                + "  (case when :lang = 'en' then v.name_en else v.name end) as villagename "
                 + "from la_spatialunit_land LD"
                 + "  inner join la_ext_personlandmapping PL on LD.landid = PL.landid"
                 + "  inner Join la_right_claimtype LC on LD.claimtypeid=LC.claimtypeid"
@@ -821,6 +830,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                 + "  inner Join la_right_landsharetype ST on PL.share_type_id =  ST.landsharetypeid"
                 + "  inner Join  la_party_person LP on PL.partyid = LP.personid"
                 + "  inner join la_ext_transactiondetails TR on PL.transactionid = TR.transactionid "
+                + "  left join public.la_spatialunitgroup_hierarchy v on LD.hierarchyid5 = v.hierarchyid "
                 + "where PL.isactive=true and PL.persontypeid=1 and LD.isactive=true and LD.projectnameid = :projectId"
                 + strWhere
                 + " order by LD.landid desc";
@@ -830,6 +840,10 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
 
         if (!StringUtils.isEmpty(appNum)) {
             q.setParameter("appNum", appNum + "%");
+        }
+
+        if (villageId > 0) {
+            q.setParameter("villageId", villageId);
         }
 
         if (!StringUtils.isEmpty(pvNum)) {
@@ -851,7 +865,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
         }
 
         try {
-            List<Object[]> arrObject = q.setFirstResult(startpos).setMaxResults(15).getResultList();
+            List<Object[]> arrObject = q.setFirstResult(startpos).setMaxResults(10).getResultList();
             List<LaSpatialunitLand> lstLaSpatialunitLand = new ArrayList<>();
 
             for (Object[] object : arrObject) {
@@ -896,6 +910,9 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                 }
                 if (object[18] != null) {
                     laSpatialunitLand.setParcelNoInSection(Long.valueOf(object[18].toString()));
+                }
+                if (object[19] != null) {
+                    laSpatialunitLand.setVillageName(object[19].toString());
                 }
                 lstLaSpatialunitLand.add(laSpatialunitLand);
 
@@ -1278,6 +1295,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
             Integer claimType,
             int project,
             String parcelId,
+            int villageId,
             String appNum,
             String pvNum,
             String apfrNum,
@@ -1299,6 +1317,10 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
 
         if (workflowId > 0) {
             strWhere = strWhere + " and LD.workflowstatusid = " + workflowId;
+        }
+
+        if (villageId > 0) {
+            strWhere = strWhere + " and LD.hierarchyid5 = :villageId";
         }
 
         if (!"".equals(parcelId)) {
@@ -1347,6 +1369,10 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
 
             if (!StringUtils.isEmpty(appNum)) {
                 q.setParameter("appNum", appNum + "%");
+            }
+
+            if (villageId > 0) {
+                q.setParameter("villageId", villageId);
             }
 
             if (!StringUtils.isEmpty(pvNum)) {
@@ -1466,7 +1492,7 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
                 q.setParameter("lang", "en");
             }
 
-            List<Object[]> arrObject = q.setFirstResult(startfrom).setMaxResults(15).getResultList();
+            List<Object[]> arrObject = q.setFirstResult(startfrom).setMaxResults(10).getResultList();
             List<LaSpatialunitLand> lstLaSpatialunitLand = new ArrayList<>();
 
             for (Object[] object : arrObject) {
@@ -2229,6 +2255,177 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
     }
 
     @Override
+    public List<ApfrStatSummary> getApfrStatSummary(int projectId, int villageId) {
+        try {
+            String sql = "select 'Total APFR' as name, 1 as ord,\n"
+                    + "  coalesce(sum(case when p.genderid = 1 and sup.share_type_id = 7 then 1 else 0 end), 0) as males, \n"
+                    + "  coalesce(sum(case when p.genderid = 2 and sup.share_type_id = 7 then 1 else 0 end), 0) as females,\n"
+                    + "  coalesce(sum(case when sup.share_type_id = 8 then 1 else 0 end), 0) as collective \n"
+                    + "from la_spatialunit_land su inner join la_ext_personlandmapping sup on su.landid = sup.landid inner join la_party_person p on sup.partyid = p.personid\n"
+                    + "where su.claimtypeid = 1 and su.projectnameid = :projectId and su.isactive and (su.hierarchyid5 = :villageId or 0 = :villageId)\n"
+                    + "\n"
+                    + "union\n"
+                    + "\n"
+                    + "select 'Total APFR applications' as name, 2 as ord,\n"
+                    + "  coalesce(sum(case when p.genderid = 1 and sup.share_type_id = 7 then 1 else 0 end), 0) as males, \n"
+                    + "  coalesce(sum(case when p.genderid = 2 and sup.share_type_id = 7 then 1 else 0 end), 0) as females,\n"
+                    + "  coalesce(sum(case when sup.share_type_id = 8 then 1 else 0 end), 0) as collective \n"
+                    + "from la_spatialunit_land su inner join la_ext_personlandmapping sup on su.landid = sup.landid inner join la_party_person p on sup.partyid = p.personid\n"
+                    + "where sup.transactionid not in (select transactionid from la_ext_transactionhistory) and \n"
+                    + "  su.claimtypeid = 1 and su.projectnameid = :projectId and su.isactive and (su.hierarchyid5 = :villageId or 0 = :villageId)\n"
+                    + "\n"
+                    + "union\n"
+                    + "\n"
+                    + "select 'Total signed PV' as name, 3 as ord, \n"
+                    + "  coalesce(sum(case when p.genderid = 1 and sup.share_type_id = 7 then 1 else 0 end), 0) as males, \n"
+                    + "  coalesce(sum(case when p.genderid = 2 and sup.share_type_id = 7 then 1 else 0 end), 0) as females,\n"
+                    + "  coalesce(sum(case when sup.share_type_id = 8 then 1 else 0 end), 0) as collective \n"
+                    + "from la_spatialunit_land su inner join la_ext_personlandmapping sup on su.landid = sup.landid inner join la_party_person p on sup.partyid = p.personid\n"
+                    + "where su.landid in (select landid from la_ext_landworkflowhistory where workflowid = 7) and sup.transactionid not in (select transactionid from la_ext_transactionhistory) and \n"
+                    + "  su.claimtypeid = 1 and su.projectnameid = :projectId and su.isactive and (su.hierarchyid5 = :villageId or 0 = :villageId)\n"
+                    + "\n"
+                    + "union \n"
+                    + "\n"
+                    + "select 'Total APFR deliverd to applicants' as name, 4 as ord, \n"
+                    + "  coalesce(sum(case when p.genderid = 1 and sup.share_type_id = 7 then 1 else 0 end), 0) as males, \n"
+                    + "  coalesce(sum(case when p.genderid = 2 and sup.share_type_id = 7 then 1 else 0 end), 0) as females,\n"
+                    + "  coalesce(sum(case when sup.share_type_id = 8 then 1 else 0 end), 0) as collective \n"
+                    + "from la_spatialunit_land su inner join la_ext_personlandmapping sup on su.landid = sup.landid inner join la_party_person p on sup.partyid = p.personid\n"
+                    + "where su.workflowstatusid = 9 and sup.transactionid not in (select transactionid from la_ext_transactionhistory) and \n"
+                    + "  su.claimtypeid = 1 and su.projectnameid = :projectId and su.isactive and (su.hierarchyid5 = :villageId or 0 = :villageId)\n"
+                    + "\n"
+                    + "union\n"
+                    + "\n"
+                    + "select 'Total APFR area (ha)' as name, 5 as ord,\n"
+                    + "  coalesce(sum(case when p.genderid = 1 and sup.share_type_id = 7 then (round((st_area(st_transform(geometry, 32630))/10000)\\:\\:numeric, 2)) else 0 end), 0) as males, \n"
+                    + "  coalesce(sum(case when p.genderid = 2 and sup.share_type_id = 7 then (round((st_area(st_transform(geometry, 32630))/10000)\\:\\:numeric, 2)) else 0 end), 0) as females,\n"
+                    + "  coalesce(sum(case when sup.share_type_id = 8 then (round((st_area(st_transform(geometry, 32630))/10000)\\:\\:numeric, 2)) else 0 end), 0) as collective \n"
+                    + "from la_spatialunit_land su inner join la_ext_personlandmapping sup on su.landid = sup.landid inner join la_party_person p on sup.partyid = p.personid\n"
+                    + "where sup.transactionid not in (select transactionid from la_ext_transactionhistory) and \n"
+                    + "  su.claimtypeid = 1 and su.projectnameid = :projectId and su.isactive and (su.hierarchyid5 = :villageId or 0 = :villageId)\n"
+                    + "\n"
+                    + "union\n"
+                    + "\n"
+                    + "select 'Total APFR from mutation' as name, 6 as ord,\n"
+                    + "  coalesce(sum(case when p.genderid = 1 and sup.share_type_id = 7 then 1 else 0 end), 0) as males, \n"
+                    + "  coalesce(sum(case when p.genderid = 2 and sup.share_type_id = 7 then 1 else 0 end), 0) as females,\n"
+                    + "  coalesce(sum(case when sup.share_type_id = 8 then 1 else 0 end), 0) as collective \n"
+                    + "from la_spatialunit_land su inner join la_ext_personlandmapping sup on su.landid = sup.landid inner join la_party_person p on sup.partyid = p.personid\n"
+                    + "where sup.transactionid in (select transactionid from la_ext_transactionhistory) and \n"
+                    + "  su.claimtypeid = 1 and su.projectnameid = :projectId and su.isactive and (su.hierarchyid5 = :villageId or 0 = :villageId)\n"
+                    + "\n"
+                    + "union\n"
+                    + "\n"
+                    + "select 'Total APFR from mutation area (ha)' as name, 7 as ord,\n"
+                    + "  coalesce(sum(case when p.genderid = 1 and sup.share_type_id = 7 then (round((st_area(st_transform(geometry, 32630))/10000)\\:\\:numeric, 2)) else 0 end), 0) as males, \n"
+                    + "  coalesce(sum(case when p.genderid = 2 and sup.share_type_id = 7 then (round((st_area(st_transform(geometry, 32630))/10000)\\:\\:numeric, 2)) else 0 end), 0) as females,\n"
+                    + "  coalesce(sum(case when sup.share_type_id = 8 then (round((st_area(st_transform(geometry, 32630))/10000)\\:\\:numeric, 2)) else 0 end), 0) as collective \n"
+                    + "from la_spatialunit_land su inner join la_ext_personlandmapping sup on su.landid = sup.landid inner join la_party_person p on sup.partyid = p.personid\n"
+                    + "where sup.transactionid in (select transactionid from la_ext_transactionhistory) and \n"
+                    + "  su.claimtypeid = 1 and su.projectnameid = :projectId and su.isactive and (su.hierarchyid5 = :villageId or 0 = :villageId)\n"
+                    + "\n"
+                    + "order by ord";
+
+            Query q = getEntityManager().createNativeQuery(sql, ApfrStatSummary.class);
+            q.setParameter("projectId", projectId)
+                    .setParameter("villageId", villageId);
+            return q.getResultList();
+
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
+
+    @Override
+    public List<TransactionsStatSummary> getTransactionStatSummary(int projectId, int villageId) {
+        try {
+            String sql = "select mu.name, 1 as ord,\n"
+                    + "  coalesce(sum(case when p.genderid = 1 and sup.share_type_id = 7 then 1 else 0 end), 0) as males, \n"
+                    + "  coalesce(sum(case when p.genderid = 1 and sup.share_type_id = 7 then (round((st_area(st_transform(geometry, 32630))/10000)\\:\\:numeric, 2)) else 0 end), 0) as males_area, \n"
+                    + "  coalesce(sum(case when p.genderid = 2 and sup.share_type_id = 7 then 1 else 0 end), 0) as females,\n"
+                    + "  coalesce(sum(case when p.genderid = 2 and sup.share_type_id = 7 then (round((st_area(st_transform(geometry, 32630))/10000)\\:\\:numeric, 2)) else 0 end), 0) as females_area,\n"
+                    + "  coalesce(sum(case when sup.share_type_id = 8 then 1 else 0 end), 0) as collective,\n"
+                    + "  coalesce(sum(case when sup.share_type_id = 8 then (round((st_area(st_transform(geometry, 32630))/10000)\\:\\:numeric, 2)) else 0 end), 0) as collective_area \n"
+                    + "from la_spatialunit_land su inner join (la_ext_personlandmapping sup inner join mutation_type mu on sup.mutation_id = mu.id) \n"
+                    + "  on su.landid = sup.landid inner join la_party_person p on sup.partyid = p.personid\n"
+                    + "where sup.transactionid in (select transactionid from la_ext_transactionhistory) and \n"
+                    + "  su.claimtypeid in (1,2) and su.projectnameid = :projectId and su.isactive and (su.hierarchyid5 = :villageId or 0 = :villageId)\n"
+                    + "group by mu.name\n"
+                    + "\n"
+                    + "union\n"
+                    + "\n"
+                    + "select 'Autorisation de Mise en Valeur' as name, 2 as ord,\n"
+                    + "  coalesce(sum(case when p.genderid = 1 and p.nop_id is null then 1 else 0 end), 0) as males, \n"
+                    + "  coalesce(sum(case when p.genderid = 1 and p.nop_id is null then (round((st_area(st_transform(geometry, 32630))/10000)\\:\\:numeric, 2)) else 0 end), 0) as males_area, \n"
+                    + "  coalesce(sum(case when p.genderid = 2 and p.nop_id is null then 1 else 0 end), 0) as females,\n"
+                    + "  coalesce(sum(case when p.genderid = 2 and p.nop_id is null then (round((st_area(st_transform(geometry, 32630))/10000)\\:\\:numeric, 2)) else 0 end), 0) as females_area,\n"
+                    + "  coalesce(sum(case when p.nop_id is not null then 1 else 0 end), 0) as collective,\n"
+                    + "  coalesce(sum(case when p.nop_id is not null then (round((st_area(st_transform(geometry, 32630))/10000)\\:\\:numeric, 2)) else 0 end), 0) as collective_area \n"
+                    + "from (la_spatialunit_land su inner join la_ext_permission per on su.landid = per.landid) inner join la_party_person p on per.applicantid = p.personid\n"
+                    + "where per.terminatedid is null and \n"
+                    + "  su.claimtypeid in (1,2) and su.projectnameid = :projectId and su.isactive and (su.hierarchyid5 = :villageId or 0 = :villageId)\n"
+                    + "\n"
+                    + "union\n"
+                    + "\n"
+                    + "select pr.processname as name, 3 as ord,\n"
+                    + "  coalesce(sum(case when p.genderid = 1 and ((td.processid = 1 and individual) or (td.processid = 10 and p.nop_id is null)) then 1 else 0 end), 0) as males, \n"
+                    + "  coalesce(sum(case when p.genderid = 1 and ((td.processid = 1 and individual) or (td.processid = 10 and p.nop_id is null)) then (round((st_area(st_transform(geometry, 32630))/10000)\\:\\:numeric, 2)) else 0 end), 0) as males_area, \n"
+                    + "  coalesce(sum(case when p.genderid = 2 and ((td.processid = 1 and individual) or (td.processid = 10 and p.nop_id is null)) then 1 else 0 end), 0) as females,\n"
+                    + "  coalesce(sum(case when p.genderid = 2 and ((td.processid = 1 and individual) or (td.processid = 10 and p.nop_id is null)) then (round((st_area(st_transform(geometry, 32630))/10000)\\:\\:numeric, 2)) else 0 end), 0) as females_area,\n"
+                    + "  coalesce(sum(case when (td.processid = 1 and not individual) or (td.processid = 10 and p.nop_id is not null) then 1 else 0 end), 0) as collective,\n"
+                    + "  coalesce(sum(case when (td.processid = 1 and not individual) or (td.processid = 10 and p.nop_id is not null) then (round((st_area(st_transform(geometry, 32630))/10000)\\:\\:numeric, 2)) else 0 end), 0) as collective_area \n"
+                    + "from (la_spatialunit_land su inner join (la_lease l inner join (la_ext_transactiondetails td inner join la_ext_process pr on td.processid = pr.processid) on l.leaseid = td.moduletransid) \n"
+                    + "  on su.landid = l.landid) inner join la_party_person p on l.personid = p.personid\n"
+                    + "where td.processid in (1,10) and \n"
+                    + "  su.claimtypeid in (1,2) and su.projectnameid = :projectId and su.isactive and (su.hierarchyid5 = :villageId or 0 = :villageId)\n"
+                    + "group by pr.processname\n"
+                    + "\n"
+                    + "order by ord, name";
+
+            Query q = getEntityManager().createNativeQuery(sql, TransactionsStatSummary.class);
+            q.setParameter("projectId", projectId)
+                    .setParameter("villageId", villageId);
+            return q.getResultList();
+
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
+
+    @Override
+    public List<ResourcesStatSummary> getResourcesStatSummary(int projectId) {
+        try {
+            String sql = "select sum(total) as total, sum(chartered) as chartered, sum(adopted) as adopted\n"
+                    + "from\n"
+                    + "(select count(1) as total, sum(case when chartered then 1 else 0 end) as chartered, sum(case when validated_by_council then 1 else 0 end) as adopted\n"
+                    + "from la_spatialunit_resource_land\n"
+                    + "where isactive and projectnameid = :projectId\n"
+                    + "\n"
+                    + "union \n"
+                    + "\n"
+                    + "select count(1) as total, sum(case when chartered then 1 else 0 end) as chartered, sum(case when validated_by_council then 1 else 0 end) as adopted\n"
+                    + "from la_spatialunit_resource_line\n"
+                    + "where isactive and projectnameid = :projectId\n"
+                    + "\n"
+                    + "union \n"
+                    + "\n"
+                    + "select count(1) as total, sum(case when chartered then 1 else 0 end) as chartered, sum(case when validated_by_council then 1 else 0 end) as adopted\n"
+                    + "from la_spatialunit_resource_point\n"
+                    + "where isactive and projectnameid = :projectId) res";
+            
+            Query q = getEntityManager().createNativeQuery(sql, ResourcesStatSummary.class);
+            q.setParameter("projectId", projectId);
+            return q.getResultList();
+            
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
+
+    @Override
     public List<Object> findparcelcountbygender(int project, String tag, Integer villageId) {
         int newworkflow_id = 0;
         int existingworkflow_id = 0;
@@ -2306,9 +2503,9 @@ public class LandRecordsHibernateDAO extends GenericHibernateDAO<SpatialUnitTabl
         }
         return null;
     }
-    
+
     @Override
-    public List<GeometryPoint> getGeometryPoints(int landid){
+    public List<GeometryPoint> getGeometryPoints(int landid) {
         Query q = getEntityManager().createNativeQuery("select * from get_geometry_points(" + landid + ")", GeometryPoint.class);
         return q.getResultList();
     }

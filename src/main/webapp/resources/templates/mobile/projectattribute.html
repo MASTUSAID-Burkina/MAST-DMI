@@ -268,7 +268,7 @@
 
                             </div>
 
-                            <h3>
+                            <!--h3>
                                 <a href="#"><span id="common" data-i18n="gen-common"></span></a>
                             </h3>
 
@@ -289,7 +289,7 @@
 
 
 
-                            </div>
+                            </div-->
 
 
 
@@ -465,28 +465,28 @@
                 <tr>		
                 <td colspan="2">
                 {{if (uid)}}
-                    <input type="hidden" id="hid_uid${id}" name="hid_aliasuid" value="${uid}"/>
+                <input type="hidden" id="hid_uid${id}" name="hid_aliasuid" value="${uid}"/>
                 {{/if}}		
                 {{if (flag)}}
-                    {{if (uid)}}
-                            <input type="checkbox" id="uid${id}" name="aliasuid" value="${uid}" class='roleCheckbox' style="display:none;" checked/>
-                    {{/if}}	
-                    <input type="checkbox" id="${id}" name="alias" value="${id}_${uid}" class='roleCheckbox' checked /> 
-                    {{if (Global.LANG === "en")}}
-                        ${aliasEn}
-                    {{else}}
-                        ${alias}
-                    {{/if}}
+                {{if (uid)}}
+                <input type="checkbox" id="uid${id}" name="aliasuid" value="${uid}" class='roleCheckbox' style="display:none;" checked/>
+                {{/if}}	
+                <input type="checkbox" id="${id}" name="alias" value="${id}_${uid}" class='roleCheckbox' checked /> 
+                {{if (Global.LANG === "en")}}
+                ${aliasEn}
                 {{else}}
-                    {{if (uid)}}
-                        <input type="checkbox" id="uid${id}" name="aliasuid" value="${uid}" class='roleCheckbox' style="display:none;"/>
-                    {{/if}}
-                    <input type="checkbox" id="${id}" name="alias" value="${id}" class='roleCheckbox' /> 
-                    {{if (Global.LANG === "en")}}
-                        ${aliasEn}
-                    {{else}}
-                        ${alias}
-                    {{/if}}
+                ${alias}
+                {{/if}}
+                {{else}}
+                {{if (uid)}}
+                <input type="checkbox" id="uid${id}" name="aliasuid" value="${uid}" class='roleCheckbox' style="display:none;"/>
+                {{/if}}
+                <input type="checkbox" id="${id}" name="alias" value="${id}" class='roleCheckbox' /> 
+                {{if (Global.LANG === "en")}}
+                ${aliasEn}
+                {{else}}
+                ${alias}
+                {{/if}}
                 {{/if}}				
                 </td>       	
                 </tr>	
@@ -500,17 +500,17 @@
                 {{if (uid)}}<input type="checkbox" id="uid${id}" name="aliasuid" value="${uid}" class='roleCheckbox' style="display:none;" checked/>{{/if}}	
                 <input type="checkbox" id="${id}" name="alias" value="${id}_${uid}" class='roleCheckbox' checked /> 
                 {{if (Global.LANG === "en")}}
-                    ${aliasEn}
+                ${aliasEn}
                 {{else}}
-                    ${alias}
+                ${alias}
                 {{/if}}
                 {{else}}
                 {{if (uid)}}<input type="checkbox" id="uid${id}" name="aliasuid" value="${uid}" class='roleCheckbox' style="display:none;"/>{{/if}}
                 <input type="checkbox" id="${id}" name="alias" value="${id}" class='roleCheckbox' /> 
                 {{if (Global.LANG === "en")}}
-                    ${aliasEn}
+                ${aliasEn}
                 {{else}}
-                    ${alias}
+                ${alias}
                 {{/if}}
                 {{/if}}				
                 </td>       	
@@ -526,17 +526,17 @@
                 {{if (uid)}}<input type="checkbox" id="uid${id}" name="aliasuid" value="${uid}" class='roleCheckbox' style="display:none;" checked/>{{/if}}	
                 <input type="checkbox" id="${id}" name="alias" value="${id}_${uid}" class='roleCheckbox' checked /> 
                 {{if (Global.LANG === "en")}}
-                    ${aliasEn}
+                ${aliasEn}
                 {{else}}
-                    ${alias}
+                ${alias}
                 {{/if}}
                 {{else}}
                 {{if (uid)}}<input type="checkbox" id="uid${id}" name="aliasuid" value="${uid}" class='roleCheckbox' style="display:none;"/>{{/if}}
                 <input type="checkbox" id="${id}" name="alias" value="${id}" class='roleCheckbox' /> 
                 {{if (Global.LANG === "en")}}
-                    ${aliasEn}
+                ${aliasEn}
                 {{else}}
-                    ${alias}
+                ${alias}
                 {{/if}}
                 {{/if}}				
                 </td>       	
@@ -553,17 +553,17 @@
                 {{if (uid)}}<input type="checkbox" id="uid${id}" name="aliasuid" value="${uid}" class='roleCheckbox' style="display:none;" checked/>{{/if}}	
                 <input type="checkbox" id="${id}" name="alias" value="${id}_${uid}" class='roleCheckbox' checked /> 
                 {{if (Global.LANG === "en")}}
-                    ${aliasEn}
+                ${aliasEn}
                 {{else}}
-                    ${alias}
+                ${alias}
                 {{/if}}
                 {{else}}
                 {{if (uid)}}<input type="checkbox" id="uid${id}" name="aliasuid" value="${uid}" class='roleCheckbox' style="display:none;"/>{{/if}}
                 <input type="checkbox" id="${id}" name="alias" value="${id}" class='roleCheckbox' /> 
                 {{if (Global.LANG === "en")}}
-                    ${aliasEn}
+                ${aliasEn}
                 {{else}}
-                    ${alias}
+                ${alias}
                 {{/if}}
                 {{/if}}				
                 </td>       	
@@ -580,17 +580,17 @@
                 {{if (uid)}}<input type="checkbox" id="uid${id}" name="aliasuid" value="${uid}" class='roleCheckbox' style="display:none;" checked/>{{/if}}	
                 <input type="checkbox" id="${id}" name="alias" value="${id}_${uid}" class='roleCheckbox' checked /> 
                 {{if (Global.LANG === "en")}}
-                    ${aliasEn}
+                ${aliasEn}
                 {{else}}
-                    ${alias}
+                ${alias}
                 {{/if}}
                 {{else}}
                 {{if (uid)}}<input type="checkbox" id="uid${id}" name="aliasuid" value="${uid}" class='roleCheckbox' style="display:none;"/>{{/if}}
                 <input type="checkbox" id="${id}" name="alias" value="${id}" class='roleCheckbox' />
                 {{if (Global.LANG === "en")}}
-                    ${aliasEn}
+                ${aliasEn}
                 {{else}}
-                    ${alias}
+                ${alias}
                 {{/if}}
                 {{/if}}				
                 </td>       	
@@ -605,17 +605,17 @@
                 {{if (uid)}}<input type="checkbox" id="uid${id}" name="aliasuid" value="${uid}" class='roleCheckbox' style="display:none;" checked/>{{/if}}	
                 <input type="checkbox" id="${id}" name="alias" value="${id}_${uid}" class='roleCheckbox' checked /> 
                 {{if (Global.LANG === "en")}}
-                    ${aliasEn}
+                ${aliasEn}
                 {{else}}
-                    ${alias}
+                ${alias}
                 {{/if}}
                 {{else}}
                 {{if (uid)}}<input type="checkbox" id="uid${id}" name="aliasuid" value="${uid}" class='roleCheckbox' style="display:none;"/>{{/if}}
                 <input type="checkbox" id="${id}" name="alias" value="${id}" class='roleCheckbox' /> 
                 {{if (Global.LANG === "en")}}
-                    ${aliasEn}
+                ${aliasEn}
                 {{else}}
-                    ${alias}
+                ${alias}
                 {{/if}}
                 {{/if}}				
                 </td>   
@@ -631,10 +631,10 @@
     <tr>
     <td id="${attributeMaster.attributemasterid}">
     {{if (Global.LANG === "en")}}
-        ${attributeMaster.fieldaliasnameEn}
+    ${attributeMaster.fieldaliasnameEn}
     {{/if}}
     {{if (Global.LANG !== "en")}}
-        ${attributeMaster.fieldaliasname}
+    ${attributeMaster.fieldaliasname}
     {{/if}}
     </td>
     <td>

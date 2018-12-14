@@ -1,7 +1,5 @@
 package com.rmsi.mast.studio.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -30,24 +28,21 @@ import com.rmsi.mast.studio.domain.Bookmark;
 import com.rmsi.mast.studio.domain.Layergroup;
 import com.rmsi.mast.studio.domain.Maptip;
 import com.rmsi.mast.studio.domain.MaptipPK;
+import com.rmsi.mast.studio.domain.ParcelCount;
 import com.rmsi.mast.studio.domain.Project;
 import com.rmsi.mast.studio.domain.ProjectAdjudicator;
 import com.rmsi.mast.studio.domain.ProjectArea;
 import com.rmsi.mast.studio.domain.ProjectHamlet;
-import com.rmsi.mast.studio.domain.ProjectLayergroup;
 import com.rmsi.mast.studio.domain.ProjectRegion;
-import com.rmsi.mast.studio.domain.ProjectSpatialData;
 import com.rmsi.mast.studio.domain.Savedquery;
-import com.rmsi.mast.studio.domain.User;
-import com.rmsi.mast.studio.domain.UserProject;
 import com.rmsi.mast.studio.domain.UserRole;
 import com.rmsi.mast.studio.domain.fetch.ProjectData;
 import com.rmsi.mast.studio.domain.fetch.ProjectDetails;
 import com.rmsi.mast.studio.domain.fetch.ProjectTemp;
 import com.rmsi.mast.studio.service.MaptipService;
 import com.rmsi.mast.studio.service.ProjectService;
+import com.rmsi.mast.viewer.dao.ParcelCountDao;
 import com.rmsi.mast.viewer.dao.ProjectTempDao;
-import com.rmsi.mast.viewer.web.mvc.LandRecordsController;
 
 /**
  * @author Aparesh.Chakraborty
@@ -102,6 +97,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     private ProjectHamletDAO projectHamletDAO;
+    
+    @Autowired
+    private ParcelCountDao parcelCountDao;
 
     @Override
     //@TriggersRemove(cacheName = { "projectFBNCache", "userFBNCache" }, removeAll = true)
@@ -164,22 +162,6 @@ public class ProjectServiceImpl implements ProjectService {
                 newMaptip.setName(proj.getName() + "_" + maptip.getName());
                 newMaptip.setProjectBean(proj);
                 newMaptip.setQueryexpression(maptip.getQueryexpression());
-
-                /*
-				 * System.out.println("-----------------------------------");
-				 * System.out.println("-----getName"+newMaptip.getName());
-				 * System.out.println("-----getField"+newMaptip.getField());
-				 * System
-				 * .out.println("-----getId().getLayer"+newMaptip.getId().
-				 * getLayer ());
-				 * System.out.println("-----getProject()"+newMaptip.getId().
-				 * getProject());
-				 * System.out.println("-----getLayerBean().getName"
-				 * +newMaptip.getLayerBean().getName());
-				 * System.out.println("-----getProjectBean().getName"
-				 * +newMaptip.getProjectBean().getName());
-				 * System.out.println("-----------------------------------");
-                 */
                 maptipDAO.makePersistent(newMaptip);
 
             }
@@ -189,7 +171,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     //@TriggersRemove(cacheName = "projectFBNCache", removeAll = true)
-    public void addProject(Project project) {
+    public void addProject(Project project, ParcelCount[] numberCounters) {
         // delete existing projectlayergroup
         if (null != project.getProjectnameid()) {
             try {
@@ -245,6 +227,11 @@ public class ProjectServiceImpl implements ProjectService {
 
         try {
             projectDAO.makePersistent(project);
+            if(numberCounters != null){
+                for(int i = 0; i < numberCounters.length; i++){
+                    parcelCountDao.makePersistent(numberCounters[i]);
+                }
+            }
         } catch (Exception e1) {
             logger.error(e1);
         }

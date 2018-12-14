@@ -164,13 +164,14 @@ public class ProjectRegionHibernateDAO extends GenericHibernateDAO<ProjectRegion
                     + "from la_spatialunitgroup_hierarchy v "
                     + "inner join la_spatialunitgroup_hierarchy c on v.uperhierarchyid = c.hierarchyid "
                     + "inner join la_spatialunitgroup_hierarchy p on c.uperhierarchyid = p.hierarchyid "
+                    + "inner join la_spatialunitgroup_hierarchy r on p.uperhierarchyid = r.hierarchyid "
                     + "where v.isactive = true and v.spatialunitgroupid = 5 ");
 
             if (!"".equals(villageName)) {
                 q.append("and (lower(v.name) like :villageName or lower(v.name_en) like :villageName) ");
             }
 
-            q.append("order by v.name");
+            q.append("order by r.name, p.name, v.name");
 
             Query query = getEntityManager().createNativeQuery(q.toString(), VillageSearchResult.class);
 
@@ -187,7 +188,7 @@ public class ProjectRegionHibernateDAO extends GenericHibernateDAO<ProjectRegion
     }
 
     @Override
-    public List<ProjectRegion> getVillagesByProject(int id){
+    public List<ProjectRegion> getVillagesByProject(int id) {
         try {
             String q = "select v.hierarchyid, v.uperhierarchyid, v.isactive, v.name, v.name_en, v.code, v.cfv_agent, null as spatialunitgroupid "
                     + "from la_spatialunitgroup_hierarchy v inner join la_ext_projectarea p on v.uperhierarchyid = p.hierarchyid4 "
@@ -202,9 +203,9 @@ public class ProjectRegionHibernateDAO extends GenericHibernateDAO<ProjectRegion
         }
         return null;
     }
-    
+
     @Override
-    public List<ProjectRegion> getVillagesByProjectName(String name){
+    public List<ProjectRegion> getVillagesByProjectName(String name) {
         try {
             String q = "select v.hierarchyid, v.uperhierarchyid, v.isactive, v.name, v.name_en, v.code, v.cfv_agent, null as spatialunitgroupid "
                     + "from la_spatialunitgroup_hierarchy v inner join (la_ext_projectarea p inner join la_spatialsource_projectname pn on p.projectnameid = pn.projectnameid) on v.uperhierarchyid = p.hierarchyid4 "
@@ -219,7 +220,7 @@ public class ProjectRegionHibernateDAO extends GenericHibernateDAO<ProjectRegion
         }
         return null;
     }
-    
+
     @Override
     public VillageSearchResult getVillage(Integer id) {
         try {

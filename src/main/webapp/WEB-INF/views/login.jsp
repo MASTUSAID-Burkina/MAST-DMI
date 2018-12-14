@@ -19,8 +19,7 @@
         <%@include file="../jspf/HeaderResources.jspf" %>
     </head>
     <body onload='document.loginForm.j_username.focus();'>
-        <%
-            String getURL = request.getQueryString();
+        <%            String getURL = request.getQueryString();
             String requestParam = request.getQueryString();
             if (requestParam == null) {
                 requestParam = "param=1";
@@ -37,6 +36,9 @@
 
             <div class="header_wrapper">
                 <div id="usaid_logo" onClick="window.location = 'http://usaid.gov/land-tenure';"></div>
+                <div id="onf_logo">
+                    <a href="http://www.onf-bf.org" target="new"><img id="onf_logo_img" src="./resources/images/logo-onf.png"></a>
+                </div>
                 <div class="header_title" data-i18n="[html]gen-mast-dmi"></div>
                 <div id="languageBarWrapper">
                     <%@include file="../jspf/LanguageBar.jspf" %>
@@ -91,13 +93,12 @@
 
         <script language="javascript">
             var auth_status = "";
-            <%
-                if (getURL != null) {
+            <%                if (getURL != null) {
                     if (getURL.equalsIgnoreCase("login_error=1")) {
             %>
             auth_status = "<fmt:message key="LOGIN_FAILED" />";
             <%
-                    } else if (getURL.equalsIgnoreCase("access_denied=1")) {
+            } else if (getURL.equalsIgnoreCase("access_denied=1")) {
             %>
             auth_status = "<fmt:message key="ERROR_UNAUTHORIZED_ACCESS" />";
             <%

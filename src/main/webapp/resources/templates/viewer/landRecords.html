@@ -220,19 +220,24 @@
                                         <tr class="tblFooter" id="landrecords_pagerDiv">
                                             <td colspan="9">
                                                 <div id="spatialunitDiv">
-                                                    <a href="javascript:previousRecords();"><img
-                                                            class="img-prev" src="resources/images/studio/previous.png"
-                                                            data-i18n="[title]gen-previous" /></a> 
+                                                    <a href="javascript:firstRecords();">
+                                                        <img src="resources/images/studio/first.png" data-i18n="[title]gen-first" style="vertical-align: text-top;" />
+                                                    </a>
+                                                    <a href="javascript:previousRecords();">
+                                                        <img src="resources/images/studio/previous.png" data-i18n="[title]gen-previous" style="vertical-align: text-top;" />
+                                                    </a> 
                                                     <input type="text" readonly="readonly"
                                                            name="records_from" id="records_from" value=""
                                                            class="input-medium"> <span data-i18n="gen-to"></span> <input type="text"
                                                            name="records_to" id="records_to" value=""
                                                            class="input-medium" readonly="readonly"> <span data-i18n="gen-of"></span> <input
                                                            type="text" name="records_all" id="records_all" value=""
-                                                           class="input-medium" readonly="readonly"><a
-                                                           href="javascript:nextRecords();">
-                                                        <img class="img-next"
-                                                             src="resources/images/studio/next.png" data-i18n="[title]gen-next">
+                                                           class="input-medium" readonly="readonly">
+                                                    <a href="javascript:nextRecords();">
+                                                        <img src="resources/images/studio/next.png" data-i18n="[title]gen-next" style="vertical-align: text-top;" />
+                                                    </a>
+                                                    <a href="javascript:lastRecords();">
+                                                        <img src="resources/images/studio/last.png" data-i18n="[title]gen-last" style="vertical-align: text-top;" />
                                                     </a>
                                                 </div>
                                             </td>
@@ -420,7 +425,14 @@
                                                 <input type="text" name="txtRegNumber" id="txtRegNumber" class="text ui-widget-content ui-corner-all justread">
                                             </td>
                                         </tr>
-
+                                        
+                                        <tr>
+                                            <td colspan="4">
+                                                <label data-i18n="reg-village"></label> 
+                                                <select name="cbxVillage" id="cbxVillage" class="read-tenure"></select>
+                                            </td>
+                                        </tr>
+                                        
                                         <tr>
                                             <td class="borderedBottom" colspan="4">
                                                 <h3><label data-i18n="reg-tenure"></label></h3>
@@ -1442,7 +1454,7 @@
             </fieldset>
         </form>
     </div>
-    
+
     <form action="landrecords/exportdata/" name="dataExportForm" id="dataExportForm" method="post" target="_blank">
         <input type="hidden" name="hVertices" id="hVertices">
     </form>

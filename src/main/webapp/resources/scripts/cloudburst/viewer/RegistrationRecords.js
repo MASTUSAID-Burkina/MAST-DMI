@@ -120,19 +120,21 @@ function RegistrationRecords(_selectedItem) {
         }
     });
 
+    if (villagesList === null) {
+        $.ajax({
+            url: "landrecords/projectvillages/" + activeProject_R,
+            async: false,
+            success: function (data) {
+                villagesList = data;
+            }
+        });
+    }
+
     jQuery.ajax({
         url: "registration/processdetails/",
         async: false,
         success: function (data) {
             processdetails_R = data;
-        }
-    });
-
-    jQuery.ajax({
-        url: "village/getbyproject/" + activeProject,
-        async: false,
-        success: function (data) {
-            villagesList = data;
         }
     });
 
@@ -173,12 +175,22 @@ function displayRefreshedRegistryRecords_ABC() {
                         dataList_R = data;
                         $("#registryRecordsRowData1").empty();
                         $("#cbx_app_type").empty();
+                        $("#cbxRegVillage").empty();
                         $("#sale_transfer_type").empty();
                         $("#sale_ownership_type").empty();
 
                         $("#sale_ownership_type").append($("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
                         $("#cbx_app_type").append($("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
                         $("#sale_transfer_type").append($("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
+                        $("#cbxRegVillage").append($("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
+
+                        jQuery.each(villagesList, function (i, village) {
+                            var displayName = village.name;
+                            if (Global.LANG === "en") {
+                                displayName = village.nameEn;
+                            }
+                            $("#cbxRegVillage").append($("<option></option>").attr("value", village.hierarchyid).text(displayName));
+                        });
 
                         jQuery.each(tenuretypeListR, function (i, tenureType) {
                             var displayName = tenureType.landsharetype;
@@ -307,7 +319,6 @@ function displayRefreshedRegistryRecords() {
 }
 
 function previousRecords_R() {
-
     records_from_R = $('#records_from_R').val();
     records_from_R = parseInt(records_from_R);
     records_from_R = records_from_R - 11;
@@ -320,11 +331,9 @@ function previousRecords_R() {
     } else {
         alert($.i18n("err-no-records"));
     }
-
 }
 
 function nextRecords_R() {
-
     records_from_R = $('#records_from_R').val();
     records_from_R = parseInt(records_from_R);
     records_from_R = records_from_R + 9;
@@ -338,11 +347,42 @@ function nextRecords_R() {
             }
         }
         RegistrationRecords_R(records_from_R);
-
     } else {
         alert($.i18n("err-no-records"));
     }
+}
 
+function firstRecordsR() {
+    records_from_R = $('#records_from_R').val();
+    records_from_R = parseInt(records_from_R);
+    if (records_from_R > 1) {
+        if (searchRecords_R != null) {
+            RegistrationSearch_R(0);
+        } else {
+            RegistrationRecords_R(0);
+        }
+    }
+}
+
+function lastRecordsR() {
+    recordsAll_R = $('#records_all_R').val();
+    recordsAll_R = parseInt(recordsAll_R);
+    
+    if ((recordsAll_R % 10) > 0) {
+        records_from_R = recordsAll_R - (recordsAll_R % 10);
+    } else {
+        records_from_R = recordsAll_R - 10;
+    }
+    
+    if (recordsAll_R > 10) {
+        if (searchRecords_R != null) {
+            if (records_from_R <= searchRecords_R - 1) {
+                RegistrationSearch_R(records_from_R);
+            }
+        } else {
+            RegistrationRecords_R(records_from_R);
+        }
+    }
 }
 
 function RegistrationRecords_R(records_from_R) {
@@ -381,17 +421,9 @@ function clearSearch_R() {
     $("#txt_pv_num").val("");
     $("#txt_apfr_num").val("");
     $("#txt_first_name").val("");
-
-    $("#registryRecordsRowData1").empty();
-    if (dataList_R.length !== 0 && dataList_R.length !== undefined) {
-        $("#registryRecordsAttrTemplate1").tmpl(dataList_R).appendTo("#registryRecordsRowData1");
-        $("#registryRecordsRowData1").i18n();
-        $('#records_from_R').val(1);
-        $('#records_to_R').val(dataList_R.length);
-        if (dataList_R.length >= 10)
-            $('#records_to_R').val(10);
-        $('#records_all_R').val(dataList_R.length);
-    }
+    $("#cbxRegVillage").val(0);
+    searchRecords_R = null;
+    displayRefreshedRegistryRecords_ABC();
 }
 
 function search_R() {
@@ -1340,6 +1372,9 @@ function saveLease() {
     var selectedprocess = $("#registration_process").val();
     if (selectedprocess == 5)
     {
+        if ($("#surrenderLeaseId").val() === "") {
+            saveattributesSurrenderLease();
+        }
         registerLeaseSurrender();
     } else
     {
@@ -1411,6 +1446,7 @@ function registerLease() {
 function saveattributesSurrenderLease() {
     jQuery.ajax({
         type: "POST",
+        async: false,
         url: "registration/savesurrenderleasedata",
         data: $("#editprocessAttributeformID").serialize(),
         success: function (result) {
@@ -1634,6 +1670,15 @@ function getprocessvalue(id) {
         split.style.display = "none";
         clearBuyerDetails_sale();
 
+        $("#divReqDocsLoan").hide();
+        $("#divReqDocsLease").hide();
+        
+        if (id == 1) {
+            $("#divReqDocsLoan").show();
+        } else if (id == 10) {
+            $("#divReqDocsLease").show();
+        }
+        
         currentdiv = "Lease";
 
         fetchDocument(selectedlandid, 1, id);
@@ -1670,6 +1715,11 @@ function getprocessvalue(id) {
         processid = id;
         tabPermission.style.display = "block";
 
+        if (id == 11) {
+            $("#divReqDocsDevPerm").show();
+        } else {
+            $("#divReqDocsDevPerm").hide();
+        }
         currentdiv = "Permission";
         loadPermission();
     } else if (id == 2) // "Sale"
@@ -2212,7 +2262,7 @@ function ViewHistory(landid) {
                 $("#comment_cancel").html(
                         '<span class="ui-button-text">' + $.i18n("gen-cancel") + '</span>');
                 commentHistoryDialogPop.dialog("open");
-
+                document.getElementById('btnInitTrans').blur();
             } else {
                 jAlert("No Records", $.i18n("gen-info"));
             }
@@ -3008,7 +3058,7 @@ function ActionfillRegistration(landid, transactionid, apfrNo, shareTypeId) {
     html += "<li> <a title='" + $.i18n("reg-print-permission") + "' href='#' onclick='printPermission(" + landid + ")'>" + $.i18n("reg-print-permission") + "</a></li>";
     html += "<li> <a title='" + $.i18n("reg-init-tran") + "' href='#' onclick='leaseAttribute(" + landid + ")'>" + $.i18n("reg-init-tran") + "</a></li>";
     html += "<li> <a title='" + $.i18n("reg-view-tran-history") + "' id='' name=''  href='#' onclick='ViewHistory(" + landid + ")'>" + $.i18n("reg-view-tran-history") + "</a></li>";
-    
+
 
     $("" + appid + "").append('<div class="signin_menu"><div class="signin"><ul>' + html + '</ul></div></div>');
 
@@ -3575,8 +3625,9 @@ function AddDocInfoRegistration() {
             return;
         }
         if (processid == 5 && $("#surrenderLeaseId").val() === "") {
-            jAlert($.i18n("err-save-lessee-lender"), $.i18n("err-alert"));
-            return;
+            //jAlert($.i18n("err-save-lessee-lender"), $.i18n("err-alert"));
+            //return;
+            saveattributesSurrenderLease();
         }
         if (doc_name_Lease.value.length == 0) {
             errors += "- " + $.i18n("err-enter-doc-name") + "\n"

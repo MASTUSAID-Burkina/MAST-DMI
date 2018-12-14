@@ -119,6 +119,9 @@ import com.rmsi.mast.studio.mobile.dao.NonNaturalPersonDao;
 import com.rmsi.mast.studio.mobile.dao.StatusDao;
 import com.rmsi.mast.studio.mobile.dao.SurveyProjectAttributeDao;
 import com.rmsi.mast.studio.mobile.service.SpatialUnitService;
+import com.rmsi.mast.studio.domain.fetch.ApfrStatSummary;
+import com.rmsi.mast.studio.domain.fetch.ResourcesStatSummary;
+import com.rmsi.mast.studio.domain.fetch.TransactionsStatSummary;
 import com.rmsi.mast.studio.service.ClaimBasicService;
 import com.rmsi.mast.studio.util.StringUtils;
 import com.rmsi.mast.viewer.dao.ApplicationNatureDao;
@@ -802,6 +805,11 @@ public class LandRecordsServiceImpl implements LandRecordsService {
 
         return attributeCategoryDAO.findAll();
     }
+    
+    @Override
+    public List<AttributeCategory> getResourceCategories(){
+        return attributeCategoryDAO.getResourceCategories();
+    }
 
     @Override
     public List<AttributeValuesFetch> findAttributelistByCategoryId(Long parentid, Long id) {
@@ -1347,10 +1355,10 @@ public class LandRecordsServiceImpl implements LandRecordsService {
     }
 
     @Override
-    public List<LaSpatialunitLand> search(String lang, Integer claimType, int project, String parcelId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int appStatus, int workflowId, Integer startpos) {
-        return landRecordsDao.search(lang, claimType, project, parcelId, appNum, pvNum, apfrNum, firstName, appType, appStatus, workflowId, startpos);
+    public List<LaSpatialunitLand> search(String lang, Integer claimType, int project, String parcelId, int villageId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int appStatus, int workflowId, Integer startpos) {
+        return landRecordsDao.search(lang, claimType, project, parcelId, villageId, appNum, pvNum, apfrNum, firstName, appType, appStatus, workflowId, startpos);
     }
-
+    
     @Override
     public List<Object> findsummaryreport(String project) {
         return landRecordsDao.findsummaryreport(project);
@@ -1398,8 +1406,8 @@ public class LandRecordsServiceImpl implements LandRecordsService {
     }
 
     @Override
-    public Integer searchCount(Integer claimType, int project, String parcelId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int workflowId, int appStatus) {
-        return landRecordsDao.searchCount(claimType, project, parcelId, appNum, pvNum, apfrNum, firstName, appType, workflowId, appStatus);
+    public Integer searchCount(Integer claimType, int project, String parcelId, int villageId, String appNum, String pvNum, String apfrNum, String firstName, int appType, int workflowId, int appStatus) {
+        return landRecordsDao.searchCount(claimType, project, parcelId, villageId, appNum, pvNum, apfrNum, firstName, appType, workflowId, appStatus);
     }
 
     @Override
@@ -1600,6 +1608,21 @@ public class LandRecordsServiceImpl implements LandRecordsService {
     @Override
     public List<Object> findregparcelcountbyTenure(int project, String tag, Integer villageId) {
         return landRecordsDao.findregparcelcountbyTenure(project, tag, villageId);
+    }
+    
+    @Override
+    public List<ApfrStatSummary> getApfrStatSummary(int projectId, int villageId){
+        return landRecordsDao.getApfrStatSummary(projectId, villageId);
+    }
+    
+    @Override
+    public List<ResourcesStatSummary> getResourcesStatSummary(int projectId){
+        return landRecordsDao.getResourcesStatSummary(projectId);
+    }
+    
+    @Override
+    public List<TransactionsStatSummary> getTransactionStatSummary(int projectId, int villageId){
+        return landRecordsDao.getTransactionStatSummary(projectId, villageId);
     }
     
     @Override

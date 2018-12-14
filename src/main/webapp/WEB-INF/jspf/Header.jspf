@@ -14,6 +14,9 @@
 
 <div class="header-top">
     <div id="usaid_logo" onClick="window.location = 'http://usaid.gov/land-tenure';"></div>
+    <div id="onf_logo">
+        <a href="http://www.onf-bf.org" target="new"><img id="onf_logo_img" src="./resources/images/logo-onf.png"></a>
+    </div>
     <div class="header_title" data-i18n="[html]gen-mast-dmi"></div>
 
     <div class="userinfo" >

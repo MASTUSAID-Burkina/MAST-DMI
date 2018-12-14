@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.rmsi.mast.studio.domain.Bookmark;
 import com.rmsi.mast.studio.domain.Layergroup;
+import com.rmsi.mast.studio.domain.ParcelCount;
 import com.rmsi.mast.studio.domain.Project;
 import com.rmsi.mast.studio.domain.ProjectAdjudicator;
 import com.rmsi.mast.studio.domain.ProjectArea;
@@ -31,7 +32,7 @@ public interface ProjectService {
 	void addSaveProject(Project project,Set<Layergroup> layergroups,List<Bookmark> bookmarks,String projectName);
 
 	@Transactional
-	void addProject(Project project);
+	void addProject(Project project, ParcelCount[] numberCounters);
 
 	@Transactional
 	void deleteProject();

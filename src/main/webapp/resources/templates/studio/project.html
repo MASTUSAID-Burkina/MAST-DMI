@@ -397,7 +397,7 @@
         <script id="ProjectTemplateBaselayer" type="text/x-jquery-tmpl">
             <tr id="tr-${baselayerEn}">		
             <td  colspan="2">
-            <input type="radio" id="${baselayerid}" name="selectedBaselayer" value="${baselayerid}" class='baselayerCheckbox' /> ${baselayerEn}
+            <input type="checkbox" id="${baselayerid}" name="selectedBaselayer" value="${baselayerid}" class='baselayerCheckbox' /> ${baselayerEn}
             </td>	
 
             <td>
@@ -465,22 +465,42 @@
             </tr>
 
             <tr>
-            <td>
-            <label class="lblint" data-i18n="gen-logo"></label>
-            </td>
-            <td>    
-            <img src="" id="imgProjectLogo" class="projectLogo" />
-            <br />
-            <a href="#" id="linkDeleteProjectLogo" class="deleteLink" onclick="deleteSignature('ProjectLogo')" style="display: none;">
-                <i class="fa fa-times"></i> <span data-i18n="gen-delete"></span>
-            </a>
-            <a href="#" id="linkAddProjectLogo" class="addLink" onclick="uploadSignature('ProjectLogo')">
-                <i class="fa fa-plus"></i> <span data-i18n="gen-add"></span>
-            </a>
-            <input type="hidden" id="hProjectLogo" name="hProjectLogo" />
-            </td>
-            <td></td>
-            <td></td>
+                <td>
+                    <label class="lblint" data-i18n="reg-app-number"></label> 
+                </td> 
+                <td>
+                    <input type="textbox" name="appnumber" id="appnumber" value="0" /> 
+                </td>
+    
+                <td>
+                    <label class="lblint" data-i18n="reg-pv-number"></label>
+                </td>
+                <td>    
+                    <input type="textbox" name="pvnumber" id="pvnumber" value="0" /> 
+                </td>
+            </tr>
+    
+            <tr>
+                <td>
+                    <label class="lblint" data-i18n="reg-apfr-number"></label>
+                </td>
+                <td>    
+                    <input type="textbox" name="apfrnumber" id="apfrnumber" value="0" /> 
+                </td>
+                <td>
+                    <label class="lblint" data-i18n="gen-logo"></label>
+                </td>
+                <td>    
+                    <img src="" id="imgProjectLogo" class="projectLogo" />
+                    <br />
+                    <a href="#" id="linkDeleteProjectLogo" class="deleteLink" onclick="deleteSignature('ProjectLogo')" style="display: none;">
+                       <i class="fa fa-times"></i> <span data-i18n="gen-delete"></span>
+                    </a>
+                    <a href="#" id="linkAddProjectLogo" class="addLink" onclick="uploadSignature('ProjectLogo')">
+                        <i class="fa fa-plus"></i> <span data-i18n="gen-add"></span>
+                    </a>
+                    <input type="hidden" id="hProjectLogo" name="hProjectLogo" />
+                </td>
             </tr>
         </script>
     </form>

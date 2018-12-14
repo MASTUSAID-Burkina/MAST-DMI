@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.rmsi.mast.studio.domain.ResourceAttributeValues;
-import com.rmsi.mast.studio.domain.fetch.ResourceDetails;
 import com.rmsi.mast.studio.mobile.dao.ResourceAttributeValuesDAO;
+import com.rmsi.mast.studio.mobile.transferobjects.SearchResult;
 import com.rmsi.mast.viewer.service.ResourceAttributeValuesService;
 
 @Service
@@ -24,8 +24,8 @@ public class ResourceAttributeValuesServiceImpl implements ResourceAttributeValu
 	}
 
 	@Override
-	public List<ResourceDetails> getAllresouceByproject(String project,Integer startfrom) {
-		return resourceAttributeValuesDAO.getAllresouceByproject(project,startfrom);
+	public SearchResult searchResources(String project, int chartered, int tenureType, int classType, String owner,Integer startfrom) {
+		return resourceAttributeValuesDAO.searchResources(project, chartered, tenureType, classType, owner, startfrom);
 	}
 
 	@Override

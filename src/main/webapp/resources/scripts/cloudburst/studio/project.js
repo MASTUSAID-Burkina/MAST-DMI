@@ -188,15 +188,21 @@ var createEditProject = function (_name) {
         async: false
     });
 
-
-
-
     if (_name) {
         jQuery('#name').attr('readonly', true);
         jQuery.ajax({
             url: selectedItem + "/" + _name,
             async: false,
             success: function (data) {
+
+                var projectNumbers = null;
+                jQuery.ajax({
+                    url: "project/numbers/" + _name,
+                    async: false,
+                    success: function (numbers) {
+                        projectNumbers = numbers;
+                    }
+                });
 
                 jQuery("#ProjectTemplateForm").tmpl(data, {}).appendTo("#projectGeneralBody");
                 $("#projectGeneralBody").i18n();
@@ -211,7 +217,6 @@ var createEditProject = function (_name) {
                 $("#projectDisclaimerBody").i18n();
                 jQuery("#projectUserList").empty();
                 jQuery("#ProjectTemplateUser").tmpl(userroledata).appendTo("#projectUserList");
-
 
                 jQuery.each(proj_country, function (i, value) {
                     jQuery("#countryId").append(jQuery("<option></option>").attr("value", value.hierarchyid).text(value.name));
@@ -230,17 +235,19 @@ var createEditProject = function (_name) {
                     jQuery("#displayProjection_code").append(jQuery("<option></option>").attr("value", value.projectionid).text(value.projection));
                 });
 
-
                 jQuery("#project_outputFormat").val(data.outputformat.documentformatid);
                 jQuery("#project_unit").val(data.unit.unitid);
                 jQuery("#projection_code").val(data.projection.projectionid);
                 jQuery("#displayProjection_code").val(data.projection.projectionid);
-
-
                 jQuery("#hid_idseq").val(data.projectnameid);
 
+                if(projectNumbers !== null){
+                    $("#appnumber").val(projectNumbers[0].count);
+                    $("#pvnumber").val(projectNumbers[1].count);
+                    $("#apfrnumber").val(projectNumbers[2].count);
+                }
+                
                 if (data.projectArea.length > 0) {
-
                     if (data.projectArea[0].laSpatialunitgroupHierarchy1 != null) {
                         jQuery("#countryId").val(data.projectArea[0].laSpatialunitgroupHierarchy1.hierarchyid);
                         getRegionOnCountryChange(data.projectArea[0].laSpatialunitgroupHierarchy1.hierarchyid);
@@ -261,7 +268,6 @@ var createEditProject = function (_name) {
                         jQuery("#CommuneId").val(data.projectArea[0].laSpatialunitgroupHierarchy4.hierarchyid);
                         getHamletOnVillageChange(data.projectArea[0].laSpatialunitgroupHierarchy4.hierarchyid)
                     }
-
 
                     if (data.projectArea[0].laSpatialunitgroupHierarchy5 != null) {
                         jQuery("#placeId").val(data.projectArea[0].laSpatialunitgroupHierarchy5.hierarchyid);
@@ -286,12 +292,9 @@ var createEditProject = function (_name) {
                     jQuery("#vcmeetingdate").val(data.projectArea[0].vcMeetingDate);
                 }
 
-
                 jQuery('#name').attr('readonly', true);
 
                 $('[class^="tr-"]').hide();
-
-
 
                 if (data.disclaimer != null && data.disclaimer != "") {
                     jQuery("#chkDisclaimer").attr('checked', true);
@@ -309,17 +312,13 @@ var createEditProject = function (_name) {
                             $.each(obj, function (ind1, obj1) {
                                 if (ind1 != "layerLayergroups" && ind1 == "layergroupid") {
                                     jQuery("#" + obj1).attr('checked', true);
-
                                 }
-
                             });
                         }
-
                     });
                 });
 
                 if (data.projectBaselayers.length > 0) {
-
                     for (_i = 0; _i < data.projectBaselayers.length; _i++) {
                         if (data.projectBaselayers[_i].baselayers.baselayerEn.indexOf("Google_") > -1) {
                             populatebaselayer('Google', data);
@@ -343,10 +342,8 @@ var createEditProject = function (_name) {
                                 if (ind1 == "baselayerid") {
                                     jQuery("#" + obj1).attr('checked', true);
                                 }
-
                             });
                         }
-
                     });
                 });
                 // GetActiveLayer('default', '');

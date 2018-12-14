@@ -144,6 +144,9 @@ public class LaSpatialunitLand implements Serializable {
     @Transient
     private String registrationNo;
 
+    @Transient
+    private String villageName;
+    
     private String other_use;
 
     public String getOther_use() {
@@ -658,6 +661,14 @@ public class LaSpatialunitLand implements Serializable {
 
     public void setRightShareTypeId(Integer rightShareTypeId) {
         this.rightShareTypeId = rightShareTypeId;
+    }
+
+    public String getVillageName() {
+        return villageName;
+    }
+
+    public void setVillageName(String villageName) {
+        this.villageName = villageName;
     }
 
 }

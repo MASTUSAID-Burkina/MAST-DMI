@@ -1061,11 +1061,7 @@ public class UserDataServiceImpl implements UserDataService {
             } else if (attribute.getId() == 17) {
 //                   parcel.getLaExtPersonlandmappings().get(0).getLaExtTransactiondetail().setRemarks(attribute.getValue());
             } //               else if (attribute.getId() == 28) {
-            //                   parcel.setLandOwner(attribute.getValue());
-            //               }
-            //               else if (attribute.getId() == 34) {
-            //                   parcel.setAddress1(attribute.getValue());
-            //               } 
+
             else if (attribute.getId() == 37) {
                 if (Integer.parseInt(attribute.getValue()) == 35) {
                     parcel.setLaBaunitLandtype(landTypeDao.getLandTypeById(1));
@@ -1087,9 +1083,6 @@ public class UserDataServiceImpl implements UserDataService {
             } else if (attribute.getId() == 47) {
                 parcel.setNeighborWest(attribute.getValue());
             }
-//               else if (attribute.getId() == 53) {
-//                   parcel.getLaBaunitLandusetype().setLandusetypeEn(attribute.getValue());
-//               }
         }
     }
 
@@ -1409,339 +1402,6 @@ public class UserDataServiceImpl implements UserDataService {
         return decPasswd;
     }
 
-//    @Override
-//    public boolean updateNaturalPersonAttribValues(NaturalPerson naturalPerson, String project) {
-////        try {
-////            List<AttributeValues> attribsList = new ArrayList<>();
-////            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-////            long parentUid = naturalPerson.getPartyid();
-////
-////            if (!StringUtils.isEmpty(naturalPerson.getFirstname())) {
-////                addAttribute(1, project, parentUid, naturalPerson.getFirstname(), attribsList);
-////            }
-////            if (!StringUtils.isEmpty(naturalPerson.getLastname())) {
-////                addAttribute(2, project, parentUid, naturalPerson.getLastname(), attribsList);
-////            }
-////            if (!StringUtils.isEmpty(naturalPerson.getMiddlename())) {
-////                addAttribute(3, project, parentUid, naturalPerson.getMiddlename(), attribsList);
-////            }
-////            if (naturalPerson.getGenderid() != null) {
-////                addAttribute(4, project, parentUid,
-////                        attributeOptionsDao.getAttributeOptionsId(4, (int) naturalPerson.getGenderid()),
-////                        attribsList);
-////            }
-//////            if (!StringUtils.isEmpty(naturalPerson.getMobile())) {
-//////                addAttribute(5, project, parentUid, naturalPerson.getMobile(), attribsList);
-//////            }
-////            if (!StringUtils.isEmpty(naturalPerson.getIdentityno())) {
-////                addAttribute(30, project, parentUid, naturalPerson.getIdentityno(), attribsList);
-////            }
-//////            if (naturalPerson.getAge() != 0) {
-//////                addAttribute(21, project, parentUid, Integer.toString(naturalPerson.getAge()), attribsList);
-//////            }
-////            if (!StringUtils.isEmpty(naturalPerson.getLaPartygroupOccupation().getOccupationEn())) {
-////                addAttribute(19, project, parentUid, naturalPerson.getLaPartygroupOccupation().getOccupationEn(), attribsList);
-////            }
-////            if (naturalPerson.getLaPartygroupEducationlevel() != null) {
-////                addAttribute(20, project, parentUid,
-////                        attributeOptionsDao.getAttributeOptionsId(20, (int) naturalPerson.getLaPartygroupEducationlevel().getEducationlevelid()),
-////                        attribsList);
-////            }
-//////            if (!StringUtils.isEmpty(naturalPerson.getTenure_Relation())) {
-//////                addAttribute(25, project, parentUid, naturalPerson.getTenure_Relation(), attribsList);
-//////            }
-//////            if (!StringUtils.isEmpty(naturalPerson.getHouseholdRelation())) {
-//////                addAttribute(26, project, parentUid, naturalPerson.getHouseholdRelation(), attribsList);
-//////            }
-//////            if (!StringUtils.isEmpty(naturalPerson.getWitness())) {
-//////                addAttribute(27, project, parentUid, naturalPerson.getWitness(), attribsList);
-//////            }
-////            if (naturalPerson.getLaPartygroupMaritalstatus() != null) {
-////                addAttribute(22, project, parentUid,
-////                        attributeOptionsDao.getAttributeOptionsId(22, (int) naturalPerson.getLaPartygroupMaritalstatus().getMaritalstatusid()),
-////                        attribsList);
-////            }
-//////            if (naturalPerson.getOwner() != null) {
-//////                addAttribute(40, project, parentUid, naturalPerson.getOwner().toString(), attribsList);
-//////            }
-//////            if (!StringUtils.isEmpty(naturalPerson.getAdministator())) {
-//////                addAttribute(41, project, parentUid, naturalPerson.getAdministator(), attribsList);
-//////            }
-//////            if (naturalPerson.getCitizenship_id() != null) {
-//////                addAttribute(42, project, parentUid,
-//////                        attributeOptionsDao.getAttributeOptionsId(42, (int) naturalPerson.getCitizenship_id().getId()),
-//////                        attribsList);
-//////            }
-//////            if (naturalPerson.getResident_of_village() != null) {
-//////                addAttribute(43, project, parentUid, naturalPerson.getResident_of_village().toString(), attribsList);
-//////            }
-////            if (naturalPerson.getLaPartygroupPersontype() != null) {
-////                addAttribute(54, project, parentUid,
-////                        attributeOptionsDao.getAttributeOptionsId(54,  naturalPerson.getLaPartygroupPersontype().getPersontypeid().intValue()),
-////                        attribsList);
-////            }
-////            if (!StringUtils.isEmpty(naturalPerson.getIdentityno())) {
-////                addAttribute(310, project, parentUid, naturalPerson.getIdentityno(), attribsList);
-////            }
-////            if (naturalPerson.getDateofbirth() != null) {
-////                addAttribute(330, project, parentUid, dateFormat.format(naturalPerson.getDateofbirth()), attribsList);
-////            }
-////            if (naturalPerson.getLaPartygroupIdentitytype() != null) {
-////                addAttribute(320, project, parentUid,
-////                        attributeOptionsDao.getAttributeOptionsId(320, (int) naturalPerson.getLaPartygroupIdentitytype().getIdentitytypeid()),
-////                        attribsList);
-////            }
-////            attributeValuesDao.updateAttributeValues(attribsList);
-////        } catch (Exception e) {
-//            logger.error("Exception", e);
-//            e.printStackTrace();
-//            return false;
-//        }
-//        return null;
-//    }
-//
-//    private void addAttribute(long attributeId, String project, Long parentUid, String value, List<AttributeValues> list) {
-//        Long attributeProjectId = surveyProjectAttribute.getSurveyProjectAttributeId(attributeId, project);
-//        if (attributeProjectId != null && parentUid != null) {
-//            AttributeValues attributeValues = new AttributeValues();
-//            attributeValues.setParentuid(parentUid);
-//            attributeValues.setAttributevalue(value);
-////            attributeValues.setUid(attributeProjectId);
-//            list.add(attributeValues);
-//        }
-//    }
-//
-//    @Override
-//    public boolean updateTenureAttribValues(SocialTenureRelationship socialTenure, String project) {
-//        try {
-//            List<AttributeValues> attribsList = new ArrayList<AttributeValues>();
-//            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//            long parentUid = socialTenure.getPersonlandid();
-//
-//            if (socialTenure.getCreateddate() != null) {
-//                addAttribute(32, project, parentUid, dateFormat.format(socialTenure.getCreateddate()), attribsList);
-//            }
-////            if (socialTenure.getSocial_tenure_enddate() != null) {
-////                addAttribute(33, project, parentUid, dateFormat.format(socialTenure.getSocial_tenure_enddate()), attribsList);
-////            }
-////            if (socialTenure.getTenureDuration() != 0) {
-////                addAttribute(13, project, parentUid, socialTenure.getTenureDuration() + "", attribsList);
-////            }
-////            if (socialTenure.getLaSpatialunitLand().getLaRightLandsharetype() != null) {
-////                addAttribute(31, project, parentUid,
-////                        attributeOptionsDao.getAttributeOptionsId(31, socialTenure.getLaSpatialunitLand().getLaRightLandsharetype().getLandsharetypeid()),
-////                        attribsList);
-////            }
-////            if (socialTenure.getOccupancyTypeId() != null) {
-////                addAttribute(24, project, parentUid,
-////                        attributeOptionsDao.getAttributeOptionsId(24, socialTenure.getOccupancyTypeId().getOccId()),
-////                        attribsList);
-////            }
-////            if (socialTenure.getLaParty().getLaPartyPerson().getLaRightTenureclass() != null) {
-////                addAttribute(23, project, parentUid,
-////                        attributeOptionsDao.getAttributeOptionsId(23, socialTenure.getLaParty().getLaPartyPerson().getLaRightTenureclass().getTenureclassid()),
-////                        attribsList);
-////            }
-////            if (socialTenure.getLaSpatialunitLand().getLaRightAcquisitiontype() != null) {
-////                addAttribute(300, project, parentUid,
-////                        attributeOptionsDao.getAttributeOptionsId(300, socialTenure.getLaSpatialunitLand().getLaRightAcquisitiontype().getAcquisitiontypeid()),
-////                        attribsList);
-////            }
-//            attributeValuesDao.updateAttributeValues(attribsList);
-//        } catch (Exception e) {
-//            logger.error("Exception", e);
-//            e.printStackTrace();
-//            return false;
-//        }
-//        return true;
-//    }
-//
-//  
-//    
-//    @Override
-//    public boolean updateNonNaturalPersonAttribValues(
-//            NonNaturalPerson nonnaturalPerson, String project) {
-////        try {
-////            List<AttributeValues> attribsList = new ArrayList<>();
-////            long parentUid = nonnaturalPerson.getOrganizationid();
-////
-//////          if (StringUtils.isNotEmpty(nonnaturalPerson.getAddress())) {
-//////              addAttribute(7, project, parentUid, nonnaturalPerson.getAddress(), attribsList);
-//////          }
-////          if (StringUtils.isNotEmpty(nonnaturalPerson.getOrganizationname())) {
-////              addAttribute(6, project, parentUid, nonnaturalPerson.getOrganizationname(), attribsList);
-////          }
-////          if (StringUtils.isNotEmpty(nonnaturalPerson.getContactno())) {
-////              addAttribute(8, project, parentUid, nonnaturalPerson.getContactno(), attribsList);
-////          }
-////          if (nonnaturalPerson.getGroupType() != null) {
-////              addAttribute(52, project, parentUid,
-////                      attributeOptionsDao.getAttributeOptionsId(52, (int) nonnaturalPerson.getGroupType().getGrouptypeid()), 
-////                      attribsList);
-////          }
-////            attributeValuesDao.updateAttributeValues(attribsList);
-////        } catch (Exception e) {
-////            logger.error("Exception", e);
-////            e.printStackTrace();
-////            return false;
-////        }
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean updateGeneralAttribValues(SpatialUnitTable spatialunit, String project) {
-//        try {
-//            List<SocialTenureRelationship> rights = socialTenureDao.findSocailTenureByUsin(spatialunit.getUsin());
-//            List<AttributeValues> attribsList = new ArrayList<AttributeValues>();
-//            long parentUid = spatialunit.getUsin();
-//
-//            if (spatialunit.getHousehidno() != 0) {
-//                addAttribute(15, project, parentUid, spatialunit.getHousehidno() + "", attribsList);
-//            }
-//            if (StringUtils.isNotEmpty(spatialunit.getComments())) {
-//                addAttribute(17, project, parentUid, spatialunit.getComments(), attribsList);
-//            }
-//            if (StringUtils.isNotEmpty(spatialunit.getAddress1())) {
-//                addAttribute(34, project, parentUid, spatialunit.getAddress1(), attribsList);
-//            }
-//            if (StringUtils.isNotEmpty(spatialunit.getAddress2())) {
-//                addAttribute(35, project, parentUid, spatialunit.getAddress2(), attribsList);
-//            }
-//            if (StringUtils.isNotEmpty(spatialunit.getPostal_code())) {
-//                addAttribute(36, project, parentUid, spatialunit.getPostal_code(), attribsList);
-//            }
-//            if (spatialunit.getProposedUse() != null) {
-//                String value = attributeOptionsDao.getAttributeOptionsId(9, (int) spatialunit.getProposedUse().getLandusetypeid());
-//                addAttribute(9, project, parentUid, value, attribsList);
-//
-//                if (rights != null) {
-//                    for (SocialTenureRelationship right : rights) {
-//                        addAttribute(9, project, (long) right.getCreatedby(), value, attribsList);
-//                    }
-//                }
-//            }
-//            if (spatialunit.getExistingUse() != null) {
-//                String value = attributeOptionsDao.getAttributeOptionsId(16, (int) spatialunit.getExistingUse().getLandusetypeid());
-//                addAttribute(16, project, parentUid, value, attribsList);
-//            }
-//            if (spatialunit.getLandType() != null) {
-//                String value = attributeOptionsDao.getAttributeOptionsId(37, (int) spatialunit.getLandType().getLandtypeid());
-//                addAttribute(37, project, parentUid, value, attribsList);
-//            }
-//            if (spatialunit.getSoilQualityValues() != null) {
-//                String value = attributeOptionsDao.getAttributeOptionsId(38, (int) spatialunit.getSoilQualityValues().getLandsoilqualityid());
-//                addAttribute(38, project, parentUid, value, attribsList);
-//            }
-//            if (spatialunit.getSlopeValues() != null) {
-//                String value = attributeOptionsDao.getAttributeOptionsId(39, (int) spatialunit.getSlopeValues().getSlopevalueid());
-//                addAttribute(39, project, parentUid, value, attribsList);
-//            }
-//            if (StringUtils.isNotEmpty(spatialunit.getNeighbor_north())) {
-//                addAttribute(44, project, parentUid, spatialunit.getNeighbor_north(), attribsList);
-//            }
-//            if (StringUtils.isNotEmpty(spatialunit.getNeighbor_south())) {
-//                addAttribute(45, project, parentUid, spatialunit.getNeighbor_south(), attribsList);
-//            }
-//            if (StringUtils.isNotEmpty(spatialunit.getNeighbor_east())) {
-//                addAttribute(46, project, parentUid, spatialunit.getNeighbor_east(), attribsList);
-//            }
-//            if (StringUtils.isNotEmpty(spatialunit.getNeighbor_west())) {
-//                addAttribute(47, project, parentUid, spatialunit.getNeighbor_west(), attribsList);
-//            }
-//            if (StringUtils.isNotEmpty(spatialunit.getOtherUseType())) {
-//                addAttribute(53, project, parentUid, spatialunit.getOtherUseType(), attribsList);
-//            }
-//            attributeValuesDao.updateAttributeValues(attribsList);
-//        } catch (Exception e) {
-//            logger.error("Exception", e);
-//            e.printStackTrace();
-//            return false;
-//        }
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean updateMultimediaAttribValues(SourceDocument sourcedocument,
-//            String project) {
-//        try {
-//            List<AttributeValues> attribsList = new ArrayList<>();
-//            long parentUid = Long.parseLong(sourcedocument.getDocumentid() + "");
-//
-//            if (StringUtils.isNotEmpty(sourcedocument.getDocumentname())) {
-//                addAttribute(10, project, parentUid, sourcedocument.getDocumentname(), attribsList);
-//            }
-//            if (StringUtils.isNotEmpty(sourcedocument.getLaExtTransactiondetail().getRemarks())) {
-//                addAttribute(11, project, parentUid, sourcedocument.getLaExtTransactiondetail().getRemarks(), attribsList);
-//            }
-//
-////            if (sourcedocument.getDocumentType() != null) {
-////                addAttribute(340, project, parentUid,
-////                        attributeOptionsDao.getAttributeOptionsId(340, sourcedocument.getDocumentType().getCode().intValue()),
-////                        attribsList);
-////            }
-//            attributeValuesDao.updateAttributeValues(attribsList);
-//        } catch (Exception e) {
-//            logger.error("Exception", e);
-//            e.printStackTrace();
-//            return false;
-//        }
-//        return true;
-//    }
-//
-//    @Override
-//    @Transactional(noRollbackFor = Exception.class)
-//    public List<Long> updateAdjudicatedData(Long userId, List<Long> usinList) {
-//
-//        try {
-//
-//            List<Long> sucessfulUpdateList = new ArrayList<Long>();
-//
-//            WorkflowStatusHistory statusHistory;
-//
-//            Iterator<Long> usinIter = usinList.iterator();
-//
-//            // Get Spatial Unit by usin
-//            while (usinIter.hasNext()) {
-//
-//                /**
-//                 * 1) Updating Status and Stautsv update time in Spatial Unit
-//                 */
-//                Long usin = usinIter.next();
-//                Status statusId = status.getStatusById(2);
-//
-////                SpatialUnit spatialUnit = spatialUnitDao
-////                        .getSpatialUnitByUsin(usin);
-//
-//                Date statusUpdateTime = new SimpleDateFormat(
-//                        "dd/MM/yyyy HH:mm:ss").parse(new SimpleDateFormat(
-//                        "dd/MM/yyyy HH:mm:ss").format(new Date()));
-////                spatialUnit.getLaExtPersonlandmappings().get(0).getLaExtTransactiondetail().setLaExtApplicationstatus(statusId);
-////                spatialUnit.setModifieddate(new Timestamp(statusUpdateTime.getTime()));
-//
-//                /**
-//                 * 2) Updating Status History in Workflow Status History
-//                 */
-//                statusHistory = new WorkflowStatusHistory();
-//
-//               // statusHistory.setStatus_change_time(statusUpdateTime);
-//              //  statusHistory.setUserid(userId);
-//               // statusHistory.setUsin(usin);
-//               // statusHistory.setWorkflow_status_id(statusId
-//                 //       .getWorkflowStatusId());
-//
-////                sucessfulUpdateList.add(spatialUnitDao.addSpatialUnit(
-////                        spatialUnit).getLandid());
-//                workflowStatusHistoryDao
-//                        .addWorkflowStatusHistory(statusHistory);
-//            }
-//            return sucessfulUpdateList;
-//        } catch (Exception e) {
-//            logger.error("Exception in saving STATUS UPDATE in SPATIAL UNIT and STATUS HISTORY::: "
-//                    + e);
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
     @Override
     @Transactional
     public Map<String, String> saveResource(List<Property> resources, String projectName, int userId) throws Exception {
@@ -1755,41 +1415,42 @@ public class UserDataServiceImpl implements UserDataService {
 
         try {
             // Get list of all attributes defined for the project
-            List<Surveyprojectattribute> projectAttributes = surveyProjectAttribute.getSurveyProjectAttributes(projectName);
+            DateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            
             for (Property prop : resources) {
                 if (prop.getGeomType().equalsIgnoreCase("Polygon")) {
                     featureId = prop.getId();
-                    Date creationDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss a").parse(prop.getCompletionDate());
-//                SpatialUnit spatialUnit = spatialUnitDao.findByImeiandTimeStamp(projectName, creationDate);
                     Project project = projectDao.findByProjectId(Integer.parseInt(projectName));
                     ProjectArea projectArea = projectService.getProjectArea(project.getName()).get(0);
 
-//                if (spatialUnit != null) {
-//                    result.put(featureId.toString(), Long.toString(spatialUnit.getLandid()));
-//                    continue;
-//                }
                     SpatialUnitResourcePolygon spatialUnit = new SpatialUnitResourcePolygon();
                     spatialUnit.setClaimtypeid(5);   // for resources
-                    //spatialUnit.setLaRightClaimtype(claimTypeDAO.findById(prop.getClaimTypeCode(), false));
 
                     if (!StringUtils.isEmpty(prop.getUkaNumber())) {
                         spatialUnit.setLandno(prop.getUkaNumber());
                     }
                     spatialUnit.setGeometrytype(prop.getPolygonNumber());
                     DateFormat dateformat = new SimpleDateFormat("dd-MM-yyyy");
-                    Date date = dateformat.parse(prop.getCompletionDate());
-                    long time = date.getTime();
                     spatialUnit.setCreateddate(dateformat.parse(prop.getCreationDate()));
-//                spatialUnit.setSurveydate(new SimpleDateFormat("yyyy-MM-dd").parse(prop.getSurveyDate()));
                     spatialUnit.setProjectnameid(Integer.parseInt(projectName));
                     spatialUnit.setCreatedby(userId);
                     spatialUnit.setLandno(featureId.toString());
-//                ShareType sharetype =  shareTypeDao.getTenureRelationshipTypeById(prop.getRight().getShareTypeId());
-//                spatialUnit.setLaRightLandsharetype(sharetype);
-//                spatialUnit.setHamletId(prop.getHamletId());
-//                spatialUnit.setWitness1(prop.getAdjudicator1());
-//                spatialUnit.setWitness2(prop.getAdjudicator2());
 
+                    if(prop.getChartered() != null){
+                        spatialUnit.setChartered(prop.getChartered());
+                    }
+                    spatialUnit.setComment(prop.getComment());
+                    
+                    if(StringUtils.isNotEmpty(prop.getValidationDate())){
+                        spatialUnit.setValidationDate(isoDateFormat.parse(prop.getValidationDate()));
+                    }
+                    if(prop.getValidatedByCouncil() != null){
+                        spatialUnit.setValidatedByCouncil(prop.getValidatedByCouncil());
+                    }
+                    if(prop.getInExploitation() != null){
+                        spatialUnit.setInExploitation(prop.getInExploitation());
+                    }
+                    
                     GeometryConversion geomConverter = new GeometryConversion();
 
                     spatialUnit.setGeometrytype(prop.getGeomType());
@@ -1803,7 +1464,6 @@ public class UserDataServiceImpl implements UserDataService {
                         }
                     }
 
-//                spatialUnit.getTheGeom().setSRID(4326);
                     spatialUnit.setLaSpatialunitgroup1(projectArea.getLaSpatialunitgroup1());
                     spatialUnit.setLaSpatialunitgroup2(projectArea.getLaSpatialunitgroup2());
                     spatialUnit.setLaSpatialunitgroup3(projectArea.getLaSpatialunitgroup3());
@@ -1822,7 +1482,6 @@ public class UserDataServiceImpl implements UserDataService {
                     spatialUnit.setWorkflowstatusid(1);
                     spatialUnit.setModifiedby(userId);
                     spatialUnit.setModifieddate(new Date());
-//                spatialUnit.setImei(prop.getImei());
 
                     setReourcePolygonPropAttibutes(spatialUnit, prop);
                     try {
@@ -1837,37 +1496,37 @@ public class UserDataServiceImpl implements UserDataService {
 
                 } else if (prop.getGeomType().equalsIgnoreCase("Point")) {
                     featureId = prop.getId();
-                    Date creationDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss a").parse(prop.getCompletionDate());
-//                    SpatialUnit spatialUnit = spatialUnitDao.findByImeiandTimeStamp(projectName, creationDate);
                     Project project = projectDao.findByProjectId(Integer.parseInt(projectName));
                     ProjectArea projectArea = projectService.getProjectArea(project.getName()).get(0);
 
-//                    if (spatialUnit != null) {
-//                        result.put(featureId.toString(), Long.toString(spatialUnit.getLandid()));
-//                        continue;
-//                    }
                     SpatialUnitResourcePoint spatialUnit = new SpatialUnitResourcePoint();
                     spatialUnit.setClaimtypeid(5);   // for resources
-                    //spatialUnit.setLaRightClaimtype(claimTypeDAO.findById(prop.getClaimTypeCode(), false));
 
                     if (!StringUtils.isEmpty(prop.getUkaNumber())) {
                         spatialUnit.setLandno(prop.getUkaNumber());
                     }
                     spatialUnit.setGeometrytype(prop.getPolygonNumber());
                     DateFormat dateformat = new SimpleDateFormat("dd-MM-yyyy");
-                    Date date = dateformat.parse(prop.getCompletionDate());
-                    long time = date.getTime();
                     spatialUnit.setCreateddate(dateformat.parse(prop.getCreationDate()));
-//                    spatialUnit.setSurveydate(new SimpleDateFormat("yyyy-MM-dd").parse(prop.getSurveyDate()));
                     spatialUnit.setProjectnameid(Integer.parseInt(projectName));
                     spatialUnit.setCreatedby(userId);
                     spatialUnit.setLandno(featureId.toString());
-//                    ShareType sharetype =  shareTypeDao.getTenureRelationshipTypeById(prop.getRight().getShareTypeId());
-//                    spatialUnit.setLaRightLandsharetype(sharetype);
-//                    spatialUnit.setHamletId(prop.getHamletId());
-//                    spatialUnit.setWitness1(prop.getAdjudicator1());
-//                    spatialUnit.setWitness2(prop.getAdjudicator2());
 
+                    if(prop.getChartered() != null){
+                        spatialUnit.setChartered(prop.getChartered());
+                    }
+                    spatialUnit.setComment(prop.getComment());
+                    
+                    if(StringUtils.isNotEmpty(prop.getValidationDate())){
+                        spatialUnit.setValidationDate(isoDateFormat.parse(prop.getValidationDate()));
+                    }
+                    if(prop.getValidatedByCouncil() != null){
+                        spatialUnit.setValidatedByCouncil(prop.getValidatedByCouncil());
+                    }
+                    if(prop.getInExploitation() != null){
+                        spatialUnit.setInExploitation(prop.getInExploitation());
+                    }
+                    
                     GeometryConversion geomConverter = new GeometryConversion();
 
                     spatialUnit.setGeometrytype(prop.getGeomType());
@@ -1881,7 +1540,6 @@ public class UserDataServiceImpl implements UserDataService {
                         }
                     }
 
-//                    spatialUnit.getTheGeom().setSRID(4326);
                     spatialUnit.setLaSpatialunitgroup1(projectArea.getLaSpatialunitgroup1());
                     spatialUnit.setLaSpatialunitgroup2(projectArea.getLaSpatialunitgroup2());
                     spatialUnit.setLaSpatialunitgroup3(projectArea.getLaSpatialunitgroup3());
@@ -1900,7 +1558,6 @@ public class UserDataServiceImpl implements UserDataService {
                     spatialUnit.setWorkflowstatusid(1);
                     spatialUnit.setModifiedby(userId);
                     spatialUnit.setModifieddate(new Date());
-//                    spatialUnit.setImei(prop.getImei());
 
                     setReourcePointPropAttibutes(spatialUnit, prop);
 
@@ -1909,18 +1566,11 @@ public class UserDataServiceImpl implements UserDataService {
 
                 } else if (prop.getGeomType().equalsIgnoreCase("Line")) {
                     featureId = prop.getId();
-                    Date creationDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss a").parse(prop.getCompletionDate());
-//                    SpatialUnit spatialUnit = spatialUnitDao.findByImeiandTimeStamp(projectName, creationDate);
                     Project project = projectDao.findByProjectId(Integer.parseInt(projectName));
                     ProjectArea projectArea = projectService.getProjectArea(project.getName()).get(0);
 
-//                    if (spatialUnit != null) {
-//                        result.put(featureId.toString(), Long.toString(spatialUnit.getLandid()));
-//                        continue;
-//                    }
                     SpatialUnitResourceLine spatialUnit = new SpatialUnitResourceLine();
                     spatialUnit.setClaimtypeid(5);   // for resources
-                    //spatialUnit.setLaRightClaimtype(claimTypeDAO.findById(prop.getClaimTypeCode(), false));
 
                     if (!StringUtils.isEmpty(prop.getUkaNumber())) {
                         spatialUnit.setLandno(prop.getUkaNumber());
@@ -1928,18 +1578,26 @@ public class UserDataServiceImpl implements UserDataService {
                     spatialUnit.setGeometrytype(prop.getPolygonNumber());
                     DateFormat dateformat = new SimpleDateFormat("dd-MM-yyyy");
                     Date date = dateformat.parse(prop.getCompletionDate());
-                    long time = date.getTime();
                     spatialUnit.setCreateddate(dateformat.parse(prop.getCreationDate()));
-//                    spatialUnit.setSurveydate(new SimpleDateFormat("yyyy-MM-dd").parse(prop.getSurveyDate()));
                     spatialUnit.setProjectnameid(Integer.parseInt(projectName));
                     spatialUnit.setCreatedby(userId);
                     spatialUnit.setLandno(featureId.toString());
-//                    ShareType sharetype =  shareTypeDao.getTenureRelationshipTypeById(prop.getRight().getShareTypeId());
-//                    spatialUnit.setLaRightLandsharetype(sharetype);
-//                    spatialUnit.setHamletId(prop.getHamletId());
-//                    spatialUnit.setWitness1(prop.getAdjudicator1());
-//                    spatialUnit.setWitness2(prop.getAdjudicator2());
 
+                    if(prop.getChartered() != null){
+                        spatialUnit.setChartered(prop.getChartered());
+                    }
+                    spatialUnit.setComment(prop.getComment());
+                    
+                    if(StringUtils.isNotEmpty(prop.getValidationDate())){
+                        spatialUnit.setValidationDate(isoDateFormat.parse(prop.getValidationDate()));
+                    }
+                    if(prop.getValidatedByCouncil() != null){
+                        spatialUnit.setValidatedByCouncil(prop.getValidatedByCouncil());
+                    }
+                    if(prop.getInExploitation() != null){
+                        spatialUnit.setInExploitation(prop.getInExploitation());
+                    }
+                    
                     GeometryConversion geomConverter = new GeometryConversion();
 
                     spatialUnit.setGeometrytype(prop.getGeomType());
@@ -1953,7 +1611,6 @@ public class UserDataServiceImpl implements UserDataService {
                         }
                     }
 
-//                    spatialUnit.getTheGeom().setSRID(4326);
                     spatialUnit.setLaSpatialunitgroup1(projectArea.getLaSpatialunitgroup1());
                     spatialUnit.setLaSpatialunitgroup2(projectArea.getLaSpatialunitgroup2());
                     spatialUnit.setLaSpatialunitgroup3(projectArea.getLaSpatialunitgroup3());
@@ -1972,79 +1629,14 @@ public class UserDataServiceImpl implements UserDataService {
                     spatialUnit.setWorkflowstatusid(1);
                     spatialUnit.setModifiedby(userId);
                     spatialUnit.setModifieddate(new Date());
-//                    spatialUnit.setImei(prop.getImei());
 
                     setReourceLinePropAttibutes(spatialUnit, prop);
 
                     serverPropId = spatialUnitResourceLinedao.addSpatialUnitResourceLine(spatialUnit).getLandid();
                     spatialUnitDao.clear();
-
                 }
 
-//                for (ClassificationAttributes attribute : prop.getClassificationAttributes()) {
-//                   
-//                	 ResourceAttributeValues resourceattribvalues = new ResourceAttributeValues();
-//                    if (attribute.getAttribID() == 1017) {
-//                 	   AttributeMaster attributemaster = attributeMasterdao.findByAttributeId(attribute.getAttribID().longValue());
-//                        resourceattribvalues.setAttributemaster(attributemaster);
-//                        resourceattribvalues.setAttributevalue(attribute.getAttribValue());
-//                        resourceattribvalues.setLandid(serverPropId.intValue());
-//                        resourceattribvalues.setProjectid(Integer.parseInt(projectName));
-//                        resourceattributeValuesdao.addResourceAttributeValues(resourceattribvalues);
-//                        } 
-//                    
-//                    else if (attribute.getAttribID() == 1018) {
-//                 	   AttributeMaster attributemaster = attributeMasterdao.findByAttributeId(attribute.getAttribID().longValue());
-//                        resourceattribvalues.setAttributemaster(attributemaster);
-//                        resourceattribvalues.setAttributevalue(attribute.getAttribValue());
-//                        resourceattribvalues.setLandid(serverPropId.intValue());
-//                        resourceattribvalues.setProjectid(Integer.parseInt(projectName));
-//                        resourceattributeValuesdao.addResourceAttributeValues(resourceattribvalues);
-//                        } 
-//                    
-//                    else if (attribute.getAttribID() == 1019) {
-//                 	   AttributeMaster attributemaster = attributeMasterdao.findByAttributeId(attribute.getAttribID().longValue());
-//                        resourceattribvalues.setAttributemaster(attributemaster);
-//                        resourceattribvalues.setAttributevalue(attribute.getAttribValue()); 
-//                        resourceattribvalues.setLandid(serverPropId.intValue());
-//                        resourceattribvalues.setProjectid(Integer.parseInt(projectName));
-//                        resourceattributeValuesdao.addResourceAttributeValues(resourceattribvalues);
-//                        } 
-//                    
-//                    else if (attribute.getAttribID() == 1026) {
-//                 	   AttributeMaster attributemaster = attributeMasterdao.findByAttributeId(attribute.getAttribID().longValue());
-//                        resourceattribvalues.setAttributemaster(attributemaster);
-//                        resourceattribvalues.setAttributevalue(attribute.getAttribValue()); 
-//                        resourceattribvalues.setLandid(serverPropId.intValue());
-//                        resourceattribvalues.setProjectid(Integer.parseInt(projectName));
-//                        resourceattributeValuesdao.addResourceAttributeValues(resourceattribvalues);
-//                        } 
-//                    
-//                    else if (attribute.getAttribID() == 1028) {
-//                 	   AttributeMaster attributemaster = attributeMasterdao.findByAttributeId(attribute.getAttribID().longValue());
-//                        resourceattribvalues.setAttributemaster(attributemaster);
-//                        resourceattribvalues.setAttributevalue(attribute.getAttribValue()); 
-//                        resourceattribvalues.setLandid(serverPropId.intValue());
-//                        resourceattribvalues.setProjectid(Integer.parseInt(projectName));  
-//                        resourceattributeValuesdao.addResourceAttributeValues(resourceattribvalues);
-//                        } 
-//                    
-//                    else if (attribute.getAttribID() == 1029) {
-//                 	   AttributeMaster attributemaster = attributeMasterdao.findByAttributeId(attribute.getAttribID().longValue());
-//                        resourceattribvalues.setAttributemaster(attributemaster);
-//                        resourceattribvalues.setAttributevalue(attribute.getAttribValue()); 
-//                        resourceattribvalues.setLandid(serverPropId.intValue());
-//                        resourceattribvalues.setProjectid(Integer.parseInt(projectName));
-//                        resourceattributeValuesdao.addResourceAttributeValues(resourceattribvalues);
-//                        } 
-//                    
-//                   
-//                              
-//                         
-//                }
-                // Resource Code
                 for (Attribute attribute : prop.getAttributes()) {
-
                     ResourceAttributeValues resourceattribvalues = new ResourceAttributeValues();
                     AttributeMaster attributemaster = attributeMasterdao.findByAttributeId(attribute.getId().longValue());
                     resourceattribvalues.setAttributemaster(attributemaster);
@@ -2054,11 +1646,9 @@ public class UserDataServiceImpl implements UserDataService {
                     resourceattribvalues.setGeomtype(prop.getGeomType());
                     resourceattribvalues.setProjectid(Integer.parseInt(projectName));
                     resourceattributeValuesdao.addResourceAttributeValues(resourceattribvalues);
-
                 }
 
                 for (ResourcePersonOfInterest attributes : prop.getPersonOfInterestsRes()) {
-
                     ResourcePOIAttributeValues resourcePoiAttribvalues = new ResourcePOIAttributeValues();
                     AttributeMasterResourcePOI Poiattributemaster = attributeMasterResourcePoiDao.getPOIAttributteMasterById(attributes.getId().intValue());
                     resourcePoiAttribvalues.setAttributemaster(Poiattributemaster);
@@ -2070,7 +1660,6 @@ public class UserDataServiceImpl implements UserDataService {
                         resourcePoiAttribvalues.setGroupid(attributes.getGroupId());
                     }
                     resourcePOIAttributeValuesdao.addResourcePOIAttributeValues(resourcePoiAttribvalues);
-
                 }
 
                 ResourceLandClassificationMapping resourcelandClassification = new ResourceLandClassificationMapping();
@@ -2085,7 +1674,6 @@ public class UserDataServiceImpl implements UserDataService {
                 resourceLandClassificationMappingdao.addResourceLandClassifications(resourcelandClassification);
 
                 for (com.rmsi.mast.studio.mobile.transferobjects.ResourceCustomAttributes rescustomAttribute : prop.getCustomAttributes()) {
-
                     CustomAttributes customAttributes = new CustomAttributes();
                     ResourceCustomAttributes resouceCustomAttributes = resouceCustomAttributesService.getByCustomattributeId(rescustomAttribute.getAttribId());
                     customAttributes.setCustomattributeid(resouceCustomAttributes);
@@ -2100,66 +1688,6 @@ public class UserDataServiceImpl implements UserDataService {
                     }
                     customAttributesHibernatedao.addResourceCustomAttributeValues(customAttributes);
                 }
-
-                // Save property attributes
-//                List<AttributeValues> attributes = createAttributesList(projectAttributes, prop.getAttributes());
-//                attributeValuesDao.addAttributeValues(attributes, serverPropId);
-
-                /*  COMMENTED BY RAHUL START                
-                
-                // Save Natural persons
-                if (prop.getRight() != null && prop.getRight().getNonNaturalPerson() == null) {
-                    for (Person propPerson : prop.getRight().getNaturalPersons()) {
-                        // Save natural person
-                        NaturalPerson person = new NaturalPerson();
-                        person.setLaSpatialunitgroup1(projectArea.getLaSpatialunitgroup1());
-                        person.setLaSpatialunitgroup2(projectArea.getLaSpatialunitgroup2());
-                        person.setLaSpatialunitgroup3(projectArea.getLaSpatialunitgroup3());
-                        person.setLaSpatialunitgroupHierarchy1(projectArea.getLaSpatialunitgroupHierarchy1());
-                        person.setLaSpatialunitgroupHierarchy2(projectArea.getLaSpatialunitgroupHierarchy2());
-                        person.setLaSpatialunitgroupHierarchy3(projectArea.getLaSpatialunitgroupHierarchy3());
-                        person.setIdentityno("13424345");
-                        IdType idtype = new IdType();
-                        idtype.setIdentitytypeid(1);
-                        person.setLaPartygroupIdentitytype(idtype);
-                        person.setCreatedby(userId);
-                        person.setCreateddate(new Timestamp(time));
-
-                        setNaturalPersonAttributes(person, propPerson);
-                        person = naturalPersonDao.addNaturalPerson(person);
-                        attributes = createAttributesList(projectAttributes, propPerson.getAttributes());
-                        attributeValuesDao.addAttributeValues(attributes, person.getPartyid());
-
-                        // Save right
-                        SocialTenureRelationship right = new SocialTenureRelationship();
-                        right.setCreatedby(userId);
-                        setRightAttributes(right, prop.getRight());
-                        right.setLandid(serverPropId);
-                        right.setPartyid(person.getPartyid());
-                        right.setLaPartygroupPersontype(person.getLaPartygroupPersontype());
-                        
-                        LaExtTransactiondetail laExtTransactiondetail = new LaExtTransactiondetail();
-            			laExtTransactiondetail.setCreatedby(userId);
-            			laExtTransactiondetail.setCreateddate(new Timestamp(time));
-            			laExtTransactiondetail.setIsactive(true);
-            			
-            			Status status = registrationRecordsService.getStatusById(1);
-            			
-            			laExtTransactiondetail.setLaExtApplicationstatus(status);
-            			laExtTransactiondetail.setModuletransid(1);
-            			laExtTransactiondetail.setRemarks("");
-            			laExtTransactiondetail.setProcessid(1l);
-                        
-                        right.setLaExtTransactiondetail(laExtTransactiondetail);
-                        right.setCreateddate(new Timestamp(time));
-                        
-                        SocialTenureRelationship  socialTenurerelationship  = socialTenureDao.addSocialTenure(right);
-                        attributes = createAttributesList(projectAttributes, prop.getRight().getAttributes());
-                        attributeValuesDao.addAttributeValues(attributes, socialTenurerelationship.getPersonlandid());
-                        
-                    }
-                }
-  COMMENTED BY RAHUL CLOSE */
                 result.put(featureId.toString(), Long.toString(serverPropId));
             }
 

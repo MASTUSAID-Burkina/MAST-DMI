@@ -181,19 +181,14 @@ function displaymasterAttr() {
     jQuery("#masterAttr_btnNew").show();
 }
 
-var savemasterAttrData = function ()
-{
-
-
-
+var savemasterAttrData = function () {
     jQuery.ajax({
         type: "POST",
         url: "masterattrib/create" + "?" + token,
         data: jQuery("#addAttributeformID").serialize(),
         success: function (result)
         {
-            if (result == 'true')
-            {
+            if (result == 'true') {
                 jAlert($.i18n("gen-data-saved"), $.i18n("gen-info"));
                 displayRefreshedMasterAttr();
                 attrDialog.dialog("destroy");
@@ -202,23 +197,16 @@ var savemasterAttrData = function ()
             } else if (result == 'duplicate')
             {
                 jAlert($.i18n("err-duplicat-alias"), $.i18n("err-alert"));
-
-
             } else if (result == 'false')
             {
                 jAlert($.i18n("err-not-saved"), $.i18n("err-alert"));
-                //attrDialog.dialog("destroy");
-
-
             }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
-
             alert('err.Message');
         }
     });
-
-}
+};
 
 function savemasterAttr()
 {
@@ -243,15 +231,11 @@ function savemasterAttr()
             category_type_sel: $.i18n("err-enter-cat-type"),
             category: $.i18n("err-enter-cat"),
         }
-
     });
 
     if ($("#addAttributeformID").valid())
     {
-
-
         savemasterAttrData();
-
     }
 }
 
@@ -378,9 +362,7 @@ function cancelMasterAttr()
 
 }
 
-function editmasterAttr(id)
-{
-
+function editmasterAttr(id) {
     jQuery.ajax({
         url: "masterattributes/" + id,
         async: false,
@@ -392,15 +374,11 @@ function editmasterAttr(id)
             jQuery("#fieldName").val(data[0].fieldname);
             jQuery("#size").val(data[0].size);
 
-
             if (data[0].laExtAttributecategory.attributecategoryid >= 1 && data[0].laExtAttributecategory.attributecategoryid <= 8) {
-
                 jQuery.ajax({
                     url: "attribcategoryById/1",
                     async: false,
                     success: function (objattribute) {
-
-
                         $("#category").empty();
                         jQuery("#category").append(jQuery("<option></option>").attr("value", "").text($.i18n("gen-please-select")));
                         jQuery.each(objattribute, function (i, _categoryobj) {
@@ -409,36 +387,24 @@ function editmasterAttr(id)
                         });
                         jQuery("#category").val(data[0].laExtAttributecategory.attributecategoryid);
                         $("#category_type_sel").val(1);
-
-
                     }
                 });
-
-
-
             }
+            
             if (data[0].laExtAttributecategory.attributecategoryid >= 9 && data[0].laExtAttributecategory.attributecategoryid <= 13) {
 
                 jQuery.ajax({
                     url: "attribcategoryById/2",
                     async: false,
                     success: function (objattribute) {
-
-
                         $("#category").empty();
                         jQuery("#category").append(jQuery("<option></option>").attr("value", "").text($.i18n("gen-please-select")));
                         jQuery.each(objattribute, function (i, _categoryobj) {
                             jQuery("#category").append(jQuery("<option></option>").attr("value", _categoryobj.attributecategoryid).text(_categoryobj[catNameField]));
-
                         });
 
-
                         jQuery("#category").val(data[0].laExtAttributecategory.attributecategoryid);
-                        $("#category_type_sel").val(1);
-
-
-
-
+                        $("#category_type_sel").val(2);
                     }
                 });
 
@@ -446,8 +412,6 @@ function editmasterAttr(id)
             }
             $('#category_type_sel').attr("disabled", true);
 
-            /*jQuery("#mandatory").val("false");*/
-            //console.log(data[0].mandatory);
             jQuery("#mandatory").prop("unchecked", "false");
             if (data[0].mandatory == true) {
                 jQuery("#mandatory").val("true");
@@ -463,12 +427,6 @@ function editmasterAttr(id)
                     _Optext_Id = _Optext_Id + 1;
 
                 });
-
-
-
-
-
-
             }
         }
     });
@@ -485,11 +443,7 @@ function editmasterAttr(id)
                 text: $.i18n("gen-update"),
                 click: function ()
                 {
-
                     updateEditAttribute();
-
-
-
                 }
             },
             {
@@ -502,13 +456,10 @@ function editmasterAttr(id)
         ],
         close: function () {
             cancelMasterAttr();
-
         }
     });
 
     attrDialog.dialog("open");
-
-
 }
 
 function updateEditAttribute()

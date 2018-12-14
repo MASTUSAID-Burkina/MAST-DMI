@@ -35,6 +35,8 @@ function generateBoundaryMap(usin) {
                             vertexTableList.push(tmp);
                         }
 
+                        $("#lblScale").text("1:" + scaleSize);
+                        
                         jQuery("#vertexTable_map").tmpl(vertexTableList).appendTo("#vertexTableBody_map");
 
                         //add neighbour details
@@ -45,19 +47,19 @@ function generateBoundaryMap(usin) {
                         for (var int = 0; int < neighbourList.length; int++) {
                             var tempNeighbourList = [];
                             if (int === 0) {
-                                tempNeighbourList["location"] = "North";
+                                tempNeighbourList["location"] = "Nord";
                                 tempNeighbourList["name"] = neighbourList[int];
                             }
                             if (int === 1) {
-                                tempNeighbourList["location"] = "South";
+                                tempNeighbourList["location"] = "Sud";
                                 tempNeighbourList["name"] = neighbourList[int];
                             }
                             if (int === 2) {
-                                tempNeighbourList["location"] = "East";
+                                tempNeighbourList["location"] = "Est";
                                 tempNeighbourList["name"] = neighbourList[int];
                             }
                             if (int === 3) {
-                                tempNeighbourList["location"] = "West";
+                                tempNeighbourList["location"] = "Ouest";
                                 tempNeighbourList["name"] = neighbourList[int];
                             }
                             neighbourFinalList.push(tempNeighbourList);

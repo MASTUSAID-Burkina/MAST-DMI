@@ -322,11 +322,11 @@
                     <ul>
                         <li><a href="#map-tab" id="tab1" data-i18n="viewer-map" onclick="javascript:closeDialog('taskMngrdiv')"></a></li>
                         <li><a href="#landrecords-div" id="tab2" data-i18n="viewer-land-records"></a></li>
-                        <%if(s.equalsIgnoreCase("ROLE_ADMIN") || s.equalsIgnoreCase("ROLE_PM") || s.equalsIgnoreCase("ROLE_SFR")){%>
+                            <%if (s.equalsIgnoreCase("ROLE_ADMIN") || s.equalsIgnoreCase("ROLE_PM") || s.equalsIgnoreCase("ROLE_SFR")) {%>
                         <li><a href="#registryTab-div" id="tab5" data-i18n="viewer-reg"></a></li>
                         <li><a href="#landresource-div" id="tab6" data-i18n="viewer-res"> </a></li>
                         <li><a href="#tabReports" id="tab4" data-i18n="viewer-reports"></a></li>
-                        <%}%>
+                            <%}%>
                     </ul>
 
                     <div id="map-tab">
@@ -342,16 +342,23 @@
                                 </div>
                             </div>
 
-                            <%if(s.equalsIgnoreCase ("ROLE_ADMIN") || s.equalsIgnoreCase("ROLE_PM")){%>
+                            <%if (s.equalsIgnoreCase("ROLE_ADMIN") || s.equalsIgnoreCase("ROLE_PM")) {%>
                             <div style="float: left; margin: 3px 6px;">
                                 <button type="button" class="btn" onclick="javascript:initTaskManager();" data-i18n="viewer-taskman"></button>
                             </div>
                             <%}%>
-                            
-                            <div style="float: right; postion: relative; height: 38px;">
+
+                            <div style="postion: relative; height: 38px;">
                                 <div id="toolbar" class="toolbar">
                                     <div class="fg-buttonset fg-buttonset-single">
                                         <ul id="mycarousel" class="jcarousel-skin-tango">
+                                            <li id="li-intersection">
+                                                <button id="intersection"
+                                                        title="Spatial Validation"
+                                                        class=" fg-button ui-state-default1 ui-priority-primary1 ui-corner-left ui-corner-right">
+                                                    <img src="<c:url value="resources/images/viewer/toolbar/intersections.png" />" />
+                                                </button>
+                                            </li>
                                             <li id="li-openproject">
                                                 <button id="openproject" data-i18n="[title]viewer-select-proj"
                                                         class=" fg-button ui-state-default1 ui-priority-primary1 ui-corner-left ui-corner-right">
@@ -549,15 +556,37 @@
                             </table>
                         </div>
                     </div>
-                    
+
                     <div id="landrecords-div"></div>
-                    
-                    <%if(s.equalsIgnoreCase ("ROLE_ADMIN") || s.equalsIgnoreCase("ROLE_PM") || s.equalsIgnoreCase("ROLE_SFR")){%>
+
+                    <%if (s.equalsIgnoreCase("ROLE_ADMIN") || s.equalsIgnoreCase("ROLE_PM") || s.equalsIgnoreCase("ROLE_SFR")) {%>
                     <div id="landresource-div"></div>
-                    
+
                     <div id="tabReports">
                         <div style="padding: 10px;">
                             <div id="reportsAccordion">
+                                <h3 data-i18n="reg-report-apfr-summary"></h3>
+                                <div>
+                                    <br /> <label data-i18n="reg-village"></label> 
+                                    <select id="cbxApfrSummaryVillages"></select> &nbsp;&nbsp; 
+                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="reportSummaryApfrStat();" /> 
+                                    <br />
+                                </div>
+                                
+                                <h3 data-i18n="reg-report-trans-summary"></h3>
+                                <div>
+                                    <br /> <label data-i18n="reg-village"></label> 
+                                    <select id="cbxTransSummaryVillages"></select> &nbsp;&nbsp; 
+                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="reportSummaryTransactionsStat();" /> 
+                                    <br />
+                                </div>
+                                
+                                <h3 data-i18n="viewer-res-summary"></h3>
+                                <div>
+                                    <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="reportSummaryResourcesStat();" /> 
+                                    <br />
+                                </div>
+                                
                                 <h3 data-i18n="reg-report-by-tenure"></h3>
                                 <div>
                                     <br /> <label data-i18n="reg-village"></label> 
@@ -565,7 +594,7 @@
                                     <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:reportByTenure();" /> 
                                     <br />
                                 </div>
-                                
+
                                 <h3 data-i18n="reg-report-by-gender"></h3>
                                 <div>
                                     <br /> <label data-i18n="reg-village"></label> 
@@ -573,7 +602,7 @@
                                     <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:reportByGender();" /> 
                                     <br />
                                 </div>
-                                
+
                                 <h3 data-i18n="reg-report-by-tenure-app-reg"></h3>
                                 <div>
                                     <br /> <label data-i18n="reg-village"></label> 
@@ -581,7 +610,7 @@
                                     <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:reportByTenureAppReg();" /> 
                                     <br />
                                 </div>
-                                
+
                                 <h3 data-i18n="reg-report-by-gender-app-reg"></h3>
                                 <div>
                                     <br /> <label data-i18n="reg-village"></label> 
@@ -589,7 +618,7 @@
                                     <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:reportByGenderAppReg();" /> 
                                     <br />
                                 </div>
-                                
+
                                 <h3 data-i18n="reg-report-by-tenure-apfr-reg"></h3>
                                 <div>
                                     <br /> <label data-i18n="reg-village"></label> 
@@ -597,7 +626,7 @@
                                     <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:reportByTenureApfrReg();" /> 
                                     <br />
                                 </div>
-                                
+
                                 <h3 data-i18n="reg-report-by-gender-apfr-reg"></h3>
                                 <div>
                                     <br /> <label data-i18n="reg-village"></label> 
@@ -605,7 +634,7 @@
                                     <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:reportByGenderApfrReg();" /> 
                                     <br />
                                 </div>
-                                
+
                                 <h3 data-i18n="reg-reg-app-proccess"></h3>
                                 <div>
                                     <br /> <label data-i18n="reg-village"></label> 
@@ -613,7 +642,7 @@
                                     <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:reportByAppProcess();" /> 
                                     <br />
                                 </div>
-                                
+
                                 <h3 data-i18n="reg-reg-app-publish"></h3>
                                 <div>
                                     <br /> <label data-i18n="reg-village"></label> 
@@ -621,7 +650,7 @@
                                     <input type="button" data-i18n="[value]gen-generate" class="btn1" onclick="javascript:reportByAppPublish();" /> 
                                     <br />
                                 </div>
-                                
+
                                 <h3 data-i18n="reg-reg-app-apfr"></h3>
                                 <div>
                                     <br /> <label data-i18n="reg-village"></label> 
@@ -634,12 +663,41 @@
                     </div>
                     <div id="registryTab-div"></div>
                     <%}%>
-                    
+
                     <div id="bottomstatusbar" class="bottom_statusbar"></div>
                 </div>
 
                 <div id="printDiv" style="display: none;"></div>
 
+                <!-- Popup for spatial validation -->
+
+                <div id="validation-dialog-form" title="Spatial Validation"
+                     style="display: none;">
+
+
+
+                    <form class="cmxform" id="spatialValidationformID" action="" onsubmit="return false;">
+
+                        <fieldset>
+
+                            <div id="radioSpatial">
+                                <div class="bottom-clr-5">
+                                    <input class="selectSpatial" name="spatial_validation"
+                                           type="radio" value="1" id="pre-selectAll"
+                                           onclick="handleClick(this)" title="Select all" />
+                                    <span>Select All</span>
+                                </div>
+                                <div class="bottom-clr-5">
+                                    <input class="selectlang" name="spatial_validation" type="radio"
+                                           value="2" id="pre-selectRect" onclick="handleClick(this)"
+                                           title="Select by rectangle" />
+                                    <span>Select by rectangle</span>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+                <!-- End Popup -->
             </div>
 
             <div>

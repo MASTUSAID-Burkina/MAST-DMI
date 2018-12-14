@@ -75,10 +75,6 @@ public class ProjectDataHibernateDAO extends GenericHibernateDAO<ProjectSpatialD
                     .setParameter("name", name);
 
             int count = query.executeUpdate();
-
-            System.out.println(count);
-            System.out.println(count);
-
         } catch (Exception e) {
             logger.error(e);
 

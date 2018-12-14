@@ -63,6 +63,13 @@ var dragBoxInteraction = new ol.interaction.DragBox({
         })
     })
 });
+var selectForValidation = new ol.interaction.DragBox({
+    style: new ol.style.Style({
+        stroke: new ol.style.Stroke({
+            color: [250, 25, 25, 1]
+        })
+    })
+});
 var selectClick = new ol.interaction.Select({
     condition: ol.events.condition.click,
 });
@@ -436,6 +443,10 @@ function clearSelection(clearResultGrid, _lyr) {
         map.removeInteraction(measure_draw);
     }
 
+    if (selectForValidation != null) {
+        map.removeInteraction(selectForValidation);
+    }
+
     if (draw != null)
     {
         map.removeInteraction(draw);
@@ -583,7 +594,9 @@ function removeDeactiveMarkupTool() {
 
     $(".tooltip-static").remove();
 
-
+    if (selectForValidation != null) {
+        map.removeInteraction(selectForValidation);
+    }
     if (measure_draw != null)
     {
         map.removeInteraction(measure_draw);
@@ -1087,7 +1100,7 @@ function removeNulls(obj) {
     if (typeof obj !== 'undefined' && obj !== null) {
         for (var prop in obj) {
             if (obj.hasOwnProperty(prop)) {
-                if(obj[prop] === null){
+                if (obj[prop] === null) {
                     obj[prop] = "";
                 }
             }

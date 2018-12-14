@@ -35,6 +35,7 @@ import com.rmsi.mast.studio.domain.Baselayer;
 import com.rmsi.mast.studio.domain.Bookmark;
 import com.rmsi.mast.studio.domain.LaSpatialunitgroup;
 import com.rmsi.mast.studio.domain.Layergroup;
+import com.rmsi.mast.studio.domain.ParcelCount;
 import com.rmsi.mast.studio.domain.Project;
 import com.rmsi.mast.studio.domain.ProjectAdjudicator;
 import com.rmsi.mast.studio.domain.ProjectArea;
@@ -62,8 +63,9 @@ import com.rmsi.mast.studio.service.RoleService;
 import com.rmsi.mast.studio.service.UnitService;
 import com.rmsi.mast.studio.service.UserProjectService;
 import com.rmsi.mast.studio.service.UserService;
+import com.rmsi.mast.studio.util.ConstantUtil;
 import com.rmsi.mast.studio.util.FileUtils;
-import com.rmsi.mast.studio.util.StringUtils;
+import com.rmsi.mast.viewer.dao.ParcelCountDao;
 import com.rmsi.mast.viewer.service.LandRecordsService;
 import java.text.DateFormat;
 
@@ -117,6 +119,9 @@ public class ProjectController {
     @Autowired
     UserProjectService userProjectService;
 
+    @Autowired
+    private ParcelCountDao parcelCountDao;
+
     @RequestMapping(value = "/studio/userproject/", method = RequestMethod.GET)
     @ResponseBody
     public List<Project> getAllUserProjects() {
@@ -142,6 +147,41 @@ public class ProjectController {
     @ResponseBody
     public Project getProjectById(@PathVariable String id) {
         return projectService.findProjectByName(id);
+    }
+
+    @RequestMapping(value = "/studio/project/numbers/{name}", method = RequestMethod.GET)
+    @ResponseBody
+    public ParcelCount[] getProjectNumbers(@PathVariable String name) {
+        ParcelCount[] result = new ParcelCount[3];
+
+        ParcelCount appCount = parcelCountDao.findParcelCountByTypeAndProjectName(ConstantUtil.APPLICATION, name);
+        if (appCount == null) {
+            appCount = new ParcelCount();
+            appCount.setCount(0);
+            appCount.setPname(name);
+            appCount.setType(ConstantUtil.APPLICATION);
+        }
+
+        ParcelCount pvCount = parcelCountDao.findParcelCountByTypeAndProjectName(ConstantUtil.PV, name);
+        if (pvCount == null) {
+            pvCount = new ParcelCount();
+            pvCount.setCount(0);
+            pvCount.setPname(name);
+            pvCount.setType(ConstantUtil.PV);
+        }
+
+        ParcelCount apfrCount = parcelCountDao.findParcelCountByTypeAndProjectName(ConstantUtil.APFR, name);
+        if (apfrCount == null) {
+            apfrCount = new ParcelCount();
+            apfrCount.setCount(0);
+            apfrCount.setPname(name);
+            apfrCount.setType(ConstantUtil.APFR);
+        }
+        result[0] = appCount;
+        result[1] = pvCount;
+        result[2] = apfrCount;
+
+        return result;
     }
 
     @RequestMapping(value = "/studio/project/delete/", method = RequestMethod.GET)
@@ -237,6 +277,9 @@ public class ProjectController {
             String mayorName = "";
             String mayorElectionDateStr = "";
             Date mayorElectionDate = null;
+            int appNumber = 0;
+            int pvNumber = 0;
+            int apfrNumber = 0;
 
             try {
                 try {
@@ -300,6 +343,10 @@ public class ProjectController {
                 } catch (Exception e) {
                     logger.error(e);
                 }
+
+                appNumber = ServletRequestUtils.getIntParameter(request, "appnumber", 0);
+                pvNumber = ServletRequestUtils.getIntParameter(request, "pvnumber", 0);
+                apfrNumber = ServletRequestUtils.getIntParameter(request, "apfrnumber", 0);
 
                 mayorElectionDateStr = ServletRequestUtils.getStringParameter(request, "mayorElectionDate", null);
 
@@ -377,7 +424,38 @@ public class ProjectController {
             project.setProjectBaselayers(projectBaselayerList);
             project.setProjectArea(projectAreaset);
 
-            projectService.addProject(project);
+            ParcelCount[] numberCounters = new ParcelCount[3];
+            
+            // Get number counters
+            ParcelCount appCount = parcelCountDao.findParcelCountByTypeAndProjectName(ConstantUtil.APPLICATION, project.getName());
+            if (appCount == null) {
+                appCount = new ParcelCount();
+                appCount.setPname(project.getName());
+                appCount.setType(ConstantUtil.APPLICATION);
+            }
+            appCount.setCount(appNumber);
+            
+            ParcelCount pvCount = parcelCountDao.findParcelCountByTypeAndProjectName(ConstantUtil.PV, project.getName());
+            if (pvCount == null) {
+                pvCount = new ParcelCount();
+                pvCount.setPname(project.getName());
+                pvCount.setType(ConstantUtil.PV);
+            }
+            pvCount.setCount(pvNumber);
+            
+            ParcelCount apfrCount = parcelCountDao.findParcelCountByTypeAndProjectName(ConstantUtil.APFR, project.getName());
+            if (apfrCount == null) {
+                apfrCount = new ParcelCount();
+                apfrCount.setPname(project.getName());
+                apfrCount.setType(ConstantUtil.APFR);
+            }
+            apfrCount.setCount(apfrNumber);
+            
+            numberCounters[0] = appCount;
+            numberCounters[1] = pvCount;
+            numberCounters[2] = apfrCount;
+            
+            projectService.addProject(project, numberCounters);
 
             return "ProjectAdded";
         } catch (Exception e) {
