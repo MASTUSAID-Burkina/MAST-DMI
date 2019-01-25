@@ -173,13 +173,17 @@
 
                     <div id="tabs_res">
                         <ul>
-                            <li><a href="#tabGeneralInfo" data-i18n="gen-geninfo"></a></li>
-                            <li id="liPoi_res" onclick="issavedisabled();"><a
-                                    class="linkliPoi" href="#tabs-2c-res" data-i18n="reg-person"></a></li>
-                            <li><a href="#tab-Custom-attributes" data-i18n="reg-custom-attr"></a></li>
-
-
+                            <li onclick="showSaveResourceButton(true);">
+                                <a href="#tabGeneralInfo" data-i18n="gen-geninfo"></a>
+                            </li>
+                            <li id="liPoi_res" onclick="showSaveResourceButton(false);issavedisabled();">
+                                <a class="linkliPoi" href="#tabs-2c-res" data-i18n="reg-person"></a>
+                            </li>
+                            <li onclick="showSaveResourceButton(false);">
+                                <a href="#tab-Custom-attributes" data-i18n="reg-custom-attr"></a>
+                            </li>
                         </ul>
+                        
                         <div id="tabGeneralInfo">
                             <div class="tab-pane landrecords22" id="land-record">
                                 <div style="margin: 0 10px;">
@@ -223,27 +227,27 @@
                                         <tr>
                                             <td>
                                                 <label data-i18n="reg-chartered"></label> 
-                                                <input type="checkbox" name="chbxChartered" id="chbxChartered" disabled="disabled">
+                                                <input type="checkbox" name="chbxChartered" id="chbxChartered">
                                             </td>
                                             <td>
                                                 <label data-i18n="reg-valid-by-council"></label> 
-                                                <input type="checkbox" name="chbxValidatedByCouncil" id="chbxValidatedByCouncil" disabled="disabled">
+                                                <input type="checkbox" name="chbxValidatedByCouncil" id="chbxValidatedByCouncil">
                                             </td>
                                             <td>
                                                 <label data-i18n="reg-last-valuation"></label> 
-                                                <input type="text" name="txtValidationDate" id="txtValidationDate" value=""
-                                                       class="text ui-widget-content ui-corner-all" readonly>
+                                                <input type="text" name="txtValidationDate" id="txtValidationDate" value="" placeholder="YYYY-MM-DD"
+                                                       class="datepicker text ui-widget-content ui-corner-all justread" readonly="readonly">
                                             </td>
                                             <td>
                                                 <label data-i18n="reg-in-exploitation"></label> 
-                                                <input type="checkbox" name="chbxInExploitation" id="chbxInExploitation" disabled="disabled">
+                                                <input type="checkbox" name="chbxInExploitation" id="chbxInExploitation">
                                             </td>
                                         </tr>
                                         <tr>
                                             <td colspan="4">
                                                 <label data-i18n="gen-comments"></label> 
                                                 <textarea name="txtResComment" id="txtResComment" style="width: 93%;" rows="2"
-                                                          class="text ui-widget-content ui-corner-all" readonly>
+                                                          class="text ui-widget-content ui-corner-all">
                                                 </textarea>
                                             </td>
                                         </tr>

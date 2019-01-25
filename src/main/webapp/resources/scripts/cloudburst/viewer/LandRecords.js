@@ -5986,7 +5986,7 @@ function editParcelNumber(usin, section, parcelNum) {
                     }
 
                     var comment = $('#commentsStatus_parcelEdit').val();
-                    if (comment === "") {
+                    if (comment === "" || comment === " ") {
                         jAlert($.i18n("err-enter-comments"), $.i18n("err-alert"));
                         return false;
                     }

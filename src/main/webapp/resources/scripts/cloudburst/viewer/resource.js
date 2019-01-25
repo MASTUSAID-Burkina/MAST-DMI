@@ -430,6 +430,7 @@ function viewAttribute(usin)
 
             geomName = dataList[i].geometryName;
         }
+        $(".datepicker").datepicker({dateFormat: "yy-mm-dd"});
     }
 
     FillResourcePersonDataNew();
@@ -447,7 +448,15 @@ function viewAttribute(usin)
             $("input,select,textarea").removeClass('addBg');
             attributeHistoryDialog.dialog("destroy");
         },
-        buttons: [{
+        buttons: [
+            {
+                text: $.i18n("gen-save"),
+                "id": "btnSaveResource",
+                click: function () {
+                    saveGeneralResourceProps();
+                }
+            },
+            {
                 text: $.i18n("gen-save"),
                 "id": "comment_Save",
                 click: function ()
@@ -489,6 +498,46 @@ function viewAttribute(usin)
     $("#comment_Save").prop("disabled", false).hide();
     $("#Custom_Save").prop("disabled", false).hide();
     $("#tabs").tabs({active: 0});
+}
+
+function showSaveResourceButton(show) {
+    if (show && !$("#btnSaveResource").prop("disabled")) {
+        $("#btnSaveResource").show();
+    } else {
+        $("#btnSaveResource").hide();
+    }
+}
+
+function saveGeneralResourceProps() {
+    var formData = new FormData();
+    formData.append("id", $("#landid").val());
+    formData.append("geomType", geomName);
+    formData.append("chartered", $("#chbxChartered").prop('checked'));
+    formData.append("validatedByCouncil", $("#chbxValidatedByCouncil").prop('checked'));
+    formData.append("explotated", $("#chbxInExploitation").prop('checked'));
+    formData.append("validationDate", $("#txtValidationDate").val());
+    formData.append("comments", $("#txtResComment").val());
+
+    $.ajax({
+        url: 'resource/updateResource',
+        type: 'POST',
+        mimeType: "multipart/form-data",
+        contentType: false,
+        cache: false,
+        processData: false,
+        data: formData,
+        success: function (data) {
+            if (data) {
+                jAlert($.i18n("gen-data-saved"), $.i18n("gen-info"));
+                resourceSearch(0);
+            } else {
+                jAlert($.i18n("err-not-saved"), $.i18n("err-alert"));
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            jAlert($.i18n("err-not-saved"), $.i18n("err-alert"));
+        }
+    });
 }
 
 function FillResourcePersonDataNew()

@@ -171,7 +171,7 @@ public class ProjectRegionHibernateDAO extends GenericHibernateDAO<ProjectRegion
                 q.append("and (lower(v.name) like :villageName or lower(v.name_en) like :villageName) ");
             }
 
-            q.append("order by r.name, p.name, v.name");
+            q.append("order by r.name, p.name, c.name, v.name");
 
             Query query = getEntityManager().createNativeQuery(q.toString(), VillageSearchResult.class);
 

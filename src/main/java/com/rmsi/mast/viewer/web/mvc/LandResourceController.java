@@ -34,19 +34,28 @@ import com.rmsi.mast.studio.dao.ResourceCustomAttributesDAO;
 import com.rmsi.mast.studio.dao.UserDAO;
 import com.rmsi.mast.studio.domain.AttributeMasterResourcePOI;
 import com.rmsi.mast.studio.domain.AttributeOptions;
+import com.rmsi.mast.studio.domain.BasicResourceLine;
+import com.rmsi.mast.studio.domain.BasicResourcePoint;
+import com.rmsi.mast.studio.domain.BasicResourcePolygon;
 import com.rmsi.mast.studio.domain.CustomAttributes;
 import com.rmsi.mast.studio.domain.Project;
 import com.rmsi.mast.studio.domain.RelationshipType;
 import com.rmsi.mast.studio.domain.ResourceAttributeValues;
 import com.rmsi.mast.studio.domain.ResourceClassification;
 import com.rmsi.mast.studio.domain.ResourcePOIAttributeValues;
+import com.rmsi.mast.studio.domain.SpatialUnitResourceLine;
+import com.rmsi.mast.studio.domain.SpatialUnitResourcePoint;
+import com.rmsi.mast.studio.domain.SpatialUnitResourcePolygon;
 import com.rmsi.mast.studio.domain.User;
 import com.rmsi.mast.studio.mobile.dao.AttributeOptionsDao;
 import com.rmsi.mast.studio.mobile.dao.CustomAttributesDAO;
 import com.rmsi.mast.studio.mobile.dao.ResourceAttributeValuesDAO;
 import com.rmsi.mast.studio.mobile.dao.SpatialUnitResourceLineDao;
+import com.rmsi.mast.studio.mobile.dao.SpatialUnitResourcePointDao;
+import com.rmsi.mast.studio.mobile.dao.SpatialUnitResourcePolygonDao;
 import com.rmsi.mast.studio.mobile.service.ResourceClassificationServise;
 import com.rmsi.mast.studio.mobile.transferobjects.SearchResult;
+import com.rmsi.mast.studio.util.StringUtils;
 import com.rmsi.mast.viewer.service.ResourceAttributeValuesService;
 
 @Controller
@@ -87,6 +96,15 @@ public class LandResourceController {
 
     @Autowired
     ResourceClassificationServise resClassificationService;
+    
+    @Autowired
+    SpatialUnitResourcePolygonDao resPolygonDao;
+    
+    @Autowired
+    SpatialUnitResourcePointDao resPointDao;
+
+    @Autowired
+    SpatialUnitResourceLineDao resLineDao;
     
     @RequestMapping(value = "/viewer/resource/allAttribue/{landid}/{projectId}", method = RequestMethod.GET)
     @ResponseBody
@@ -1410,4 +1428,72 @@ public class LandResourceController {
 
     }
 
+    @RequestMapping(value = "/viewer/resource/updateResource", method = RequestMethod.POST)
+    @ResponseBody
+    @Transactional
+    public boolean updateResource(HttpServletRequest request, HttpServletResponse response) {
+
+        try {
+            Long landId = ServletRequestUtils.getRequiredLongParameter(request, "id");
+            String geomType = ServletRequestUtils.getStringParameter(request, "geomType", "Polygon");
+            boolean chartered = ServletRequestUtils.getBooleanParameter(request, "chartered", false);
+            boolean validatedByCouncil = ServletRequestUtils.getBooleanParameter(request, "validatedByCouncil", false);
+            boolean explotated = ServletRequestUtils.getBooleanParameter(request, "explotated", false);
+            String validationDate = ServletRequestUtils.getRequiredStringParameter(request, "validationDate");
+            String comments = ServletRequestUtils.getRequiredStringParameter(request, "comments");
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            
+            if (geomType.equalsIgnoreCase("Polygon")) {
+                BasicResourcePolygon res = resPolygonDao.getBasicResourcePolygon(landId);
+                if(res == null){
+                    return false;
+                }
+                
+                res.setChartered(chartered);
+                res.setValidatedByCouncil(validatedByCouncil);
+                res.setInExploitation(explotated);
+                if(StringUtils.isEmpty(validationDate)){
+                    res.setValidationDate(null);
+                } else {
+                    res.setValidationDate(df.parse(validationDate));
+                }
+                res.setComment(comments);
+                resPolygonDao.saveBasicResourcePolygon(res);
+            } else if (geomType.equalsIgnoreCase("Point")) {
+                BasicResourcePoint res = resPointDao.getBasicResourcePoint(landId);
+                if(res == null){
+                    return false;
+                }
+                
+                res.setChartered(chartered);
+                res.setValidatedByCouncil(validatedByCouncil);
+                res.setInExploitation(explotated);
+                if(StringUtils.isEmpty(validationDate)){
+                    res.setValidationDate(null);
+                } else {
+                    res.setValidationDate(df.parse(validationDate));
+                }
+                res.setComment(comments);
+                resPointDao.saveBasicResourcePoint(res);
+            } else if (geomType.equalsIgnoreCase("Line")) {
+                BasicResourceLine res = resLineDao.getBasicResourceLine(landId);
+                res.setChartered(chartered);
+                res.setValidatedByCouncil(validatedByCouncil);
+                res.setInExploitation(explotated);
+                if(StringUtils.isEmpty(validationDate)){
+                    res.setValidationDate(null);
+                } else {
+                    res.setValidationDate(df.parse(validationDate));
+                }
+                res.setComment(comments);
+                resLineDao.saveBasicResourceLine(res);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
 }

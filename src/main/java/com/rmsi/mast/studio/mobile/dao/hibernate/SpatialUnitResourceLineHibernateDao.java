@@ -7,26 +7,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import com.rmsi.mast.studio.dao.hibernate.GenericHibernateDAO;
-import com.rmsi.mast.studio.domain.LaParty;
+import com.rmsi.mast.studio.domain.BasicResourceLine;
 import com.rmsi.mast.studio.domain.SpatialUnit;
 import com.rmsi.mast.studio.domain.SpatialUnitResourceLine;
-import com.rmsi.mast.studio.domain.SpatialUnitResourcePoint;
-import com.rmsi.mast.studio.domain.SpatialUnitResourcePolygon;
 import com.rmsi.mast.studio.domain.fetch.ClaimBasic;
-import com.rmsi.mast.studio.domain.fetch.DisputeBasic;
-import com.rmsi.mast.studio.domain.fetch.MediaBasic;
-import com.rmsi.mast.studio.domain.fetch.RightBasic;
-import com.rmsi.mast.studio.domain.fetch.SpatialUnitTable;
-import com.rmsi.mast.studio.mobile.dao.SpatialUnitDao;
 import com.rmsi.mast.studio.mobile.dao.SpatialUnitResourceLineDao;
-import com.rmsi.mast.studio.mobile.dao.SpatialUnitResourcePolygonDao;
 
 /**
  * @author Shruti.Thakur
@@ -132,4 +122,15 @@ public class SpatialUnitResourceLineHibernateDao extends
         }
     }
 
+    @Override
+    public BasicResourceLine getBasicResourceLine(Long landid){
+        return getEntityManager().find(BasicResourceLine.class, landid);
+    }
+    
+    @Override 
+    public BasicResourceLine saveBasicResourceLine(BasicResourceLine line){
+        BasicResourceLine obj = getEntityManager().merge(line);
+        flush();
+        return obj;
+    }
 }

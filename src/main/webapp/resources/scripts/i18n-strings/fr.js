@@ -300,7 +300,7 @@ LANGUAGES.fr = {
     "viewer-measure-type": "Type de mesure",
     "viewer-measure-length": "Longueur (km)",
     "viewer-measure-length-meters": "Longueur (m)",
-    "viewer-measure-area": "Aire (km2)",
+    "viewer-measure-area": "Aire (ha)",
     "viewer-measure-area-meters": "Aire (m2)",
     "viewer-measure-geodetic": "Utiliser des mesures géodésiques",
     "viewer-ext-boundary": "Limite de l'étendue",

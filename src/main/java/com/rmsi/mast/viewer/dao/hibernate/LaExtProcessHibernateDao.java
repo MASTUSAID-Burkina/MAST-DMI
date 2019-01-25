@@ -31,7 +31,7 @@ public class LaExtProcessHibernateDao extends GenericHibernateDAO<LaExtProcess, 
     @Override
     public List<LaExtProcess> getAllProcessDetails() {
         try {
-            Query query = getEntityManager().createQuery("Select lp from LaExtProcess lp where lp.isactive = true order by lp.processname");
+            Query query = getEntityManager().createQuery("Select lp from LaExtProcess lp where lp.isactive = true order by lp.processname desc");
             List<LaExtProcess> lstExtProcesses = query.getResultList();
             return lstExtProcesses;
         } catch (Exception e) {

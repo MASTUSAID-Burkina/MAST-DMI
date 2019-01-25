@@ -22,7 +22,7 @@ public class ResourceDetails implements Serializable {
     private Boolean chartered;
     private String comment;
     private Boolean validatedByCouncil;
-    private Date validationDate;
+    private String validationDate;
     private Boolean inExploitation;
     
     public Integer getLandid() {
@@ -113,11 +113,11 @@ public class ResourceDetails implements Serializable {
         this.validatedByCouncil = validatedByCouncil;
     }
 
-    public Date getValidationDate() {
+    public String getValidationDate() {
         return validationDate;
     }
 
-    public void setValidationDate(Date validationDate) {
+    public void setValidationDate(String validationDate) {
         this.validationDate = validationDate;
     }
 

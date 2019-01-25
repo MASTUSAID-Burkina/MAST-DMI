@@ -300,7 +300,7 @@ LANGUAGES.en = {
     "viewer-measure-type": "Measurement type",
     "viewer-measure-length": "Length (km)",
     "viewer-measure-length-meters": "Length (m)",
-    "viewer-measure-area": "Area (km2)",
+    "viewer-measure-area": "Area (ha)",
     "viewer-measure-area-meters": "Area (m2)",
     "viewer-measure-geodetic": "Use geodesic measures",
     "viewer-ext-boundary": "Extent Boundary",

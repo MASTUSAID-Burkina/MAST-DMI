@@ -205,7 +205,6 @@ function createMeasureTooltip() {
 
 var formatLength = function (line) {
     var length;
-//    if (geodesicCheckbox.checked) {
     var coordinates = line.getCoordinates();
     length = 0;
     var sourceProj = map.getView().getProjection();
@@ -214,16 +213,7 @@ var formatLength = function (line) {
         var c2 = ol.proj.transform(coordinates[i + 1], sourceProj, 'EPSG:4326');
         length += wgs84Sphere.haversineDistance(c1, c2);
     }
-//    } else {
-//        var coordinates = line.getCoordinates();
-//        length = 0;
-//        var sourceProj = map.getView().getProjection();
-//        for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
-//            var c1 = ol.proj.transform(coordinates[i], sourceProj, 'EPSG:4326');
-//            var c2 = ol.proj.transform(coordinates[i + 1], sourceProj, 'EPSG:4326');
-//            length += wgs84Sphere.haversineDistance(c1, c2);
-//        }
-//    }
+
     var output;
 
     if (!isMeters) {
@@ -236,18 +226,15 @@ var formatLength = function (line) {
 
 var formatArea = function (polygon) {
     var area;
-//    if (geodesicCheckbox.checked) {
     var sourceProj = map.getView().getProjection();
     var geom = (polygon.clone().transform(sourceProj, 'EPSG:4326'));
     var coordinates = geom.getLinearRing(0).getCoordinates();
     area = Math.abs(wgs84Sphere.geodesicArea(coordinates));
-//    } else {
-//        area = polygon.getArea();
-//    }
+
     var output;
 
     if (!isMeters) {
-        output = (Math.round(area / 1000000 * 100) / 100) + ' km<sup>2</sup>';
+        output = (Math.round(area / 10000 * 100) / 100) + ' ha';
     } else {
         output = Math.round(area) + ' m<sup>2</sup>';
     }

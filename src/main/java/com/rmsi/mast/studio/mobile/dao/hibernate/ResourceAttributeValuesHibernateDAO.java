@@ -167,7 +167,7 @@ public class ResourceAttributeValuesHibernateDAO extends GenericHibernateDAO<Res
                     }
                     if (null != object[10]) {
                         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                        resourceDetails.setValidationDate(df.parse(object[10].toString()));
+                        resourceDetails.setValidationDate(df.format(object[10]));
                     }
                     if (null != object[11]) {
                         resourceDetails.setInExploitation(Boolean.valueOf(object[11].toString()));
