@@ -351,6 +351,7 @@ public class Form5Dto implements Serializable {
         this.previousApfrDate = previousApfrDate;
     }
 
+    @JsonSerialize(using = JsonDateSerializer2.class)
     public Date getIdDate() {
         return idDate;
     }

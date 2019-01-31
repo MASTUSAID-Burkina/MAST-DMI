@@ -13,60 +13,61 @@ import com.rmsi.mast.studio.domain.NaturalPerson;
 import com.rmsi.mast.studio.domain.SocialTenureRelationship;
 import com.rmsi.mast.viewer.dao.LaPartyDao;
 
-
 @Repository
 public class LaPartyHibernateDao extends
-GenericHibernateDAO<LaParty, Long> implements LaPartyDao{
+        GenericHibernateDAO<LaParty, Long> implements LaPartyDao {
 
-	Logger logger = Logger.getLogger(LaPartyHibernateDao.class);
-	@Override
-	public LaParty saveParty(LaParty laParty) {
-		
-		 try {
-	            return makePersistent(laParty);
+    Logger logger = Logger.getLogger(LaPartyHibernateDao.class);
 
-	        } catch (Exception ex) {
-	            logger.error(ex);
-	            throw ex;
-	        }
-	}
-	@SuppressWarnings("unchecked")
-	@Override
-	public LaParty getPartyIdByID(Long id) {
-		 List<LaParty> lstLaParty = new ArrayList<LaParty>();
-		 
-	        try {
-	     
+    @Override
+    public LaParty saveParty(LaParty laParty) {
 
-	        	String query = "select s from LaParty  s where s.partyid = :id";
-	        	lstLaParty = getEntityManager().createQuery(query).setParameter("id", id).getResultList();
+        try {
+            return makePersistent(laParty);
 
-	            if (lstLaParty.size()>0) {
-	                return lstLaParty.get(0);
-	            }
-	        } catch (Exception ex) {
-	            ex.printStackTrace();
-	            return null;
-	        }
-		return null;
-	}
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<SocialTenureRelationship> findSocailTenureByUsin(Long usin) {
+        } catch (Exception ex) {
+            logger.error(ex);
+            throw ex;
+        }
+    }
 
-		String query = "select str.partyid, su.landid, str.transactionid from la_ext_personlandmapping "
-				+ "str inner join la_spatialunit_land su on su.landid = str.landid where"
-				+ " su.landid =" + usin +"  and str.isactive=true";
-		
-		try {
-			List<Object[]> arrObject = getEntityManager().createNativeQuery(query).getResultList();
-		List<SocialTenureRelationship> socialTenureRelationship=new ArrayList<SocialTenureRelationship>();
-		
-        for(Object [] object : arrObject){
-        	SocialTenureRelationship personlandmapping = new SocialTenureRelationship();
+    @SuppressWarnings("unchecked")
+    @Override
+    public LaParty getPartyIdByID(Long id) {
+        List<LaParty> lstLaParty = new ArrayList<LaParty>();
+
+        try {
+
+            String query = "select s from LaParty  s where s.partyid = :id";
+            lstLaParty = getEntityManager().createQuery(query).setParameter("id", id).getResultList();
+
+            if (lstLaParty.size() > 0) {
+                return lstLaParty.get(0);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<SocialTenureRelationship> findSocailTenureByUsin(Long usin) {
+
+        String query = "select str.partyid, su.landid, str.transactionid from la_ext_personlandmapping "
+                + "str inner join la_spatialunit_land su on su.landid = str.landid where"
+                + " su.landid =" + usin + "  and str.isactive=true";
+
+        try {
+            List<Object[]> arrObject = getEntityManager().createNativeQuery(query).getResultList();
+            List<SocialTenureRelationship> socialTenureRelationship = new ArrayList<SocialTenureRelationship>();
+
+            for (Object[] object : arrObject) {
+                SocialTenureRelationship personlandmapping = new SocialTenureRelationship();
 //        	personlandmapping.setPersonlandid(Long.valueOf(object[0].toString()));
-        	personlandmapping.setPartyid(Long.valueOf(object[0].toString()));
-        	personlandmapping.setLandid(Long.valueOf(object[1].toString()));
+                personlandmapping.setPartyid(Long.valueOf(object[0].toString()));
+                personlandmapping.setLandid(Long.valueOf(object[1].toString()));
 //        	personlandmapping.setLandid(Long.valueOf(object[2].toString()));
 ////        	personlandmapping.setpersontyprid(object[3].toString());
 ////        	personlandmapping.setLaExtTransactiondetail(4);
@@ -78,90 +79,87 @@ GenericHibernateDAO<LaParty, Long> implements LaPartyDao{
 //        	personlandmapping.setCreatedby(Integer.valueOf(object[9].toString()));
 //        	personlandmapping.setCreateddate(new SimpleDateFormat("dd/MM/yyyy").parse(object[10].toString()));
 ////        	personlandmapping.setWorkflowstatus(object[11].toString());
-        	
-        	socialTenureRelationship.add(personlandmapping);
-        }
-        		
-		
+
+                socialTenureRelationship.add(personlandmapping);
+            }
+
 //
 //			@SuppressWarnings("unchecked")
 //			List<SocialTenureRelationship> tenureList = getEntityManager()
 //					.createNativeQuery(query, SocialTenureRelationship.class).getResultList();
+            if (socialTenureRelationship.size() > 0) {
 
-			if (socialTenureRelationship.size() > 0) {
+                return socialTenureRelationship;
 
-				return socialTenureRelationship;
+            }
 
-			}
+        } catch (Exception ex) {
 
-		} catch (Exception ex) {
+            logger.error(ex);
 
-			logger.error(ex);
-			
+        }
+        return null;
 
-		}
-		return null;
-	
-	}
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<LaParty> getPartyListIdByID(Long id) {
-		 List<LaParty> lstLaParty = new ArrayList<LaParty>();
-		 
-	        try {
-	     	        	String query = "select s from LaParty  s where s.partyid = :id";
-	        	lstLaParty = getEntityManager().createQuery(query).setParameter("id", id).getResultList();
-	            return lstLaParty;
-	        } catch (Exception ex) {
-	            ex.printStackTrace();
-	            return null;
-	        }
-	}
-	@Override
-	public List<NaturalPerson> getObjectsBypartyId(String id) {
-		 List<LaParty> lstLaParty = new ArrayList<LaParty>();
-		 
-		 List<NaturalPerson> lstNaturalPerson = new ArrayList<NaturalPerson>();
-		 
-	        try {
-	     
+    }
 
-	        	String query = "select s from LaParty  s where s.partyid in ("+ id+ ")";
-	        	lstLaParty = getEntityManager().createQuery(query).getResultList();
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<LaParty> getPartyListIdByID(Long id) {
+        List<LaParty> lstLaParty = new ArrayList<LaParty>();
 
-	            if (lstLaParty.size()>0) {
-	            	
-	            	for(LaParty obj: lstLaParty){
-	            		
-	            		lstNaturalPerson.add((NaturalPerson)obj);
-	            		
-	            	}
-	                return lstNaturalPerson;
-	            }
-	        } catch (Exception ex) {
-	            ex.printStackTrace();
-	            return null;
-	        }
-		return null;
-	}
-	@Override
-	public LaParty getActivePartyIdByID(Long id) {
-		 List<LaParty> lstLaParty = new ArrayList<LaParty>();
-		 
-	        try {
-	     
+        try {
+            String query = "select s from LaParty  s where s.partyid = :id";
+            lstLaParty = getEntityManager().createQuery(query).setParameter("id", id).getResultList();
+            return lstLaParty;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
 
-	        	String query = "select s from LaParty  s where s.partyid = :id and s.isactive=true";
-	        	lstLaParty = getEntityManager().createQuery(query).setParameter("id", id).getResultList();
+    @Override
+    public List<NaturalPerson> getObjectsBypartyId(String id) {
+        List<LaParty> lstLaParty = new ArrayList<LaParty>();
 
-	            if (lstLaParty.size()>0) {
-	                return lstLaParty.get(0);
-	            }
-	        } catch (Exception ex) {
-	            ex.printStackTrace();
-	            return null;
-	        }
-		return null;
-	}
+        List<NaturalPerson> lstNaturalPerson = new ArrayList<NaturalPerson>();
+
+        try {
+
+            String query = "select s from LaParty  s where s.partyid in (" + id + ")";
+            lstLaParty = getEntityManager().createQuery(query).getResultList();
+
+            if (lstLaParty.size() > 0) {
+
+                for (LaParty obj : lstLaParty) {
+
+                    lstNaturalPerson.add((NaturalPerson) obj);
+
+                }
+                return lstNaturalPerson;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return null;
+    }
+
+    @Override
+    public NaturalPerson getActivePartyIdByID(Long id) {
+        List<NaturalPerson> lstLaParty = new ArrayList<NaturalPerson>();
+
+        try {
+            String query = "select p from NaturalPerson p where p.partyid = :id and p.isactive=true";
+            lstLaParty = getEntityManager().createQuery(query).setParameter("id", id).getResultList();
+
+            if (lstLaParty.size() > 0) {
+                return lstLaParty.get(0);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return null;
+    }
 
 }

@@ -283,8 +283,8 @@ function generateform8(usin, dto) {
                     jQuery("#printDiv").append(data1);
 
                     var form8obj = dto;
-                    
-                    if(isEmpty(dto)){
+
+                    if (isEmpty(dto)) {
                         var fromTmp = new generateForms();
                         form8obj = fromTmp.Form8(usin);
                     }
@@ -382,8 +382,8 @@ function generateform52(usin, dto) {
                     jQuery("#printDiv").append(data1);
 
                     var form52obj = dto;
-                    
-                    if(isEmpty(dto)){
+
+                    if (isEmpty(dto)) {
                         var fromTmp = new generateForms();
                         form52obj = fromTmp.Form8(usin);
                     }
@@ -431,7 +431,7 @@ function generateform52(usin, dto) {
                     $("#contract_name52").text(form52obj.contractName);
                     $("#contract_num52").text(form52obj.contractNum);
                     $("#contract_date52").text(form52obj.contractDate);
-                    
+
                     if (form52obj.other_use === "0" || form52obj.other_use === null || form52obj.other_use === "" || form52obj.other_use === 0) {
                         $('#other_use8').text("");
                     } else {
@@ -621,13 +621,13 @@ function generateform5(usin, dto) {
                     jQuery("#printDiv").append(data5);
 
                     var form5Obj = dto;
-                    
-                    if(isEmpty(dto)){
+
+                    if (isEmpty(dto)) {
                         var fromTmp = new generateForms();
                         form5Obj = fromTmp.Form5(usin);
                     }
                     removeNulls(form5Obj);
-                    
+
                     $('.commune_logo').append("<img width='125' height='100' src='" + formImage + "'>");
 
                     $('#region_5').text(form5Obj.region);
@@ -637,7 +637,7 @@ function generateform5(usin, dto) {
                     $('.villageno_5').text(form5Obj.village_no);
                     $('.application_date5').text(form5Obj.application_date);
                     $('.apfrno5').text(form5Obj.application_no);
-                    $('.apfrno_5').text(form5Obj.apfrno);  
+                    $('.apfrno_5').text(form5Obj.apfrno);
 
                     $('#lastname_5').text(form5Obj.last_name);
                     $('#firstname_5').text(form5Obj.first_name);
@@ -711,13 +711,13 @@ function generateform51(usin, dto) {
                     jQuery("#printDiv").append(data51);
 
                     var form51Obj = dto;
-                    
-                    if(isEmpty(dto)){
+
+                    if (isEmpty(dto)) {
                         var fromTmp = new generateForms();
                         form51Obj = fromTmp.Form5(usin);
                     }
                     removeNulls(form51Obj);
-                    
+
                     $('.commune_logo').append("<img width='125' height='100' src='" + formImage + "'>");
 
                     $('#region_5').text(form51Obj.region);
@@ -727,7 +727,7 @@ function generateform51(usin, dto) {
                     $('.villageno_5').text(form51Obj.village_no);
                     $('.application_date5').text(form51Obj.application_date);
                     $('.apfrno5').text(form51Obj.application_no);
-                    $('.apfrno_5').text(form51Obj.apfrno);  
+                    $('.apfrno_5').text(form51Obj.apfrno);
 
                     $('#lastname_5').text(form51Obj.last_name);
                     $('#firstname_5').text(form51Obj.first_name);
@@ -756,7 +756,7 @@ function generateform51(usin, dto) {
                     $("#contract_name51").text(form51Obj.mutationType);
                     $("#contract_num51").text(form51Obj.contractNum);
                     $("#contract_date51").text(form51Obj.contractDate);
-                    
+
                     if (form51Obj.apfr_date === null) {
                         var generateForm = new generateForms();
                         $('#apfrdate5').text(generateForm.getCurrentDate());
@@ -808,19 +808,19 @@ function generateform43(usin, dto) {
 
                     var form43Obj = dto;
                     var generateForm = new generateForms();
-                    
-                    if(isEmpty(dto)){
+
+                    if (isEmpty(dto)) {
                         var fromTmp = new generateForms();
                         form43Obj = fromTmp.Form43(usin);
                     }
                     removeNulls(form43Obj);
-                    
+
                     $('.commune_logo').append("<img width='125' height='100' src='" + formImage + "'>");
 
                     $('#lblForm43Region').text(form43Obj.region);
                     $('#lblForm43Province').text(form43Obj.province);
                     $('#lblForm43Commune').text(form43Obj.commune);
-                    
+
                     $('#lblForm43Regnum').text(form43Obj.regNum);
                     $('#lblForm43ElectionDate').text(form43Obj.electionDate);
                     $('#lblForm43AppNum').text(form43Obj.appNum);
@@ -839,10 +839,10 @@ function generateform43(usin, dto) {
                     $('#lblForm43EndDate').text(form43Obj.endDate);
                     $('#lblForm43Commune2').text(form43Obj.commune);
                     $('#lblForm43CurrentDate').text(getCurrentDate());
-                    
+
                     $("#rowsForm43Coords").empty();
                     $("#rowForm43Coords").tmpl(form43Obj.coords).appendTo("#rowsForm43Coords");
-                    
+
                     var printWindow = window.open('', 'form43' + usin, 'height=900,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no,status=no, location=no');
                     printWindow.document.write('<html><head><title>Form 43</title>' +
                             '<script src="../resources/scripts/cloudburst/viewer/Form.js"></script>' +
@@ -870,7 +870,7 @@ function generatePaymentLetter(usin) {
                     var generateForm = new generateForms();
                     attrObject = generateForm.paymentDetails(usin);
                     removeNulls(attrObject);
-                    
+
                     $('.commune_logo').append("<img width='125' height='100' src='" + formImage + "'>");
                     $('#_region').text(attrObject.region);
                     $('#_province').text(attrObject.province);
@@ -907,42 +907,11 @@ function printForm() {
     window.print();
 }
 function printAPFR_Ind_Form() {
-
-    usin_key = $("#usin_primerykey").val();
-    var generateForm = new generateForms();
-    checkApfrDate = generateForm.checkApfrDate(usin_key);
-    if (checkApfrDate) {
-        document.getElementsByClassName('print_form')[0].style.visibility = "hidden";
-        location.reload();
-        window.print();
-    } else {
-        //set apfr date
-        generateForm.setApfrDate(usin_key);
-        document.getElementsByClassName('print_form')[0].style.visibility = "hidden";
-        location.reload();
-        window.print();
-    }
-
+    printForm();
 }
 
 function printNotice() {
-
-    var noticeDate = null;
-    var displayDate = null;
-    var generateForm = new generateForms();
-    usinId = $('#usin_primerykey').val();
-    noticeDate = generateForm.checkDate(usinId);
-    displayDate = noticeDate;
-
-    var flag = $('#flag').text();
-    jConfirm('Avis de publicité courant de : <strong>' + displayDate + '.</strong> Voulez-vous vraiment imprimer ?', 'Confirmer', function (response) {
-
-        if (response) {
-            if (flag == "true") {
-                printForm();
-            }
-        }
-    });
+    printForm();
 }
 
 function setAreaMap(usin, callbackFunc) {

@@ -5583,7 +5583,7 @@ public class LandRecordsController {
             for (SocialTenureRelationship obj : lst) {
 
                 if (obj.getLaPartygroupPersontype().getPersontypeid() == 1) {
-                    NaturalPerson naturalobj = (NaturalPerson) laPartyDao.getActivePartyIdByID(obj.getPartyid());
+                    NaturalPerson naturalobj = laPartyDao.getActivePartyIdByID(obj.getPartyid());
                     if (null != naturalobj) {
                         lstdata.add(naturalobj);
                     }
@@ -7031,7 +7031,7 @@ public class LandRecordsController {
 
             for (SocialTenureRelationship socialobj : socialtenureobj) {
                 if (socialobj.getPartyid().longValue() == partyid.longValue()) {
-                    NaturalPerson laparty = (NaturalPerson) laPartyDao.getActivePartyIdByID(partyid);
+                    NaturalPerson laparty = laPartyDao.getActivePartyIdByID(partyid);
                     if (null != laparty) {
                         if (laparty.getOwnertype().intValue() != 1) {
                             laparty.setIsactive(false);
