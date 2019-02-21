@@ -28,6 +28,7 @@ import com.rmsi.mast.studio.domain.La_Month;
 import com.rmsi.mast.studio.domain.LandType;
 import com.rmsi.mast.studio.domain.MaritalStatus;
 import com.rmsi.mast.studio.domain.NaturalPerson;
+import com.rmsi.mast.studio.domain.NonNaturalPerson;
 import com.rmsi.mast.studio.domain.ParcelCount;
 import com.rmsi.mast.studio.domain.Permission;
 import com.rmsi.mast.studio.domain.PersonType;
@@ -41,6 +42,7 @@ import com.rmsi.mast.studio.domain.Status;
 import com.rmsi.mast.studio.domain.fetch.ClaimBasic;
 import com.rmsi.mast.studio.domain.fetch.ClaimBasicLand;
 import com.rmsi.mast.studio.domain.fetch.RightBasic;
+import com.rmsi.mast.studio.mobile.dao.NonNaturalPersonDao;
 import com.rmsi.mast.studio.mobile.dao.hibernate.SpatialUnitHibernateDao;
 import com.rmsi.mast.studio.util.ConstantUtil;
 import com.rmsi.mast.viewer.dao.ClaimBasicLandDao;
@@ -172,6 +174,9 @@ public class RegistrationRecordsImpl implements RegistrationRecordsService {
 
     @Autowired
     PermissionDao permissionDao;
+    
+    @Autowired
+    NonNaturalPersonDao nonPersonDao;
 
     @Override
     public List<LaSpatialunitLand> findAllSpatialUnitTemp(String defaultProject,
@@ -191,7 +196,7 @@ public class RegistrationRecordsImpl implements RegistrationRecordsService {
     }
 
     @Override
-    public List<LaPartyPerson> getAllPartyPersonDetails(Integer landid) {
+    public Object getAllPartyPersonDetails(Integer landid) {
         return laPartyPersonDao.getAllPartyPersonDetails(landid);
     }
 
@@ -312,6 +317,18 @@ public class RegistrationRecordsImpl implements RegistrationRecordsService {
     public NaturalPerson saveNaturalPerson(NaturalPerson naturalPerson) {
         try {
             return naturalPersonDAO.saveNaturalPerson(naturalPerson);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e);
+            throw e;
+        }
+    }
+    
+    @Override
+    @Transactional
+    public NonNaturalPerson saveNonNaturalPerson(NonNaturalPerson nonPerson){
+        try {
+            return nonPersonDao.addNonNaturalPerson(nonPerson);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e);

@@ -340,7 +340,7 @@ public class MobileDataController {
                 configurationData.put("RelationshipType", relationshipTypedao.findAll());
 
                 // Add List of share types
-                configurationData.put("ShareType", spatialUnitService.getShareTypes());
+                configurationData.put("ShareType", spatialUnitService.getShareTypesForMobile());
 
                 // Add List of right types
                 configurationData.put("RightType", spatialUnitService.getTenureClasses());

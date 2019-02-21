@@ -1,4 +1,3 @@
-
 package com.rmsi.mast.studio.mobile.dao;
 
 import java.util.List;
@@ -13,19 +12,14 @@ import com.rmsi.mast.studio.domain.SpatialUnitPersonWithInterest;
  */
 public interface NonNaturalPersonDao extends GenericDAO<NonNaturalPerson, Long> {
 
-	/**
-	 * Used to add or update list of Non Natural Person to database
-	 * 
-	 * @param nonNaturalPersonList
-	 */
-	void addOrUpdateNonNaturalPerson(
-			List<NonNaturalPerson> nonNaturalPersonList);
+    /**
+     * Used to add or update list of Non Natural Person to database
+     *
+     * @param nonNaturalPersonList
+     */
+    void addOrUpdateNonNaturalPerson(List<NonNaturalPerson> nonNaturalPersonList);
 
-	NonNaturalPerson addNonNaturalPerson(
-			NonNaturalPerson nonNaturalPerson);
+    NonNaturalPerson addNonNaturalPerson(NonNaturalPerson nonNaturalPerson);
 
-	List<NonNaturalPerson> findById(Long id);
-	
-	
-
+    List<NonNaturalPerson> findById(Long id);
 }

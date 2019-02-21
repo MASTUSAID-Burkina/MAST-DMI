@@ -793,18 +793,7 @@ public class UserDataServiceImpl implements UserDataService {
             if (id == 6) {
                 person.setOrganizationname(value);
             }
-            if (id == 1136) {
-                person.setFirstname(value);
-
-            }
-            if (id == 1138) {
-                person.setMiddlename(value);
-
-            }
-            if (id == 1137) {
-                person.setLastname(value);
-
-            }
+           
             if (id == 7) {
                 person.setAddress(value);
             }
@@ -817,14 +806,6 @@ public class UserDataServiceImpl implements UserDataService {
                 grouptype.setGrouptypeid(attOptions.getParentid());
                 person.setGroupType(grouptype);
             }
-//            else if (id == 7) {
-//                person.setAddress(value);
-//            }
-//            else if (id == 8) {
-//                person.setPhoneNumber(value);
-//            } else if (id == 52) {
-//                person.setGroupType(groupTypeDao.getGroupTypeById(Integer.parseInt(value)));
-//            }
         }
     }
 

@@ -22,6 +22,12 @@ public class Form8Dto implements Serializable {
     private String village;
 
     private String village_no;
+    
+    private long parcelNo;
+
+    private String lotNo;
+
+    private int sectionNo;
 
     private Date application_date;
 
@@ -436,6 +442,30 @@ public class Form8Dto implements Serializable {
 
     public void setPreviousApfrDate(Date previousApfrDate) {
         this.previousApfrDate = previousApfrDate;
+    }
+
+    public long getParcelNo() {
+        return parcelNo;
+    }
+
+    public void setParcelNo(long parcelNo) {
+        this.parcelNo = parcelNo;
+    }
+
+    public String getLotNo() {
+        return lotNo;
+    }
+
+    public void setLotNo(String lotNo) {
+        this.lotNo = lotNo;
+    }
+
+    public int getSectionNo() {
+        return sectionNo;
+    }
+
+    public void setSectionNo(int sectionNo) {
+        this.sectionNo = sectionNo;
     }
 
 }

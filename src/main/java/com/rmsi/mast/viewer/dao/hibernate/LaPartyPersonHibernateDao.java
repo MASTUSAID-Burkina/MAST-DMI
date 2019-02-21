@@ -11,7 +11,9 @@ import org.springframework.stereotype.Repository;
 
 import com.rmsi.mast.studio.dao.hibernate.GenericHibernateDAO;
 import com.rmsi.mast.studio.domain.LaPartyPerson;
+import com.rmsi.mast.studio.domain.NonNaturalPerson;
 import com.rmsi.mast.viewer.dao.LaPartyPersonDao;
+import javax.persistence.Query;
 
 /**
  *
@@ -97,16 +99,16 @@ public class LaPartyPersonHibernateDao extends GenericHibernateDAO<LaPartyPerson
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<LaPartyPerson> getAllPartyPersonDetails(Integer landid) {
-        List<LaPartyPerson> lstpartyperson = new ArrayList<LaPartyPerson>();
+    public Object getAllPartyPersonDetails(Integer landid) {
+        List<Object> lstpartyperson = new ArrayList<>();
         try {
             String strQuery = "select LP.partyid,LP.persontypeid "
                     + "from la_ext_personlandmapping LP left join la_party_person psn on psn.personid=LP.partyid"
                     + " where landid = " + landid + " and LP.isactive = true order by psn.ownertype asc";
             List<Object[]> lst = getEntityManager().createNativeQuery(strQuery).getResultList();
-            if (lst.size() > 0) {
+
+            if (lst != null && lst.size() > 0) {
                 for (Object[] arrObj : lst) {
-                    //Object[] arrObj = lst.get(0);
                     int partyId = Integer.parseInt(arrObj[0].toString());
                     int persontypeId = Integer.parseInt(arrObj[1].toString());
                     if (persontypeId == 1 || persontypeId == 11) {
@@ -116,13 +118,36 @@ public class LaPartyPersonHibernateDao extends GenericHibernateDAO<LaPartyPerson
                         }
                     }
                 }
-                return lstpartyperson;
+            }
+
+            // Add organizations if any
+            strQuery = "select LP.partyid,LP.persontypeid "
+                    + "from la_ext_personlandmapping LP left join la_party_organization psn on psn.organizationid=LP.partyid"
+                    + " where landid = " + landid + " and LP.isactive = true";
+            lst = getEntityManager().createNativeQuery(strQuery).getResultList();
+            if (lst != null && lst.size() > 0) {
+                for (Object[] arrObj : lst) {
+                    long partyId = Long.parseLong(arrObj[0].toString());
+                    int persontypeId = Integer.parseInt(arrObj[1].toString());
+                    NonNaturalPerson org = getOrganization(partyId, "" + persontypeId);
+                    if (org != null) {
+                        lstpartyperson.add(org);
+                    }
+                }
             }
         } catch (NumberFormatException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return lstpartyperson;
+    }
+
+    private NonNaturalPerson getOrganization(long partyId, String personType) {
+        NonNaturalPerson org = getEntityManager().find(NonNaturalPerson.class, partyId);
+        if (org != null) {
+            org.setPersontype(personType);
+        }
+        return org;
     }
 
     private List<LaPartyPerson> getParties(int partyId, String personType) {

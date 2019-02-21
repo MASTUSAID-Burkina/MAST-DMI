@@ -474,6 +474,93 @@ function generateform52(usin, dto) {
             });
 }
 
+function generateform52Le(usin, dto) {
+    var formImage = getFormImage();
+
+    jQuery.ajax(
+            {
+                type: 'GET',
+                url: 'resources/templates/forms/form52_le.html',
+                dataType: 'html',
+                success: function (data1)
+                {
+                    jQuery("#printDiv div").empty();
+                    jQuery("#printDiv").append(data1);
+
+                    var form52obj = dto;
+
+                    if (isEmpty(dto)) {
+                        var fromTmp = new generateForms();
+                        form52obj = fromTmp.Form52Le(usin);
+                    }
+                    removeNulls(form52obj);
+
+                    $('.commune_logo').append("<img width='125' height='100' src='" + formImage + "'>");
+                    $('#region8').text(form52obj.region);
+                    $('#province8').text(form52obj.province);
+                    $('.commune8').text(form52obj.commune);
+                    $('.village8').text(form52obj.village);
+                    $('.village_no8').text(form52obj.village_no);
+                    $('#apfrno8').text(form52obj.apfrno);
+                    $('#apfrno_8').text(form52obj.apfrno);
+                    $('.apfrdate8').text(form52obj.apfr_date);
+                    $('.apfrdate_8').text(form52obj.apfr_date);  // kamal
+                    $('.applicationdate8').text(form52obj.application_date);
+                    $('.familyname8').text(form52obj.familyname);
+                    $('#lerefdoc').text(form52obj.refrence_id_card);
+                    $('#familyaddress8').text(form52obj.address);
+                    $('#village8').text(form52obj.village);
+                    
+                    $('#section8').text(form52obj.sectionNo);
+                    $('#lot8').text(form52obj.lotNo);
+                    $('#parcel_no8').text(form52obj.parcelNo);
+                    $('#area8').text(((form52obj.area) * area_constant).toFixed(2));
+                    
+                    $('#neighnour_north8').text(form52obj.neighbour_north);
+                    $('#neighbour_east8').text(form52obj.neighbour_east);
+                    $('#neighbour_south8').text(form52obj.neighbour_south);
+                    $('#neighbour_west8').text(form52obj.neighbour_west);
+                    
+                    $('#mayor_name8').text(form52obj.mayor_name);
+                    $('#pvnumber8').text(form52obj.pv_no);
+                    $('#rightsDate8').text(form52obj.date_recognition_right);
+                    $('#apfr_commune').text(form52obj.commune);
+                    $('#mandateDate').text(form52obj.mandateDate);
+                    $('#applicationno8').text(form52obj.application_no);
+                    $('#mayor_firstname').text(form52obj.mayor_name);
+                    $("#transferType52").text(form52obj.mutationType);
+                    $("#prev_apfrno52").text(form52obj.previousApfr);
+                    $("#prev_apfrdate52").text(form52obj.previousApfrDate);
+                    $("#contract_name52").text(form52obj.contractName);
+                    $("#contract_num52").text(form52obj.contractNum);
+                    $("#contract_date52").text(form52obj.contractDate);
+
+                    if (form52obj.other_use === "0" || form52obj.other_use === null || form52obj.other_use === "" || form52obj.other_use === 0) {
+                        $('#other_use8').text("");
+                    } else {
+                        $('#other_use8').text(form52obj.other_use);
+                    }
+
+                    if (form52obj.existing_use !== null) {
+                        for (var i = 0; i < form52obj.existing_use.length; i++) {
+                            jQuery("#existing_use8").append("o " + form52obj.existing_use[i].landusetype + "<br>");
+                        }
+                    }
+
+                    var printWindow = window.open('form8', 'popUpWindow', 'height=800,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no,status=no, location=no');
+
+                    var html = $("#printDiv").html();
+                    printWindow.document.write('<html><head><title>MAST</title>' + ' <link rel="stylesheet" href="../resources/styles/viewer/form.css" type="text/css" />' + ' <link rel="stylesheet" href="../resources/styles/viewer/style-new.css" type="text/css" />' +
+                            '<script src="../resources/scripts/cloudburst/viewer/Form.js"></script>' +
+                            '<script src="../resources/scripts/jquery-1.7.1/jquery-1.7.1.min.js"></script>' +
+                            '</head><body> ' + html + '<input type="hidden" id="usin_primerykey" value=' + usin + '></body></html>');
+
+                    printWindow.document.close();
+                    printWindow.focus();
+                }
+            });
+}
+
 function generateform7(usin) {
     var formImage = getFormImage();
 
@@ -645,7 +732,7 @@ function generateform5(usin, dto) {
                     $('#idcard5').text(form5Obj.refrence_id_card);
                     $("#idDate5").text(form5Obj.idDate);
                     $('#birthdate5').text(form5Obj.dob);
-                    $('#birthplace5').text(form5Obj.birthplace);
+                    $('#birth_place5').text(form5Obj.birthplace);
                     $('#profession5').text(form5Obj.profession);
                     $('#address_5').text(form5Obj.address);
                     $('#location5').text(form5Obj.location);

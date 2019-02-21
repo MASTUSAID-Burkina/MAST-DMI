@@ -80,6 +80,8 @@ public interface SpatialUnitService {
      */
     List<ShareType> getShareTypes();
     
+    List<ShareType> getShareTypesForMobile();
+    
     /**
      * This will get Tenure Classes
      *

@@ -366,6 +366,10 @@ LANGUAGES.en = {
     "reg-lastname": "Last name",
     "reg-gender": "Gender",
     "reg-dob": "Date of birth",
+    "reg-regnum": "Registration number",
+    "reg-establishment-date": "Establishment Date",
+    "reg-rep-name": "Representative",
+    "reg-rep-phone": "Representative Phone",
     "reg-relation": "Relation",
     "reg-relationship-type": "Relationship Type",
     "reg-address": "Address",
@@ -386,6 +390,7 @@ LANGUAGES.en = {
     "reg-dispute-type": "Dispute Type",
     "reg-landid": "Land ID",
     "reg-person-type": "Person Type",
+    "reg-org-type": "Type",
     "reg-id": "ID",
     "reg-file-uploaded": "File Uploaded",
     "reg-file-upload": "File Upload",
@@ -839,5 +844,7 @@ LANGUAGES.en = {
     "err-enter-regnum": "Enter Registration Number",
     "err-enter-appnum": "Enter Application Number",
     "err-enter-appdate": "Enter Application Date",
-    "err-enter-end-date": "Enter End Date"
+    "err-enter-end-date": "Enter End Date",
+    "err-enter-representative": "Enter representative name",
+    "err-select-correct-ownership": "Select correct ownership type"
 };

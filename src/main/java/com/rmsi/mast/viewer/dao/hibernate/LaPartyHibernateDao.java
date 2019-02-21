@@ -118,30 +118,14 @@ public class LaPartyHibernateDao extends
     }
 
     @Override
-    public List<NaturalPerson> getObjectsBypartyId(String id) {
-        List<LaParty> lstLaParty = new ArrayList<LaParty>();
-
-        List<NaturalPerson> lstNaturalPerson = new ArrayList<NaturalPerson>();
-
+    public List<LaParty> getObjectsBypartyId(String id) {
         try {
-
             String query = "select s from LaParty  s where s.partyid in (" + id + ")";
-            lstLaParty = getEntityManager().createQuery(query).getResultList();
-
-            if (lstLaParty.size() > 0) {
-
-                for (LaParty obj : lstLaParty) {
-
-                    lstNaturalPerson.add((NaturalPerson) obj);
-
-                }
-                return lstNaturalPerson;
-            }
+            return getEntityManager().createQuery(query).getResultList();
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;
         }
-        return null;
     }
 
     @Override

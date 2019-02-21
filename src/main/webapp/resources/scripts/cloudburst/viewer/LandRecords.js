@@ -400,7 +400,7 @@ function editAttribute(id, editable) {
             landUserList = data;
         }
     });
-    
+
     if (villages === null) {
         jQuery.ajax({
             url: "landrecords/projectvillages/" + activeProject,
@@ -456,6 +456,9 @@ function editAttribute(id, editable) {
     }
 
     associatednaturalPersonList = null;
+    var isPrivateOwner = true;
+    var landOwner = null;
+    
     jQuery.ajax({
         url: "landrecords/editattribute/" + id,
         async: false,
@@ -475,7 +478,7 @@ function editAttribute(id, editable) {
             $("#neighbor_east").val(data[0].neighborEast);
             $("#neighbor_west").val(data[0].neighborWest);
             jQuery("#existing_use").empty();
-            
+
             if (data[0].other_use !== "") {
                 jQuery("#other_use").val(data[0].other_use);
             }
@@ -490,7 +493,7 @@ function editAttribute(id, editable) {
                 }
                 jQuery("#existing_use").append(jQuery("<option></option>").attr("value", landuseobj.landusetypeid).text(displayName));
             });
-            
+
             jQuery.each(villages, function (i, village) {
                 var displayName = village.name;
                 if (Global.LANG === "en") {
@@ -504,7 +507,7 @@ function editAttribute(id, editable) {
             } else {
                 jQuery("#cbxVillage").val("");
             }
-            
+
             if (data[0].noaId !== null) {
                 jQuery("#cbxAppNature").val(data[0].noaId);
             }
@@ -512,6 +515,9 @@ function editAttribute(id, editable) {
             if (data[0].rights !== null && data[0].rights.length > 0) {
                 $.each(data[0].rights, function (i, landRight) {
                     if (landRight.isactive && landRight.persontypeId === 1) {
+                        landOwner = landRight.laParty;
+                        isPrivateOwner = landOwner.hasOwnProperty("firstname");
+                        
                         if (landRight.certTypeid !== null) {
                             jQuery("#cbxTitleType").val(landRight.certTypeid);
                         }
@@ -552,12 +558,12 @@ function editAttribute(id, editable) {
             } else {
                 jQuery("#existing_use").val("");
             }
-                        
+
             $('#existing_use').multiselect({
                 columns: 1,
                 placeholder: $.i18n("gen-please-select")
             });
-            
+
             $('#existing_use').multiselect('reload');
 
             $("#spatialid").text(_parcelNumber);
@@ -616,9 +622,19 @@ function editAttribute(id, editable) {
         ]
     });
 
-    Person(id, editable);
-    personwithinterest(id, editable);
-
+    if (isPrivateOwner) {
+        $("#personsEditingGrid1").show();
+        $("#pnlPoi").show();
+        $("#tblLandOwnerInfo").hide();
+        Person(id, editable);
+        personwithinterest(id, editable);
+    } else {
+        $("#personsEditingGrid1").hide();
+        $("#pnlPoi").hide();
+        $("#tblLandOwnerInfo").show();
+        $("#LandOwnerTableTemplate").tmpl(landOwner).appendTo("#RowLandOwnerInfo");
+    }
+    
     editAttrDialog.dialog("open");
     if (editable) {
         $("#parcelsavebutton").prop("disabled", false).show();
@@ -1379,7 +1395,7 @@ function nextRecords() {
 function firstRecords() {
     records_from = $('#records_from').val();
     records_from = parseInt(records_from);
-    
+
     if (records_from > 1) {
         if (searchRecords != null) {
             spatialSearch(0);
@@ -1388,7 +1404,7 @@ function firstRecords() {
         } else {
             spatialRecords(0);
         }
-    } 
+    }
 }
 
 function lastRecords() {
@@ -1406,7 +1422,7 @@ function lastRecords() {
         } else {
             spatialRecords(records_from);
         }
-    } 
+    }
 }
 
 function spatialRecords(records_from) {
@@ -2270,7 +2286,7 @@ function Actionfill(usin, workflowId, transactionid, parcelnum, claimtypeid, sha
             if (Global.LANG === "en") {
                 displayName = actionList[i].actionnameEn;
             }
-            html += "<li> <a title='" + actionList[i].action + "' id=" + workflowId + " name=" + usin + "  href='#' onclick='CustomAction(this," + usin + "," + workflowId + " ," + transactionid + "," + parcelnum + " ," + claimtypeid + "," + shareTypeId + ")'>" + displayName + "</a></li>";
+            html += "<li> <a id=" + workflowId + " name=" + usin + "  href='#' onclick='CustomAction(this," + usin + "," + workflowId + " ," + transactionid + "," + parcelnum + " ," + claimtypeid + "," + shareTypeId + ",\"" + actionList[i].action + "\")'>" + displayName + "</a></li>";
         }
 
         html = html += "<li> <a title='" + $.i18n("gen-view-comment") + "' id=" + workflowId + "  name=" + usin + "  href='#' onclick='commentsDialog(" + usin + ")'>" + $.i18n("gen-comments") + "</a></li>";
@@ -2292,7 +2308,7 @@ function Actionfill(usin, workflowId, transactionid, parcelnum, claimtypeid, sha
     }
 }
 
-function CustomAction(refrence, landid, workflowid, transactionid, parcelnum, claimtypeid, shareTypeId) {
+function CustomAction(refrence, landid, workflowid, transactionid, parcelnum, claimtypeid, shareTypeId, action) {
     if (claimtypeid === 3) {
         $("#liDisputes").show();
     } else {
@@ -2301,39 +2317,39 @@ function CustomAction(refrence, landid, workflowid, transactionid, parcelnum, cl
     _transactionid = transactionid;
     $('#commentsStatusWorkflow').val("");
 
-    if ((refrence.title).trim() == "approve") {
-        dialogueAction(landid, workflowid, (refrence.title).trim(), claimtypeid)
-    } else if ((refrence.title).trim() == "reject") {
-        dialogueAction(landid, workflowid, (refrence.title).trim(), claimtypeid)
-    } else if ((refrence.title).trim() == "generate map") {
+    if (action.trim() == "approve") {
+        dialogueAction(landid, workflowid, action.trim(), claimtypeid)
+    } else if (action.trim() == "reject") {
+        dialogueAction(landid, workflowid, action.trim(), claimtypeid)
+    } else if (action.trim() == "generate map") {
         generateMap(landid, shareTypeId);
-    } else if ((refrence.title).trim() == "generate forms") {
+    } else if (action.trim() == "generate forms") {
         showFormsList(landid, workflowid, shareTypeId);
-    } else if ((refrence.title).trim() == "edit") {
+    } else if (action.trim() == "edit") {
         editAttributeNew(landid, workflowid, true);
-    } else if ((refrence.title).trim() == "view") {
+    } else if (action.trim() == "view") {
         editAttributeNew(landid, workflowid, false);
-    } else if ((refrence.title).trim() == "verification") {
-        dialogueAction(landid, workflowid, (refrence.title).trim(), claimtypeid)
-    } else if ((refrence.title).trim() == "print") {
+    } else if (action.trim() == "verification") {
+        dialogueAction(landid, workflowid, action.trim(), claimtypeid)
+    } else if (action.trim() == "print") {
         _printReport(workflowid, transactionid, landid);
-    } else if ((refrence.title).trim() == "register") {
+    } else if (action.trim() == "register") {
         registerParcel(landid, workflowid, parcelnum)
-    } else if ((refrence.title).trim() == "delete") {
+    } else if (action.trim() == "delete") {
         deleteParcel(landid, workflowid)
-    } else if ((refrence.title).trim() === "edit  spatial") {
+    } else if (action.trim() === "edit  spatial") {
         showOnMap(landid, workflowid, "", true);
-    } else if ((refrence.title).trim() === "view map") {
+    } else if (action.trim() === "view map") {
         showOnMap(landid, workflowid, "", false);
     } else if (refrence.title.trim() === "view parcel number") {
         showParcelNumber($("#hSection" + landid).val(), $("#hParcelInSection" + landid).val());
     } else if (refrence.title.trim() === "edit parcel number") {
         editParcelNumber(landid, $("#hSection" + landid).val(), $("#hParcelInSection" + landid).val());
-    } else if ((refrence.title).trim() === "edit  parcel") {
+    } else if (action.trim() === "edit  parcel") {
         edituserDefineParcel(landid, workflowid);
-    } else if ((refrence.title).trim() === "payment info") {
+    } else if (action.trim() === "payment info") {
         paymentDialog(landid);
-    } else if ((refrence.title).trim() === "signatory info") {
+    } else if (action.trim() === "signatory info") {
         signatoryDialog(landid);
     }
 }
@@ -3072,7 +3088,7 @@ reports.prototype.TransStatSummary = function (villageId, proj) {
     window.open("landrecords/transstatsummary/" + proj + "/" + villageId, 'popUp', 'height=500,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,titlebar=no,menubar=no,status=no,replace=false');
 };
 
-reports.prototype.ResourcesStatSummary= function (proj) {
+reports.prototype.ResourcesStatSummary = function (proj) {
     window.open("landrecords/resoursestatsummary/" + proj, 'popUp', 'height=500,width=950,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,titlebar=no,menubar=no,status=no,replace=false');
 };
 
@@ -5470,6 +5486,18 @@ generateForms.prototype.Form8 = function (usin) {
     var formLst = [];
     jQuery.ajax({
         url: "landrecords/spatialunit/form8/" + usin,
+        async: false,
+        success: function (data) {
+            formLst = data;
+        }
+    });
+    return formLst;
+};
+
+generateForms.prototype.Form52Le = function (usin) {
+    var formLst = [];
+    jQuery.ajax({
+        url: "landrecords/spatialunit/form52le/" + usin,
         async: false,
         success: function (data) {
             formLst = data;

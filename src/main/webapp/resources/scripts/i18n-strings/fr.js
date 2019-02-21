@@ -366,6 +366,10 @@ LANGUAGES.fr = {
     "reg-lastname": "Nom de famille",
     "reg-gender": "Le sexe",
     "reg-dob": "Date de naissance",
+    "reg-regnum": "Références document de création",
+    "reg-establishment-date": "Date de fondation",
+    "reg-rep-name": "Représentant actuel",
+    "reg-rep-phone": "Téléphone du représentant",
     "reg-relation": "Relation",
     "reg-relationship-type": "Type de relation",
     "reg-address": "Addresse",
@@ -386,6 +390,7 @@ LANGUAGES.fr = {
     "reg-dispute-type": "Type de litige",
     "reg-landid": "ID de terre",
     "reg-person-type": "Type de personne",
+    "reg-org-type": "Type de personne morale",
     "reg-id": "ID",
     "reg-file-uploaded": "Fichier téléchargé",
     "reg-file-upload": "Téléchargement de fichiers",
@@ -839,5 +844,7 @@ LANGUAGES.fr = {
     "err-enter-regnum": "Entrez le numéro d'enregistrement",
     "err-enter-appnum": "Entrez le numéro de demande",
     "err-enter-appdate": "Entrer la date de demande",
-    "err-enter-end-date": "Entrez la date de fin"
+    "err-enter-end-date": "Entrez la date de fin",
+    "err-enter-representative": "Entrez le nom du représentant",
+    "err-select-correct-ownership": "Sélectionnez le type de propriété correct"
 };

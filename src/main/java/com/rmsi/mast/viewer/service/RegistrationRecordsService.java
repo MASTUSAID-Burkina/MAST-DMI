@@ -23,6 +23,7 @@ import com.rmsi.mast.studio.domain.La_Month;
 import com.rmsi.mast.studio.domain.LandType;
 import com.rmsi.mast.studio.domain.MaritalStatus;
 import com.rmsi.mast.studio.domain.NaturalPerson;
+import com.rmsi.mast.studio.domain.NonNaturalPerson;
 import com.rmsi.mast.studio.domain.Permission;
 import com.rmsi.mast.studio.domain.PersonType;
 import com.rmsi.mast.studio.domain.ProjectRegion;
@@ -42,7 +43,7 @@ public interface RegistrationRecordsService {
 
     LaPartyPerson getPartyPersonDetails(Integer landid);
 
-    List<LaPartyPerson> getAllPartyPersonDetails(Integer landid);
+    Object getAllPartyPersonDetails(Integer landid);
 
     List<LaPartyPerson> getAllPartyPersonDetailsByTransactionId(Integer transid);
 
@@ -98,6 +99,9 @@ public interface RegistrationRecordsService {
     
     @Transactional
     NaturalPerson saveNaturalPerson(NaturalPerson naturalPerson);
+    
+    @Transactional
+    NonNaturalPerson saveNonNaturalPerson(NonNaturalPerson nonPerson);
 
     @Transactional
     LaParty saveParty(LaParty laParty);

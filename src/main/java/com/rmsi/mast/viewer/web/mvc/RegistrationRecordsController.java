@@ -32,12 +32,14 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.rmsi.mast.studio.dao.DocumentTypeDao;
+import com.rmsi.mast.studio.dao.GroupTypeDAO;
 import com.rmsi.mast.studio.dao.OutputformatDAO;
 import com.rmsi.mast.studio.dao.ProjectDAO;
 import com.rmsi.mast.studio.dao.SocialTenureRelationshipDAO;
 import com.rmsi.mast.studio.dao.SourceDocumentDAO;
 import com.rmsi.mast.studio.domain.DocumentType;
 import com.rmsi.mast.studio.domain.Gender;
+import com.rmsi.mast.studio.domain.GroupType;
 import com.rmsi.mast.studio.domain.IdType;
 import com.rmsi.mast.studio.domain.LaExtFinancialagency;
 import com.rmsi.mast.studio.domain.LaExtPersonLandMapping;
@@ -56,12 +58,12 @@ import com.rmsi.mast.studio.domain.LandType;
 import com.rmsi.mast.studio.domain.LandUseType;
 import com.rmsi.mast.studio.domain.MaritalStatus;
 import com.rmsi.mast.studio.domain.NaturalPerson;
+import com.rmsi.mast.studio.domain.NonNaturalPerson;
 import com.rmsi.mast.studio.domain.Permission;
 import com.rmsi.mast.studio.domain.PersonType;
 import com.rmsi.mast.studio.domain.Project;
 import com.rmsi.mast.studio.domain.ProjectRegion;
 import com.rmsi.mast.studio.domain.RelationshipType;
-import com.rmsi.mast.studio.domain.ResourceClassification;
 import com.rmsi.mast.studio.domain.ShareType;
 import com.rmsi.mast.studio.domain.SocialTenureRelationship;
 import com.rmsi.mast.studio.domain.SourceDocument;
@@ -71,7 +73,6 @@ import com.rmsi.mast.studio.domain.User;
 import com.rmsi.mast.studio.domain.fetch.PoiReport;
 import com.rmsi.mast.studio.mobile.dao.LandUseTypeDao;
 import com.rmsi.mast.studio.mobile.dao.SpatialUnitPersonWithInterestDao;
-import com.rmsi.mast.studio.mobile.service.ResourceClassificationServise;
 import com.rmsi.mast.studio.service.UserService;
 import com.rmsi.mast.studio.util.FileUtils;
 import com.rmsi.mast.studio.util.StringUtils;
@@ -81,7 +82,6 @@ import com.rmsi.mast.viewer.dao.LaMortgageDao;
 import com.rmsi.mast.viewer.dao.LaMortgageSurrenderDao;
 import com.rmsi.mast.viewer.dao.LaPartyDao;
 import com.rmsi.mast.viewer.dao.LaSurrenderLeaseDao;
-import com.rmsi.mast.viewer.dao.PermissionDao;
 import com.rmsi.mast.viewer.dao.SourceDocumentsDao;
 import com.rmsi.mast.viewer.service.LaExtRegistrationLandShareTypeService;
 import com.rmsi.mast.viewer.service.LandRecordsService;
@@ -149,6 +149,9 @@ public class RegistrationRecordsController {
     @Autowired
     LaExtRegistrationLandShareTypeService laExtRegistrationLandShareTypeservice;
 
+    @Autowired
+    private GroupTypeDAO groupTypeDAO;
+    
     @RequestMapping(value = "/viewer/registryrecords/spatialunit/{project}/{startfrom}/{lang}", method = RequestMethod.GET)
     @ResponseBody
     public List<LaSpatialunitLand> spatialUnitList(@PathVariable String project, @PathVariable String lang, @PathVariable Integer startfrom) {
@@ -187,7 +190,7 @@ public class RegistrationRecordsController {
 
     @RequestMapping(value = "/viewer/registration/partydetails/sale/{landid}", method = RequestMethod.GET)
     @ResponseBody
-    public List<LaPartyPerson> getAllPartyPersonDetails(@PathVariable Integer landid) {
+    public Object getAllPartyPersonDetails(@PathVariable Integer landid) {
 
         return regRecordsService.getAllPartyPersonDetails(landid);
     }
@@ -739,6 +742,116 @@ public class RegistrationRecordsController {
         return null;
     }
 
+    @RequestMapping(value = "/viewer/registration/savelegalbuyer", method = RequestMethod.POST)
+    @ResponseBody
+    public String saveLegalBuyer(HttpServletRequest request, HttpServletResponse response, Principal principal) {
+        Long landId = 0L;
+        String username = principal.getName();
+        User userObj = userService.findByUniqueName(username);
+
+        Long user_id = userObj.getId();
+
+        try {
+            landId = ServletRequestUtils.getRequiredLongParameter(request, "landidhide");
+            int buyerId = ServletRequestUtils.getRequiredIntParameter(request, "personid");
+            Long processid = ServletRequestUtils.getRequiredLongParameter(request, "registration_process");
+            
+            String leName = ServletRequestUtils.getRequiredStringParameter(request, "txtLegalBuyerName");
+            int leType = ServletRequestUtils.getRequiredIntParameter(request, "cbxLegalBuyerType");
+            String leRegNum = ServletRequestUtils.getRequiredStringParameter(request, "txtLegalBuyerRegNum");
+            String leEstDate = ServletRequestUtils.getRequiredStringParameter(request, "txtLegalBuyerEstDate");
+            String leAddress = ServletRequestUtils.getRequiredStringParameter(request, "txtLegalBuyerAddress");
+            String leRepName = ServletRequestUtils.getRequiredStringParameter(request, "txtLegalBuyerRepName");
+            String leRepPhone = ServletRequestUtils.getRequiredStringParameter(request, "txtLegalBuyerRepPhone");
+
+            Status status = regRecordsService.getStatusById(7); // Final
+            PersonType personType = regRecordsService.getPersonTypeById(11);
+            GroupType gt = groupTypeDAO.getGroupType(leType);
+            
+            DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
+
+            Date dtEstDate = null;
+
+            try {
+                if (StringUtils.isNotEmpty(leEstDate)) {
+                    dtEstDate = dateformat.parse(leEstDate);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            SocialTenureRelationship rightBuyer = regRecordsService.getSocialTenureRelationshipByLandIdForBuyer(landId, processid);
+            Long buyerPartyId = ((Integer) buyerId).longValue();
+            NonNaturalPerson nonPerson = new NonNaturalPerson();
+
+            if (buyerPartyId > 0) {
+                nonPerson = (NonNaturalPerson) laPartyDao.getPartyIdByID(buyerPartyId);
+            }
+
+            nonPerson.setAddress(leAddress);
+            nonPerson.setContactno(leRepPhone);
+            nonPerson.setIdentityregistrationno(leRegNum);
+            nonPerson.setGroupType(gt);
+            nonPerson.setIsactive(Boolean.TRUE);
+            nonPerson.setOrganizationname(leName);
+            nonPerson.setLaPartygroupPersontype(personType);
+            nonPerson.setRegdate(dtEstDate);
+            nonPerson.setRepname(leRepName);
+            
+            nonPerson.setLaSpatialunitgroup1(regRecordsService.findLaSpatialunitgroupById(1));
+            nonPerson.setLaSpatialunitgroup2(regRecordsService.findLaSpatialunitgroupById(2));
+            nonPerson.setLaSpatialunitgroup3(regRecordsService.findLaSpatialunitgroupById(3));
+            nonPerson.setLaSpatialunitgroupHierarchy1(regRecordsService.findProjectRegionById(1));
+            nonPerson.setLaSpatialunitgroupHierarchy2(regRecordsService.findProjectRegionById(2));
+            nonPerson.setLaSpatialunitgroupHierarchy3(regRecordsService.findProjectRegionById(3));
+            
+            if (buyerPartyId == 0L) {
+                nonPerson.setCreatedby(user_id.intValue());
+                nonPerson.setCreateddate(new Date());
+
+                Long partyId = 0l;
+                SocialTenureRelationship sellerRight = regRecordsService.getSocialTenureRelationshipByLandId(landId);
+                if (sellerRight == null) {
+                    return null;
+                }
+
+                NonNaturalPerson nonPerson2 = regRecordsService.saveNonNaturalPerson(nonPerson);
+                partyId = nonPerson2.getPartyid();
+
+                SocialTenureRelationship newRight = new SocialTenureRelationship();
+                newRight.setShareTypeId(sellerRight.getShareTypeId());
+                newRight.setCreatedby(user_id.intValue());
+                newRight.setPartyid(partyId);
+                newRight.setLaPartygroupPersontype(personType);
+                newRight.setCreateddate(new Date());
+                newRight.setIsactive(true);
+                newRight.setLandid(landId);
+
+                LaExtTransactiondetail laExtTransactiondetail = new LaExtTransactiondetail();
+                laExtTransactiondetail.setCreatedby(user_id.intValue());
+                laExtTransactiondetail.setCreateddate(new Date());
+                laExtTransactiondetail.setIsactive(true);
+                laExtTransactiondetail.setLaExtApplicationstatus(status);
+                laExtTransactiondetail.setModuletransid(partyId.intValue());
+                laExtTransactiondetail.setProcessid(processid);
+
+                newRight.setLaExtTransactiondetail(laExtTransactiondetail);
+
+                newRight = regRecordsService.saveSocialTenureRelationship(newRight);
+                return newRight.getLaExtTransactiondetail().getTransactionid() + "";
+
+            } else {
+                nonPerson.setModifiedby(user_id.intValue());
+                nonPerson.setModifieddate(new Date());
+                regRecordsService.saveNonNaturalPerson(nonPerson);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
     @RequestMapping(value = "/viewer/registration/saveLeaseeDetails/{processId}", method = RequestMethod.POST)
     @ResponseBody
     public String saveLeaseeDetails(HttpServletRequest request, @PathVariable long processId, HttpServletResponse response, Principal principal) {
@@ -3107,7 +3220,8 @@ public class RegistrationRecordsController {
                 surrenderPermission.setUsage(p.getUsage());
                 surrenderPermission.setActive(true);
 
-                return regRecordsService.savePermission(surrenderPermission);
+                surrenderPermission = regRecordsService.savePermission(surrenderPermission);
+                return regRecordsService.getPermissionById(surrenderPermission.getId());
             }
 
             NaturalPerson applicant = new NaturalPerson();

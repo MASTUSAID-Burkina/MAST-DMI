@@ -71,7 +71,7 @@
                                 </td>
 
                                 <td>
-                                    <label data-i18n="reg-firstname"></label> 
+                                    <label><span data-i18n="reg-firstname" style="color: #000;font-size: 100%;"></span> / <span data-i18n="reg-name" style="color: #000;font-size: 100%;"></span></label>
                                     <input type="text" name="txt_first_name" id="txt_first_name" value="" class="input-medium">
                                 </td>
 
@@ -216,7 +216,22 @@
                                         <div style="margin: 10px; border: 1px solid #ccc; padding: 10px">
 
                                             <label data-i18n="reg-owner-details"></label>
-                                            <table class="amendbeforeAfterTable space-top-10">
+                                            <table class="amendbeforeAfterTable space-top-10" id="tblLegalOwnerLoanInfo">
+                                                <thead>
+                                                    <tr>
+                                                        <th data-i18n="reg-name"></th>
+                                                        <th data-i18n="reg-org-type"></th>
+                                                        <th data-i18n="reg-regnum"></th>
+                                                        <th data-i18n="reg-establishment-date"></th>
+                                                        <th data-i18n="reg-address"></th>
+                                                        <th data-i18n="reg-rep-name"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="RowLegalOwnerLoanInfo">
+                                                </tbody>
+                                            </table>
+
+                                            <table class="amendbeforeAfterTable space-top-10" id="tblPrivateOwnerLoanInfo">
                                                 <thead>
                                                     <tr>
                                                         <th data-i18n="reg-name"></th>
@@ -235,15 +250,11 @@
                                                         <th data-i18n="reg-mandate-location"></th>
                                                     </tr>
                                                 </thead>
-
                                                 <tbody id="OwnerRecordsRowDataLease">
                                                 </tbody>
-
-
                                             </table>
 
-                                            <script id="OwnerRecordsAttrTemplateLease"
-                                                    type="text/x-jquery-tmpl">
+                                            <script id="OwnerRecordsAttrTemplateLease" type="text/x-jquery-tmpl">
                                                 <tr>
                                                 <td>
                                                 ${firstname} ${middlename} ${lastname}
@@ -293,7 +304,7 @@
 
                                     </div>
 
-                                    <div style="margin: 10px; border: 1px solid #ccc; padding: 10px;">
+                                    <div style="margin: 10px; border: 1px solid #ccc; padding: 10px;" id="pnlPoiLoan">
                                         <label data-i18n="reg-poi"></label>
                                         <table class="amendbeforeAfterTable space-top-10">
                                             <thead>
@@ -677,7 +688,7 @@
                                                 - L’original de l’APFR du bailleur<br />
                                             </div>
                                         </div>
-                                        
+
                                         <table style="width: 100%" id="tableupload_Lease" class="landrecords22 ">
                                             <tr>
                                                 <td><label data-i18n="reg-doc-name"></label>
@@ -731,7 +742,7 @@
                                         <div style="margin: 10px; border: 1px solid #ccc; padding: 10px">
 
                                             <label id = "selectedsellerlabel" data-i18n="reg-seller-details"></label>
-                                            <table class="amendbeforeAfterTable space-top-10">
+                                            <table class="amendbeforeAfterTable space-top-10" id="tblPrivateSellerInfo">
                                                 <thead>
                                                     <tr>
                                                         <th data-i18n="reg-name"></th>
@@ -750,15 +761,11 @@
                                                         <th data-i18n="reg-mandate-location"></th>
                                                     </tr>
                                                 </thead>
-
                                                 <tbody id="OwnerRecordsRowDataSale">
                                                 </tbody>
-
-
                                             </table>
 
-                                            <script id="OwnerRecordsAttrTemplateSale"
-                                                    type="text/x-jquery-tmpl">
+                                            <script id="OwnerRecordsAttrTemplateSale" type="text/x-jquery-tmpl">
                                                 <tr>
                                                 <td>
                                                 ${firstname} ${middlename} ${lastname}
@@ -805,10 +812,51 @@
                                                 </tr>
                                             </script>	
 
+                                            <table class="amendbeforeAfterTable space-top-10" id="tblLegalSellerInfo">
+                                                <thead>
+                                                    <tr>
+                                                        <th data-i18n="reg-name"></th>
+                                                        <th data-i18n="reg-org-type"></th>
+                                                        <th data-i18n="reg-regnum"></th>
+                                                        <th data-i18n="reg-establishment-date"></th>
+                                                        <th data-i18n="reg-address"></th>
+                                                        <th data-i18n="reg-rep-name"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="RowLegalSellerInfo">
+                                                </tbody>
+                                            </table>
 
+                                            <script id="LegalEntityTableTemplate" type="text/x-jquery-tmpl">
+                                                <tr>
+                                                <td>
+                                                ${organizationname}
+                                                </td> 
+                                                <td>	
+                                                {{if (Global.LANG==='en')}}
+                                                ${groupType.grouptypeEn}
+                                                {{else}}
+                                                ${groupType.grouptype}
+                                                {{/if}}
+                                                </td> 
+                                                <td>		
+                                                ${identityregistrationno}
+                                                </td> 
+                                                <td>
+                                                ${regdate}
+                                                </td>
+                                                <td>
+                                                ${address}
+                                                </td>
+                                                <td>		
+                                                ${repname}<br>
+                                                ${contactno}
+                                                </td> 
+                                                </tr>
+                                            </script>
                                         </div>
 
-                                        <div style="margin: 10px; border: 1px solid #ccc; padding: 10px;">
+                                        <div style="margin: 10px; border: 1px solid #ccc; padding: 10px;" id="divPrivateSellerPoi">
                                             <label data-i18n="reg-poi"></label>
                                             <table class="amendbeforeAfterTable space-top-10">
                                                 <thead>
@@ -851,11 +899,10 @@
                                         <div id="saleLandDetailsContainer"></div>
                                     </div>
                                     <div id="Buyer_Details">
-                                        <div class="tab-pane landrecords22" id="registry-record_sale_buyer_EliminateOwner">
+                                        <div class="tab-pane landrecords22">
                                             <div style="margin: 10px; border: 1px solid #ccc; padding: 10px">
-                                                <!-- table -->
                                                 <input type="hidden" name="personid" id="personid" value="">
-                                                <table style="width: 100%" id="tablebuyer_sale" class="landrecords22 ">
+                                                <table style="width: 100%;display: none;" class="landrecords22" id="tblNewPersonBuyer">
                                                     <tr>
                                                         <td>
                                                             <label data-i18n="reg-firstname"></label> 
@@ -975,8 +1022,79 @@
                                                         </td>
                                                     </tr>
                                                 </table>
+
+                                                <table style="width: 100%;display: none;" class="landrecords22" id="tblNewLegalBuyer">
+                                                    <tr>
+                                                        <td style="width: 33.3%;">
+                                                            <label data-i18n="reg-name"></label> 
+                                                            <input type="text"
+                                                                   name="txtLegalBuyerName" id="txtLegalBuyerName" value=""
+                                                                   class="text ui-widget-content ui-corner-all"
+                                                                   maxlength="250"> 
+                                                        </td>
+                                                        <td style="width: 33.3%;">
+                                                            <label data-i18n="reg-org-type"></label> 
+                                                            <select name="cbxLegalBuyerType" id="cbxLegalBuyerType">
+                                                                <option data-i18n="gen-please-select"></option>
+                                                            </select>
+                                                        </td>
+                                                        <td style="width: 33.3%;">
+                                                            <label data-i18n="reg-regnum"></label> 
+                                                            <input type="text"
+                                                                   name="txtLegalBuyerRegNum" id="txtLegalBuyerRegNum" value=""
+                                                                   class="text ui-widget-content ui-corner-all"
+                                                                   maxlength="100"> 
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td style="width: 33.3%;">
+                                                            <label data-i18n="reg-establishment-date"></label> 
+                                                            <input type="text"
+                                                                   name="txtLegalBuyerEstDate" id="txtLegalBuyerEstDate"
+                                                                   value="" class="input-medium datepicker"> 
+                                                        </td>
+                                                        <td colspan="2" style="width: 66.6%;">
+                                                            <label data-i18n="reg-address"></label> 
+                                                            <input type="text"
+                                                                   name="txtLegalBuyerAddress" id="txtLegalBuyerAddress" value=""
+                                                                   class="text ui-widget-content ui-corner-all"
+                                                                   style="width: 515px;"
+                                                                   maxlength="250"> 
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td style="width: 33.3%;">
+                                                            <label data-i18n="reg-rep-name"></label> 
+                                                            <input type="text"
+                                                                   name="txtLegalBuyerRepName" id="txtLegalBuyerRepName" value=""
+                                                                   class="text ui-widget-content ui-corner-all"
+                                                                   maxlength="250"> 
+                                                        </td>
+                                                        <td style="width: 33.3%;">
+                                                            <label data-i18n="reg-rep-phone"></label> 
+                                                            <input type="text"
+                                                                   name="txtLegalBuyerRepPhone" id="txtLegalBuyerRepPhone" value=""
+                                                                   class="text ui-widget-content ui-corner-all"
+                                                                   maxlength="250"> 
+                                                        </td>
+                                                        <td style="width: 33.3%;">
+
+                                                        </td>
+                                                    </tr>
+                                                </table>
+
+                                                <div id="divBuyerType" style="text-align: center; display:none;">
+                                                    <button onclick="javscript:showAddPersonBuyer()" data-i18n="reg-add-person" 
+                                                            class="ui-button ui-corner-all ui-widget"></button>
+
+                                                    <button onclick="javscript:showAddNonNaturalBuyer()" data-i18n="reg-add-nonnatural-person" 
+                                                            class="ui-button ui-corner-all ui-widget"></button>
+                                                </div>
+
                                                 <div style="text-align: right;padding-right: 20px;">
-                                                    <button id="savebuyer" onclick="javscript:savebuyerdetails()" data-i18n="reg-add-person" 
+                                                    <button id="savebuyer" onclick="javscript:savebuyerdetails()" data-i18n="gen-add" 
                                                             class="ui-button ui-corner-all ui-widget"></button>
                                                 </div>
                                             </div>
@@ -984,7 +1102,7 @@
                                             <div id="newOwner" style="margin: 10px; border: 1px solid #ccc; padding: 10px">
 
                                                 <label data-i18n="reg-new-owner-details"></label>
-                                                <table class="amendbeforeAfterTable space-top-10">
+                                                <table class="amendbeforeAfterTable space-top-10" style="display: none;" id="tblPersonBuyerInfo">
                                                     <thead>
                                                         <tr>
                                                             <th data-i18n="reg-name"></th>
@@ -1009,6 +1127,53 @@
                                                     <tbody id="newOwnerRecordsRowDataSale">
                                                     </tbody>
                                                 </table>
+
+                                                <table class="amendbeforeAfterTable space-top-10" style="display: none;" id="tblLegalBuyerInfo">
+                                                    <thead>
+                                                        <tr>
+                                                            <th data-i18n="reg-name"></th>
+                                                            <th data-i18n="reg-org-type"></th>
+                                                            <th data-i18n="reg-regnum"></th>
+                                                            <th data-i18n="reg-establishment-date"></th>
+                                                            <th data-i18n="reg-address"></th>
+                                                            <th data-i18n="reg-rep-name"></th>
+                                                            <th data-i18n="gen-edit"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="RowLegalBuyerInfo">
+                                                    </tbody>
+                                                </table>
+
+                                                <script id="LegalEntityEditTableTemplate" type="text/x-jquery-tmpl">
+                                                    <tr>
+                                                    <td>
+                                                    ${organizationname}
+                                                    </td> 
+                                                    <td>	
+                                                    {{if (Global.LANG==='en')}}
+                                                    ${groupType.grouptypeEn}
+                                                    {{else}}
+                                                    ${groupType.grouptype}
+                                                    {{/if}}
+                                                    </td> 
+                                                    <td>		
+                                                    ${identityregistrationno}
+                                                    </td> 
+                                                    <td>
+                                                    ${regdate}
+                                                    </td>
+                                                    <td>
+                                                    ${address}
+                                                    </td>
+                                                    <td>		
+                                                    ${repname}<br>
+                                                    ${contactno}
+                                                    </td> 
+                                                    <td>		
+                                                    <button value="Submit" onclick="editLegalBuyer(${partyid});" data-i18n="gen-edit"></button>		
+                                                    </td >
+                                                    </tr>
+                                                </script>
 
                                                 <script id="newOwnerRecordsAttrTemplateSale" type="text/x-jquery-tmpl">
                                                     <tr>
@@ -1278,7 +1443,7 @@
                                             -  Une copie de la lettre de notification des droits et taxes<br />
                                             -  L’original ou une photocopie de la quittance de paiement de taxe<br />
                                         </div>
-                                        
+
                                         <table style="width: 100%" id="tableupload_sale" class="landrecords22 ">
                                             <tr>
                                                 <td><label data-i18n="reg-doc-name"></label>
@@ -1331,7 +1496,7 @@
                                         <div style="margin: 10px; border: 1px solid #ccc; padding: 10px">
 
                                             <label data-i18n="reg-owner-details"></label>
-                                            <table class="amendbeforeAfterTable space-top-10">
+                                            <table class="amendbeforeAfterTable space-top-10" id="tblPrivateOwnerPermInfo">
                                                 <thead>
                                                     <tr>
                                                         <th data-i18n="reg-name"></th>
@@ -1352,6 +1517,21 @@
                                                 </thead>
 
                                                 <tbody id="rowsPermissionOwner">
+                                                </tbody>
+                                            </table>
+
+                                            <table class="amendbeforeAfterTable space-top-10" id="tblLegalOwnerPermInfo">
+                                                <thead>
+                                                    <tr>
+                                                        <th data-i18n="reg-name"></th>
+                                                        <th data-i18n="reg-org-type"></th>
+                                                        <th data-i18n="reg-regnum"></th>
+                                                        <th data-i18n="reg-establishment-date"></th>
+                                                        <th data-i18n="reg-address"></th>
+                                                        <th data-i18n="reg-rep-name"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="RowLegalOwnerPermInfo">
                                                 </tbody>
                                             </table>
 
@@ -1404,7 +1584,7 @@
                                         </div>
                                     </div>
 
-                                    <div style="margin: 10px; border: 1px solid #ccc; padding: 10px;">
+                                    <div style="margin: 10px; border: 1px solid #ccc; padding: 10px;" id="pnlPermPOI">
                                         <label data-i18n="reg-poi"></label>
                                         <table class="amendbeforeAfterTable space-top-10">
                                             <thead>
@@ -1671,7 +1851,7 @@
                                                 - L’original de l’APFR pour vérification<br />
                                             </div>
                                         </div>
-                                        
+
                                         <table style="width: 100%" id="tablePermDoc" class="landrecords22 ">
                                             <tr>
                                                 <td><label data-i18n="reg-doc-name"></label>
@@ -2232,9 +2412,7 @@
 <div id="commentsDialogpopup" data-i18n="[title]reg-reg-tran-rec"
      class="">
     <fieldset>
-        <table class="amendbeforeAfterTable" style="display: none;"
-               id="commentsTablePop">
-
+        <table class="amendbeforeAfterTable" style="display: none;" id="commentsTablePop">
             <thead>
                 <tr>
                     <td><label data-i18n="reg-parcel-num"></label> <span id="parcelnovalue"> </span></td>
@@ -2457,22 +2635,36 @@
 </script>
 
 <script id="PropertyOldSaleTrackingTemplate" type="text/x-jquery-tmpl">
-
     <tr>       		                  
     <td>
-    ${firstname}    ${middlename}  ${lastname}
+    ${firstname} ${middlename} ${lastname} ${organizationname}
     </td>
-
     <td>
     ${address}    
     </td>
     <td>
-    ${identityno}    
+    ${identityno} ${identityregistrationno} 
     </td>
     <td>
     ${createddate}    
     </td>		
+    </tr>
+</script>
 
+<script id="PropertyOldLelgalSaleTrackingTemplate" type="text/x-jquery-tmpl">
+    <tr>       		                  
+    <td>
+    ${organizationname}
+    </td>
+    <td>
+    ${address}    
+    </td>
+    <td>
+    ${identityregistrationno} 
+    </td>
+    <td>
+    ${createddate}    
+    </td>		
     </tr>
 </script>
 

@@ -9,7 +9,7 @@ public interface LaPartyPersonDao extends GenericDAO<LaPartyPerson, Long> {
 
     LaPartyPerson getPartyPersonDetails(Integer landid);
 
-    List<LaPartyPerson> getAllPartyPersonDetails(Integer landid);
+    Object getAllPartyPersonDetails(Integer landid);
 
     List<LaPartyPerson> getAllPartyPersonDetailsByTransactionId(Integer transid);
 

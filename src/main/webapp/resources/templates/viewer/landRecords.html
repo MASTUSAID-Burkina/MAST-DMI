@@ -124,7 +124,7 @@
                                 </td>
 
                                 <td>
-                                    <label data-i18n="reg-firstname"></label> 
+                                    <label><span data-i18n="reg-firstname" style="color: #000;font-size: 100%;"></span> / <span data-i18n="reg-name" style="color: #000;font-size: 100%;"></span></label>
                                     <input type="text" name="first_name" id="first_name" value="" class="input-medium">
                                 </td>
 
@@ -364,7 +364,7 @@
                     <div id="tabs">
                         <ul>
                             <li onclick="showSaveButton(true);"><a href="#tabGeneralInfo" data-i18n="gen-geninfo"></a></li>
-                            <li id="liPoi" onclick="showSaveButton(false);"><a class="linkliPoi" href="#tabs-2c" data-i18n="reg-person"></a></li>
+                            <li id="liPoi" onclick="showSaveButton(false);"><a class="linkliPoi" href="#tabs-2c" data-i18n="reg-owner"></a></li>
                             <li id="liDisputes" onclick="showSaveButton(false);"><a class="linkliDisputes" href="#tabDisputes" data-i18n="reg-disputes"></a></li>
                             <li id="liMultimedia" onclick="showSaveButton(false);"><a class="linkliMultimedia" href="#tabs-4" data-i18n="reg-multimedia"></a></li>
                             <li id="liMapCoords" onclick="showSaveButton(false);"><a href="#tabs-5" data-i18n="reg-map-coords"></a></li>
@@ -425,14 +425,14 @@
                                                 <input type="text" name="txtRegNumber" id="txtRegNumber" class="text ui-widget-content ui-corner-all justread">
                                             </td>
                                         </tr>
-                                        
+
                                         <tr>
                                             <td colspan="4">
                                                 <label data-i18n="reg-village"></label> 
                                                 <select name="cbxVillage" id="cbxVillage" class="read-tenure"></select>
                                             </td>
                                         </tr>
-                                        
+
                                         <tr>
                                             <td class="borderedBottom" colspan="4">
                                                 <h3><label data-i18n="reg-tenure"></label></h3>
@@ -533,11 +533,53 @@
 
                         <div id="tabs-2c">
                             <div style="margin-top: 10px;">
-                                <div><label data-i18n="reg-person-owner"></label>
+                                <div><label data-i18n="reg-owner"></label>
                                 </div>
                                 <div class="hidenatTable">
                                     <div id="personsEditingGrid1"></div>
                                 </div>
+                                <table class="amendbeforeAfterTable" id="tblLandOwnerInfo">
+                                    <thead>
+                                        <tr>
+                                            <th data-i18n="reg-name"></th>
+                                            <th data-i18n="reg-org-type"></th>
+                                            <th data-i18n="reg-regnum"></th>
+                                            <th data-i18n="reg-establishment-date"></th>
+                                            <th data-i18n="reg-address"></th>
+                                            <th data-i18n="reg-rep-name"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="RowLandOwnerInfo">
+                                    </tbody>
+                                </table>
+
+                                <script id="LandOwnerTableTemplate" type="text/x-jquery-tmpl">
+                                    <tr>
+                                    <td>
+                                    ${organizationname}
+                                    </td> 
+                                    <td>	
+                                    {{if (Global.LANG==='en')}}
+                                    ${groupType.grouptypeEn}
+                                    {{else}}
+                                    ${groupType.grouptype}
+                                    {{/if}}
+                                    </td> 
+                                    <td>		
+                                    ${identityregistrationno}
+                                    </td> 
+                                    <td>
+                                    ${regdate}
+                                    </td>
+                                    <td>
+                                    ${address}
+                                    </td>
+                                    <td>		
+                                    ${repname}<br>
+                                    ${contactno}
+                                    </td> 
+                                    </tr>
+                                </script>
                             </div>
 
                             <div id="pnlPoi" style="display: none;">

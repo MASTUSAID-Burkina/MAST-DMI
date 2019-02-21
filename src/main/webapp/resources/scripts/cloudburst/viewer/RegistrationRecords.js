@@ -51,6 +51,7 @@ var finalbuyerarray = [];
 var tenuretypeListR = null;
 var mutationTypes = null;
 var permissionApplicant = null;
+var leTypes = null;
 
 $("#transactionId").val(0);
 
@@ -77,6 +78,14 @@ function RegistrationRecords(_selectedItem) {
         async: false,
         success: function (data) {
             maritalStatus_R = data;
+        }
+    });
+
+    jQuery.ajax({
+        url: "landrecords/grouptype/",
+        async: false,
+        success: function (data) {
+            leTypes = data;
         }
     });
 
@@ -367,13 +376,13 @@ function firstRecordsR() {
 function lastRecordsR() {
     recordsAll_R = $('#records_all_R').val();
     recordsAll_R = parseInt(recordsAll_R);
-    
+
     if ((recordsAll_R % 10) > 0) {
         records_from_R = recordsAll_R - (recordsAll_R % 10);
     } else {
         records_from_R = recordsAll_R - 10;
     }
-    
+
     if (recordsAll_R > 10) {
         if (searchRecords_R != null) {
             if (records_from_R <= searchRecords_R - 1) {
@@ -768,7 +777,7 @@ function leaseAttribute(landid) {
 
                             } else if ($('#Buyer_Details').css('display') == 'block')
                             {
-                                if (null != arry_Buyerbyprocessid && null != finalbuyerarray[i]) {
+                                if (null != arry_Buyerbyprocessid && null != finalbuyerarray) {
                                     $("#Seller_Details").hide();
                                     $("#Buyer_Details").hide();
                                     $("#Land_Details_Sale").hide();
@@ -1221,29 +1230,47 @@ function fillMortgageDetails() {
 function savebuyerdetails() {
     isVisible = true;
     var selectedprocess = $("#registration_process").val();
+    var isPerson = $("#tblPersonBuyerInfo").is(":visible");
 
     if ($("#editprocessAttributeformID").valid()) {
         var errors = "";
-        if (firstname_r_sale1.value.length === 0) {
-            errors += "-" + $.i18n("err-select-firstname") + "\n";
-        }
-        if (lastname_r_sale1.value.length === 0) {
-            errors += "-" + $.i18n("err-select-lastname") + "\n";
-        }
-        if (date_Of_birth_sale1.value.length === 0) {
-            errors += "-" + $.i18n("err-enter-dob") + "\n";
-        }
-        if (id_r1.value.length === 0) {
-            errors += "-" + $.i18n("err-enter-idnumber") + "\n";
-        }
-        if (id_date_sale1.value.length === 0) {
-            errors += "-" + $.i18n("err-enter-id-date") + "\n";
-        }
-        if (father_name_sale1.value.length === 0) {
-            errors += "-" + $.i18n("err-enter-father-name") + "\n";
-        }
-        if (mother_name_sale1.value.length === 0) {
-            errors += "-" + $.i18n("err-enter-mother-name") + "\n";
+
+        if (isPerson) {
+            if (firstname_r_sale1.value.length === 0) {
+                errors += "-" + $.i18n("err-select-firstname") + "\n";
+            }
+            if (lastname_r_sale1.value.length === 0) {
+                errors += "-" + $.i18n("err-select-lastname") + "\n";
+            }
+            if (date_Of_birth_sale1.value.length === 0) {
+                errors += "-" + $.i18n("err-enter-dob") + "\n";
+            }
+            if (id_r1.value.length === 0) {
+                errors += "-" + $.i18n("err-enter-idnumber") + "\n";
+            }
+            if (id_date_sale1.value.length === 0) {
+                errors += "-" + $.i18n("err-enter-id-date") + "\n";
+            }
+            if (father_name_sale1.value.length === 0) {
+                errors += "-" + $.i18n("err-enter-father-name") + "\n";
+            }
+            if (mother_name_sale1.value.length === 0) {
+                errors += "-" + $.i18n("err-enter-mother-name") + "\n";
+            }
+        } else {
+            if (txtLegalBuyerName.value.length === 0) {
+                errors += "-" + $.i18n("err-enter-org-name") + "\n";
+            }
+            if (cbxLegalBuyerType.value.length === 0 || cbxLegalBuyerType.value == "0") {
+                errors += "-" + $.i18n("err-select-type") + "\n";
+            }
+            if (txtLegalBuyerRegNum.value.length === 0) {
+                errors += "-" + $.i18n("err-enter-regnum") + "\n";
+            }
+            if (txtLegalBuyerRepName.value.length === 0) {
+                errors += "-" + $.i18n("err-enter-representative") + "\n";
+            }
+
         }
 
         if (errors !== "") {
@@ -1251,55 +1278,99 @@ function savebuyerdetails() {
             return false;
         }
 
-        jQuery.ajax({
-            type: "POST",
-            url: "registration/savebuyerdata",
-            data: $("#editprocessAttributeformID").serialize(),
-            success: function (result) {
-                if (result !== null && result !== undefined) {
-                    $("#buyersavebutton").prop("disabled", false).hide();
-                    $("#personid").val(0);
-                    $("#firstname_r_sale1").val("");
-                    $("#middlename_r_sale1").val("");
-                    $("#lastname_r_sale1").val("");
-                    $("#id_r1").val("");
-                    $("#id_date_sale1").val("");
-                    $("#address_sale1").val("");
-                    $("#date_Of_birth_sale1").val("");
-                    $("#sale_gender_buyer").val("0");
-                    $("#place_of_birth_sale1").val("");
-                    $("#sale_marital_buyer").val("0");
-                    $("#profession_sale1").val("");
-                    $("#father_name_sale1").val("");
-                    $("#mother_name_sale1").val("");
-                    $("#nop_sale1").val("0");
-                    $("#mandate_date_sale1").val("");
-                    $("#mandate_loc_sale1").val("");
+        if (isPerson) {
+            jQuery.ajax({
+                type: "POST",
+                url: "registration/savebuyerdata",
+                data: $("#editprocessAttributeformID").serialize(),
+                success: function (result) {
+                    if (result !== null && result !== undefined) {
+                        $("#buyersavebutton").prop("disabled", false).hide();
+                        $("#personid").val(0);
+                        $("#firstname_r_sale1").val("");
+                        $("#middlename_r_sale1").val("");
+                        $("#lastname_r_sale1").val("");
+                        $("#id_r1").val("");
+                        $("#id_date_sale1").val("");
+                        $("#address_sale1").val("");
+                        $("#date_Of_birth_sale1").val("");
+                        $("#sale_gender_buyer").val("0");
+                        $("#place_of_birth_sale1").val("");
+                        $("#sale_marital_buyer").val("0");
+                        $("#cbxLegalBuyerType").val("0");
+                        $("#profession_sale1").val("");
+                        $("#father_name_sale1").val("");
+                        $("#mother_name_sale1").val("");
+                        $("#nop_sale1").val("0");
+                        $("#mandate_date_sale1").val("");
+                        $("#mandate_loc_sale1").val("");
 
-                    SaleOwnerdBuyeretails(finallandid);
-                    salebuyerdetails(selectedprocess);
-                    $("#Seller_Details").hide();
-                    $("#Buyer_Details").show();
-                    $("#Land_Details_Sale").hide();
-                    $("#regPoi").hide();
-                    $("#Upload_Document_Sale").hide();
-                    $("#selectedbuyer").addClass("ui-tabs-active");
-                    $("#selectedbuyer").addClass("ui-state-active");
-                    $("#selectedpoi").removeClass("ui-tabs-active");
-                    $("#selectedpoi").removeClass("ui-state-active");
-                    $("#comment_Save").hide();
-                    $("#comment_Next").show();
+                        SaleOwnerdBuyeretails(finallandid);
+                        salebuyerdetails(selectedprocess);
+                        $("#Seller_Details").hide();
+                        $("#Buyer_Details").show();
+                        $("#Land_Details_Sale").hide();
+                        $("#regPoi").hide();
+                        $("#Upload_Document_Sale").hide();
+                        $("#selectedbuyer").addClass("ui-tabs-active");
+                        $("#selectedbuyer").addClass("ui-state-active");
+                        $("#selectedpoi").removeClass("ui-tabs-active");
+                        $("#selectedpoi").removeClass("ui-state-active");
+                        $("#comment_Save").hide();
+                        $("#comment_Next").show();
 
-                    jAlert($.i18n("reg-buyer-saved"));
-                } else {
+                        jAlert($.i18n("reg-buyer-saved"));
+                    } else {
+                        jAlert($.i18n("err-request-not-completed"));
+                    }
+                },
+                error: function (XMLHttpRequest,
+                        textStatus, errorThrown) {
                     jAlert($.i18n("err-request-not-completed"));
                 }
-            },
-            error: function (XMLHttpRequest,
-                    textStatus, errorThrown) {
-                jAlert($.i18n("err-request-not-completed"));
-            }
-        });
+            });
+        } else {
+            jQuery.ajax({
+                type: "POST",
+                url: "registration/savelegalbuyer",
+                data: $("#editprocessAttributeformID").serialize(),
+                success: function (result) {
+                    if (result !== null && result !== undefined) {
+                        $("#buyersavebutton").prop("disabled", false).hide();
+                        $("#personid").val(0);
+                        $("#txtLegalBuyerName").val("");
+                        $("#cbxLegalBuyerType").val("0");
+                        $("#txtLegalBuyerRegNum").val("");
+                        $("#txtLegalBuyerEstDate").val("");
+                        $("#txtLegalBuyerAddress").val("");
+                        $("#txtLegalBuyerRepName").val("");
+                        $("#txtLegalBuyerRepPhone").val("");
+
+                        SaleOwnerdBuyeretails(finallandid);
+                        salebuyerdetails(selectedprocess);
+                        $("#Seller_Details").hide();
+                        $("#Buyer_Details").show();
+                        $("#Land_Details_Sale").hide();
+                        $("#regPoi").hide();
+                        $("#Upload_Document_Sale").hide();
+                        $("#selectedbuyer").addClass("ui-tabs-active");
+                        $("#selectedbuyer").addClass("ui-state-active");
+                        $("#selectedpoi").removeClass("ui-tabs-active");
+                        $("#selectedpoi").removeClass("ui-state-active");
+                        $("#comment_Save").hide();
+                        $("#comment_Next").show();
+
+                        jAlert($.i18n("reg-buyer-saved"));
+                    } else {
+                        jAlert($.i18n("err-request-not-completed"));
+                    }
+                },
+                error: function (XMLHttpRequest,
+                        textStatus, errorThrown) {
+                    jAlert($.i18n("err-request-not-completed"));
+                }
+            });
+        }
     } else {
         jAlert($.i18n("err-fill-details"), $.i18n("err-alert"));
     }
@@ -1307,10 +1378,17 @@ function savebuyerdetails() {
 
 function saveattributessale() {
     if (isVisible) {
-        // Validate
         var errors = "";
         if ($("#sale_ownership_type").val() == "0") {
             errors += "- " + $.i18n("err-select-ownership-type") + "\n";
+        } else {
+            if (arry_Buyerbyprocessid != null && arry_Buyerbyprocessid.length > 0) {
+                var isPerson = arry_Buyerbyprocessid[0].hasOwnProperty("firstname");
+                
+                if ((!isPerson && $("#sale_ownership_type").val() != "9") || (isPerson && $("#sale_ownership_type").val() == "9")) {
+                    errors += "-" + $.i18n("err-select-correct-ownership") + "\n";
+                }
+            }
         }
         if ($("#sale_transfer_type").val() == "0") {
             errors += "- " + $.i18n("err-select-transfer-type") + "\n";
@@ -1672,13 +1750,13 @@ function getprocessvalue(id) {
 
         $("#divReqDocsLoan").hide();
         $("#divReqDocsLease").hide();
-        
+
         if (id == 1) {
             $("#divReqDocsLoan").show();
         } else if (id == 10) {
             $("#divReqDocsLease").show();
         }
-        
+
         currentdiv = "Lease";
 
         fetchDocument(selectedlandid, 1, id);
@@ -1847,7 +1925,6 @@ function getprocessvalue(id) {
 }
 
 function clearBuyerDetails_sale() {
-
     $("#firstname_r_sale1").val('');
     $("#middlename_r_sale1").val('');
     $("#lastname_r_sale1").val('');
@@ -1865,6 +1942,14 @@ function clearBuyerDetails_sale() {
     $("#fileUploadNewDowcumentss").val('');
     $("#remrks_sale").val('');
 
+    // Legal entity
+    $("#cbxLegalBuyerType").val("0");
+    $("#txtLegalBuyerName").val("");
+    $("#txtLegalBuyerRegNum").val("");
+    $("#txtLegalBuyerEstDate").val("");
+    $("#txtLegalBuyerAddress").val("");
+    $("#txtLegalBuyerRepName").val("");
+    $("#txtLegalBuyerRepPhone").val("");
 }
 
 function clear_Lease() {
@@ -2210,13 +2295,9 @@ function ViewHistory(landid) {
                 if (data[0] != null) {
                     $("#commentsTablePop").show();
                     $.each(data[0], function (index, optionData) {
-                        $("#PropertyHistTrackingTemplate")
-                                .tmpl(optionData).appendTo(
-                                "#PropertyHistTrackingBody");
+                        $("#PropertyHistTrackingTemplate").tmpl(optionData).appendTo("#PropertyHistTrackingBody");
                     });
                 }
-
-
 
                 if (data[3] != null) {
                     $("#commentsTablePopTransactionHist").show();
@@ -2236,9 +2317,7 @@ function ViewHistory(landid) {
                             text: $.i18n("gen-cancel"),
                             "id": "comment_cancel",
                             click: function () {
-                                setInterval(function () {
-
-                                }, 4000);
+                                setInterval(function () {}, 4000);
                                 $('#PropertyHistTrackingBody').empty();
                                 $('#PropertyLeaseHistTrackingBody').empty();
                                 $('#PropertyMortageHistTrackingBody').empty();
@@ -2247,27 +2326,21 @@ function ViewHistory(landid) {
                                 $("#commentsTablePopMortage").hide();
                                 $("#commentsTablePopTransactionHist").hide();
                                 commentHistoryDialogPop.dialog("destroy");
-
                             }
                         }],
                     close: function () {
-
-                        // commentHistoryDialogPop.dialog( "destroy" );
                         $("#commentsTablePop").hide();
                         $("#commentsTablePopLease").hide();
                         $("#commentsTablePopMortage").hide();
-
                     }
                 });
-                $("#comment_cancel").html(
-                        '<span class="ui-button-text">' + $.i18n("gen-cancel") + '</span>');
+                $("#comment_cancel").html('<span class="ui-button-text">' + $.i18n("gen-cancel") + '</span>');
                 commentHistoryDialogPop.dialog("open");
                 document.getElementById('btnInitTrans').blur();
             } else {
                 jAlert("No Records", $.i18n("gen-info"));
             }
         }
-
     });
 }
 
@@ -2460,12 +2533,20 @@ function viewSaleDetails(transactionid) {
 
                 if (contactObj[0] != null)
                 {
-                    $("#PropertyOldSaleTrackingTemplate").tmpl(contactObj[0]).appendTo("#popupoldBody");
+                    if (contactObj[0][0].hasOwnProperty("firstname")) {
+                        $("#PropertyOldSaleTrackingTemplate").tmpl(contactObj[0]).appendTo("#popupoldBody");
+                    } else {
+                        $("#PropertyOldLelgalSaleTrackingTemplate").tmpl(contactObj[0]).appendTo("#popupoldBody");
+                    }
                 }
 
                 if (contactObj[1] != null)
                 {
-                    $("#PropertyCurrentSaleTrackingTemplate").tmpl(contactObj[1]).appendTo("#popupCurrentBody");
+                    if (contactObj[1][0].hasOwnProperty("firstname")) {
+                        $("#PropertyOldSaleTrackingTemplate").tmpl(contactObj[1]).appendTo("#popupCurrentBody");
+                    } else {
+                        $("#PropertyOldLelgalSaleTrackingTemplate").tmpl(contactObj[1]).appendTo("#popupCurrentBody");
+                    }
                 }
 
                 $("#ViewPopuupDiv").dialog(
@@ -3091,6 +3172,14 @@ function printApfr(landid, shareTypeId) {
                     // Generate form 51
                     generateform51(landid, data);
                 }
+            }
+        });
+    } else if (shareTypeId === 9) {
+        jQuery.ajax({
+            url: "landrecords/spatialunit/form52le/" + landid,
+            async: false,
+            success: function (data) {
+                generateform52Le(landid, data);
             }
         });
     } else {
@@ -4264,6 +4353,27 @@ function editNewBuyer(id) {
     }
 }
 
+function editLegalBuyer(id) {
+    if (arry_Buyerbyprocessid.length > 0) {
+        for (var i = 0; i < arry_Buyerbyprocessid.length; i++) {
+            if (id == arry_Buyerbyprocessid[i].partyid) {
+                $("#cbxLegalBuyerType").val(arry_Buyerbyprocessid[i].groupType.grouptypeid);
+                $("#txtLegalBuyerName").val(arry_Buyerbyprocessid[i].organizationname);
+                $("#txtLegalBuyerRegNum").val(arry_Buyerbyprocessid[i].identityregistrationno);
+                $("#txtLegalBuyerEstDate").val(arry_Buyerbyprocessid[i].regdate);
+                $("#txtLegalBuyerAddress").val(arry_Buyerbyprocessid[i].address);
+                $("#txtLegalBuyerRepName").val(arry_Buyerbyprocessid[i].repname);
+                $("#txtLegalBuyerRepPhone").val(arry_Buyerbyprocessid[i].contactno);
+
+                $("#personid").val(arry_Buyerbyprocessid[i].partyid);
+
+                $("#savebuyer").text($.i18n("gen-save"));
+                $("#savebuyer").show();
+            }
+        }
+    }
+}
+
 function editNewLeasee(id) {
     if (leaseData !== null) {
         if (id == leaseData.personid) {
@@ -4320,6 +4430,7 @@ function editSeller(id) {
                 $("#sale_gender_buyer").val(arry_Sellerbyprocessid[i].genderid);
                 $("#sale_idtype_buyer").val(arry_Sellerbyprocessid[i].identitytypeid);
                 $("#sale_marital_buyer").val(arry_Sellerbyprocessid[i].maritalstatusid);
+                $("#cbxLegalBuyerType").val(arry_Sellerbyprocessid[i].groupType.grouptypeid);
                 $("#personid").val(arry_Sellerbyprocessid[i].personid);
             }
         }
@@ -4513,8 +4624,10 @@ function fillBuyerandSellerpage(landid) {
             $("#sale_idtype_buyer").empty();
             $("#nop_sale1").empty();
             $("#doc_Type_Sale").empty();
+            $("#cbxLegalBuyerType").empty();
 
             $("#sale_marital_buyer").append($("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
+            $("#cbxLegalBuyerType").append($("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
             $("#sale_gender_buyer").append($("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
             $("#nop_sale1").append($("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
             $("#doc_Type_Sale").append($("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
@@ -4525,6 +4638,13 @@ function fillBuyerandSellerpage(landid) {
                     displayName = obj1.maritalstatusEn;
                 }
                 $("#sale_marital_buyer").append($("<option></option>").attr("value", obj1.maritalstatusid).text(displayName));
+            });
+            $.each(leTypes, function (i, t) {
+                var displayName = t.grouptype;
+                if (Global.LANG === "en") {
+                    displayName = t.grouptypeEn;
+                }
+                $("#cbxLegalBuyerType").append($("<option></option>").attr("value", t.grouptypeid).text(displayName));
             });
             jQuery.each(genderStatus_R, function (i, obj1) {
                 var displayName = obj1.gender;
@@ -4720,25 +4840,29 @@ function SaleOwnerdBuyeretails(landid) {
             jQuery.each(objdata, function (i, obj)
             {
                 removeNulls(obj);
-                if (obj.persontype == 1)  // sler
-                {
-                    arry_Seller.push(obj);
-                } else if (obj.persontype == 11)  //buyer
+                if (obj.persontype == 11)  //buyer
                 {
                     arry_Buyer.push(obj);
+                } else {
+                    arry_Seller.push(obj);
                 }
             });
             arry_Sellerbyprocessid = arry_Seller;
             arry_Buyerbyprocessid = arry_Buyer;
 
             $("#OwnerRecordsRowDataSale").empty();
+            $("#RowLegalOwnerLoanInfo").empty();
             $("#OwnerRecordsRowDataLease").empty();
             $("#OwnerRecordsRowDataMortgage").empty();
 
             $("#newOwnerRecordsRowDataSale").empty();
+            $("#RowLegalBuyerInfo").empty();
+            $("#rowsPermissionApplicant").empty();
+            $("#RowLegalSellerInfo").empty();
             $("#OwnerRecordsRowDataSaleEdit").empty();
 
             $("#rowsPermissionOwner").empty();
+            $("#RowLegalOwnerPermInfo").empty();
             $("#liPermCurrentOwner").show();
             $("#tabPermCurrentOwner").show();
 
@@ -4798,18 +4922,47 @@ function SaleOwnerdBuyeretails(landid) {
 
             if (arry_Seller !== null && arry_Seller.length > 0) {
                 for (var i = 0; i < arry_Seller.length; i++) {
-                    $("#OwnerRecordsAttrTemplateSale").tmpl(arry_Seller[i]).appendTo("#OwnerRecordsRowDataSale");
-                    $("#OwnerRecordsAttrTemplateLease").tmpl(arry_Seller[i]).appendTo("#OwnerRecordsRowDataLease");
-                    $("#OwnerRecordsAttrTemplateMortgage").tmpl(arry_Seller[i]).appendTo("#OwnerRecordsRowDataMortgage");
+                    if (arry_Seller[i].hasOwnProperty("firstname")) {
+                        // Private person
+                        $("#tblPrivateSellerInfo").show();
+                        $("#divPrivateSellerPoi").show();
+                        $("#tblPrivateOwnerLoanInfo").show();
+                        $("#pnlPoiLoan").show();
+                        $("#tblPrivateOwnerPermInfo").show();
+                        $("#pnlPermPOI").show();
+                        $("#tblLegalSellerInfo").hide();
+                        $("#tblLegalOwnerLoanInfo").hide();
+                        $("#tblLegalOwnerPermInfo").hide();
 
-                    $("#OwnerRecordsAttrTemplateSaleEdit").tmpl(arry_Seller[i]).appendTo("#OwnerRecordsRowDataSaleEdit");
-                    $("#rowPermissionOwner").tmpl(arry_Seller[i]).appendTo("#rowsPermissionOwner");
+                        $("#OwnerRecordsAttrTemplateSale").tmpl(arry_Seller[i]).appendTo("#OwnerRecordsRowDataSale");
+                        $("#OwnerRecordsAttrTemplateLease").tmpl(arry_Seller[i]).appendTo("#OwnerRecordsRowDataLease");
+                        $("#OwnerRecordsAttrTemplateMortgage").tmpl(arry_Seller[i]).appendTo("#OwnerRecordsRowDataMortgage");
+
+                        $("#OwnerRecordsAttrTemplateSaleEdit").tmpl(arry_Seller[i]).appendTo("#OwnerRecordsRowDataSaleEdit");
+                        $("#rowPermissionOwner").tmpl(arry_Seller[i]).appendTo("#rowsPermissionOwner");
+                    } else {
+                        // Legal entity
+                        $("#tblPrivateSellerInfo").hide();
+                        $("#divPrivateSellerPoi").hide();
+                        $("#tblPrivateOwnerLoanInfo").hide();
+                        $("#pnlPoiLoan").hide();
+                        $("#tblPrivateOwnerPermInfo").hide();
+                        $("#pnlPermPOI").hide();
+                        $("#tblLegalSellerInfo").show();
+                        $("#tblLegalOwnerLoanInfo").show();
+                        $("#tblLegalOwnerPermInfo").show();
+
+                        $("#LegalEntityTableTemplate").tmpl(arry_Seller[i]).appendTo("#RowLegalSellerInfo");
+                        $("#LegalEntityTableTemplate").tmpl(arry_Seller[i]).appendTo("#RowLegalOwnerLoanInfo");
+                        $("#LegalEntityTableTemplate").tmpl(arry_Seller[i]).appendTo("#RowLegalOwnerPermInfo");
+                    }
                     $("#OwnerRecordsRowDataSaleEdit").i18n();
                 }
             }
 
             finalbuyerarray = arry_Buyer;
 
+            // NOT USED  
             if (arry_Seller != null && arry_Seller.length > 0)
             {
                 $("#SecondOwner").hide();
@@ -4864,25 +5017,17 @@ function SaleOwnerdBuyeretails(landid) {
             }
 
             // Buyer
-
             $("#sale_marital_buyer").empty();
             $("#sale_gender_buyer").empty();
             $("#sale_idtype_buyer").empty();
-
             $("#doc_Type_Sale").empty();
+            $("#cbxLegalBuyerType").empty();
 
-            $("#sale_marital_buyer").append(
-                    $("<option></option>").attr("value", 0).text(
-                    $.i18n("gen-please-select")));
-            $("#sale_gender_buyer").append(
-                    $("<option></option>").attr("value", 0).text(
-                    $.i18n("gen-please-select")));
-            $("#sale_idtype_buyer").append(
-                    $("<option></option>").attr("value", 0).text(
-                    $.i18n("gen-please-select")));
-            $("#doc_Type_Sale").append(
-                    $("<option></option>").attr("value", 0).text(
-                    $.i18n("gen-please-select")));
+            $("#sale_marital_buyer").append($("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
+            $("#cbxLegalBuyerType").append($("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
+            $("#sale_gender_buyer").append($("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
+            $("#sale_idtype_buyer").append($("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
+            $("#doc_Type_Sale").append($("<option></option>").attr("value", 0).text($.i18n("gen-please-select")));
 
             jQuery.each(maritalStatus_R, function (i, obj1) {
                 var displayName = obj1.maritalstatus;
@@ -4890,6 +5035,13 @@ function SaleOwnerdBuyeretails(landid) {
                     displayName = obj1.maritalstatusEn;
                 }
                 $("#sale_marital_buyer").append($("<option></option>").attr("value", obj1.maritalstatusid).text(displayName));
+            });
+            $.each(leTypes, function (i, t) {
+                var displayName = t.grouptype;
+                if (Global.LANG === "en") {
+                    displayName = t.grouptypeEn;
+                }
+                $("#cbxLegalBuyerType").append($("<option></option>").attr("value", t.grouptypeid).text(displayName));
             });
             jQuery.each(genderStatus_R, function (i, obj1) {
                 $("#sale_gender_buyer").append(
@@ -4902,7 +5054,6 @@ function SaleOwnerdBuyeretails(landid) {
                         obj1.identitytypeid).text(
                         obj1.identitytypeEn));
             });
-
             jQuery.each(documenttype_R, function (i, obj) {
                 $("#doc_Type_Sale").append(
                         $("<option></option>").attr("value",
@@ -4969,34 +5120,24 @@ function SaleOwnerdBuyeretails(landid) {
                         obj.landsharetypeEn));
             });
 
-            $("#sale_land_type").val(
-                    suReg.landtypeid);
+            $("#sale_land_type").val(suReg.landtypeid);
             if (suReg.firstname != "") {
                 $("#proposedUse_lease").val(suReg.firstname)
                 $("#sale_proposeduse").val(suReg.firstname)
                 $("#mortgage_proposed_use").val(suReg.firstname)
             }
-            $("#sale_country").val(
-                    suReg.hierarchyid1);
-            $("#sale_region").val(
-                    suReg.hierarchyid2);
-            $("#sale_province").val(
-                    suReg.hierarchyid3);
+            $("#sale_country").val(suReg.hierarchyid1);
+            $("#sale_region").val(suReg.hierarchyid2);
+            $("#sale_province").val(suReg.hierarchyid3);
 
             $("#parcel_r").val("000000" + suReg.landid);
-            $("#sale_land_Share_type").val(
-                    suReg.landusetypeid);
+            $("#sale_land_Share_type").val(suReg.landusetypeid);
             $("#sale_area").val(suReg.area);
-            $("#sale_land_use").val(
-                    suReg.landusetype_en);
-            $("#neighbor_west_sale").val(
-                    suReg.neighbor_west);
-            $("#neighbor_north_sale").val(
-                    suReg.neighbor_north);
-            $("#neighbor_south_sale").val(
-                    suReg.neighbor_south);
-            $("#neighbor_east_sale").val(
-                    suReg.neighbor_east);
+            $("#sale_land_use").val(suReg.landusetype_en);
+            $("#neighbor_west_sale").val(suReg.neighbor_west);
+            $("#neighbor_north_sale").val(suReg.neighbor_north);
+            $("#neighbor_south_sale").val(suReg.neighbor_south);
+            $("#neighbor_east_sale").val(suReg.neighbor_east);
         }
     });
 }
@@ -6709,6 +6850,11 @@ function deleteSalePOI(poiId) {
 
 function salebuyerdetails(id) {
     $("#newOwnerRecordsRowDataSale").empty();
+    $("#RowLegalBuyerInfo").empty();
+    $("#tblNewPersonBuyer").hide();
+    $("#tblPersonBuyerInfo").hide();
+    $("#tblNewLegalBuyer").hide();
+    $("#tblLegalBuyerInfo").hide();
 
     if (!$("#saleLandDetailsContainer #pnlLandDetails").length) {
         $("#saleLandDetailsContainer").empty();
@@ -6716,27 +6862,65 @@ function salebuyerdetails(id) {
     }
 
     fillLandDetails();
+    $("#savebuyer").hide();
+    $("#divBuyerType").hide();
 
     if (finalbuyerarray.length > 0) {
-        $("#savebuyer").hide();
         for (var i = 0; i < finalbuyerarray.length; i++) {
-            var personid = finalbuyerarray[i].personid;
+            var isPerson = finalbuyerarray[i].hasOwnProperty("firstname");
+            var personid;
+
+            if (isPerson) {
+                $("#tblNewPersonBuyer").show();
+                $("#tblPersonBuyerInfo").show();
+                personid = finalbuyerarray[i].personid;
+            } else {
+                $("#tblNewLegalBuyer").show();
+                $("#tblLegalBuyerInfo").show();
+                personid = finalbuyerarray[i].partyid;
+            }
+
             jQuery.ajax({
                 type: "GET",
                 url: "registration/salebuyerdetails/" + personid + "/" + landid,
                 async: false,
                 success: function (data) {
                     if (data == id) {
-                        $("#newOwnerRecordsAttrTemplateSale").tmpl(finalbuyerarray[i]).appendTo("#newOwnerRecordsRowDataSale");
-                        $("#newOwnerRecordsRowDataSale").i18n();
+                        if (isPerson) {
+                            $("#newOwnerRecordsAttrTemplateSale").tmpl(finalbuyerarray[i]).appendTo("#newOwnerRecordsRowDataSale");
+                            $("#newOwnerRecordsRowDataSale").i18n();
+                        } else {
+                            $("#LegalEntityEditTableTemplate").tmpl(finalbuyerarray[i]).appendTo("#RowLegalBuyerInfo");
+                            $("#RowLegalBuyerInfo").i18n();
+                        }
                     }
                 }
             });
         }
     } else {
-        $("#savebuyer").text($.i18n("reg-add-person"));
-        $("#savebuyer").show();
+        $("#divBuyerType").show();
+        $("#savebuyer").text($.i18n("gen-add"));
     }
+}
+
+function showAddPersonBuyer() {
+    $("#divBuyerType").hide();
+    $("#savebuyer").show();
+
+    $("#tblNewPersonBuyer").show();
+    $("#tblPersonBuyerInfo").show();
+    $("#tblNewLegalBuyer").hide();
+    $("#tblLegalBuyerInfo").hide();
+}
+
+function showAddNonNaturalBuyer() {
+    $("#divBuyerType").hide();
+    $("#savebuyer").show();
+
+    $("#tblNewPersonBuyer").hide();
+    $("#tblPersonBuyerInfo").hide();
+    $("#tblNewLegalBuyer").show();
+    $("#tblLegalBuyerInfo").show();
 }
 
 function documentEditFetch() {

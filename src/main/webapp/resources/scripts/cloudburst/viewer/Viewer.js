@@ -1,3 +1,5 @@
+var Global = Global || {};
+
 var project = null;
 var baseLayers = [];
 var cosmeticStatus = false;
@@ -18,6 +20,8 @@ var _projectExtent;
 var extent = ol.proj.transformExtent([35.739998, -7.900000999970367, 35.83000249996666, -7.82], "EPSG:4326", "EPSG:3857");
 var bounds = [34.9655456095934, -8.57657546620732, 35.9042312577367, -7.83167176245347];
 var villageList = null;
+Global.PROJECT_ID = null;
+Global.PROJECT_AREA = null;
 
 Cloudburst.loadMap = function (mapdiv, options, callback) {
     _projectExtent = "";
@@ -42,6 +46,8 @@ Cloudburst.loadMap = function (mapdiv, options, callback) {
         success: function (data) {
             projectName = data.name;
             _projectExtent = data.maxextent;
+            Global.PROJECT_ID = data.projectnameid;
+            Global.PROJECT_AREA = data.projectArea[0];
 
             if (data.active) {
                 cookieProjectName = data.name + '|' + user;
@@ -296,6 +302,9 @@ Cloudburst.loadMap = function (mapdiv, options, callback) {
                                 } else if (data.layertype.description == 'WFS') {
                                     var _mapStyle;
                                     var cqlFilter = 'isactive=true';
+                                    if (data.name === 'Mast:la_spatialunit_land') {
+                                        cqlFilter += " and projectnameid=" + Global.PROJECT_ID;
+                                    }
                                     var vectorSource = new ol.source.Vector({
                                         format: new ol.format.GeoJSON(),
                                         url: function (extent) {

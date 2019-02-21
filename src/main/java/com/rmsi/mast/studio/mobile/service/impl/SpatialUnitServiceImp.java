@@ -255,6 +255,11 @@ public class SpatialUnitServiceImp implements SpatialUnitService {
     }
 
     @Override
+    public List<ShareType> getShareTypesForMobile(){
+        return tenureRelationTypeDao.getShareTypesForMobile();
+    }
+    
+    @Override
     public List<TenureClass> getTenureClasses() {
         return tenureClassDao.findAll();
     }

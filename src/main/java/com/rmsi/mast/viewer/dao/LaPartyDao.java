@@ -15,7 +15,7 @@ public interface LaPartyDao extends GenericDAO<LaParty, Long> {
 
     NaturalPerson getActivePartyIdByID(Long id);
 
-    List<NaturalPerson> getObjectsBypartyId(String id);
+    List<LaParty> getObjectsBypartyId(String id);
 
     List<SocialTenureRelationship> findSocailTenureByUsin(Long usin);
 

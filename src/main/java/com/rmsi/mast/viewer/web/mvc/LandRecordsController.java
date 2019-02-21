@@ -5388,33 +5388,21 @@ public class LandRecordsController {
     public List<Object> findsaledetailbyTransid(@PathVariable Long transactionid) {
         List<Object> object = new ArrayList<Object>();
         LaExtTransactionHistory lasaleobj = null;
-        //Object objsaledetails = null;
         Object newobjperson = null;
         Object oldobjperson = null;
-        /*Object objtransactiondetails = null;*/
 
         try {
-
             lasaleobj = laExtTransactionHistorydao.getTransactionHistoryByTransId(transactionid.intValue());
-            //objsaledetails= landRecordsService.getownerhistorydetails(landid);
 
-            List<NaturalPerson> oldpersonobj = laPartyDao.getObjectsBypartyId(lasaleobj.getOldownerid());
-            List<NaturalPerson> newpersonobj = laPartyDao.getObjectsBypartyId(lasaleobj.getNewownerid());
+            List<LaParty> oldpersonobj = laPartyDao.getObjectsBypartyId(lasaleobj.getOldownerid());
+            List<LaParty> newpersonobj = laPartyDao.getObjectsBypartyId(lasaleobj.getNewownerid());
 
-            /*Gender genderobj = Genderdao.getGenderById(oldpersonobj.getGenderid().longValue());
- 	oldpersonobj.setGender(genderobj.getGender_en());
- 	
- 	 Gender newgenderobj = Genderdao.getGenderById(newpersonobj.getGenderid().longValue());
- 	newpersonobj.setGender(newgenderobj.getGender_en());*/
             newobjperson = (Object) newpersonobj;
             oldobjperson = (Object) oldpersonobj;
-            /*objmortagedetails= landRecordsService.getmortagagedetails(landid);
- 			objtransactiondetails= landRecordsService.gettransactiondetails(landid);*/
-
-            //object.add(objsaledetails);
+            
             object.add(0, oldobjperson);
             object.add(1, newobjperson);
-            //object.add(objtransactiondetails);
+
             return object;
         } catch (Exception e) {
             // TODO Auto-generated catch block
@@ -7777,6 +7765,103 @@ public class LandRecordsController {
             dto.setContractNum(right.getTransferContractNum());
 
             dto.setMandateDate(person.getMandateDate());
+
+        } catch (Exception e) {
+            logger.error(e);
+        }
+        return dto;
+    }
+    
+    @RequestMapping(value = "/viewer/landrecords/spatialunit/form52le/{usin}", method = RequestMethod.GET)
+    @ResponseBody
+    public Form8Dto getForm52Le(@PathVariable Long usin) {
+
+        Form8Dto dto = new Form8Dto();
+        try {
+            ClaimBasic su = spatialUnitService.getClaimsBasicByLandId(usin).get(0);
+            RightBasic right = getOwnershipRight(su);
+            NonNaturalPerson le = (NonNaturalPerson) right.getLaParty();
+            Project project = projectService.findProjectById(su.getProjectnameid());
+
+            String mayorname = project.getProjectArea().iterator().next().getMayorname();
+            List<SpatialunitPersonwithinterest> poiLst = getPropertyPois(usin, right.getLaExtTransactiondetail().getTransactionid());
+
+            SpatialUnitExtension suExt = null;
+            if (su.getParcelExtensions() != null && su.getParcelExtensions().size() > 0) {
+                suExt = su.getParcelExtensions().get(0);
+            }
+
+            if (su.getLaSpatialunitgroupHierarchy5() != null) {
+                dto.setVillage(su.getLaSpatialunitgroupHierarchy5().getName());
+            }
+            if (su.getLaSpatialunitgroupHierarchy4() != null) {
+                dto.setCommune(su.getLaSpatialunitgroupHierarchy4().getName());
+            }
+            if (su.getLaSpatialunitgroupHierarchy3() != null) {
+                dto.setProvince(su.getLaSpatialunitgroupHierarchy3().getName());
+            }
+            if (su.getLaSpatialunitgroupHierarchy2() != null) {
+                dto.setRegion(su.getLaSpatialunitgroupHierarchy2().getName());
+            }
+
+            dto.setAddress(le.getAddress());
+            dto.setApplication_date(su.getApplicationdate());
+            dto.setApplication_no(su.getAppNum());
+            dto.setArea(Double.toString(su.getArea()));
+            if (suExt != null) {
+                dto.setDate_recognition_right(suExt.getRecognition_rights_date());
+            }
+
+            List<LandUseType> existingList = landRecordsService.getExistingUseName(su.getLandusetypeid());
+            dto.setExisting_use(existingList);
+
+            dto.setFirst_name(le.getRepname());
+            dto.setLocation(dto.getCommune() + " " + dto.getVillage());
+            dto.setMayor_name(mayorname);
+            dto.setNeighbour_east(su.getNeighborEast());
+            dto.setNeighbour_north(su.getNeighborNorth());
+            dto.setNeighbour_south(su.getNeighborSouth());
+            dto.setNeighbour_west(su.getNeighborWest());
+            dto.setPv_no(su.getPvNum());
+            dto.setRefrence_id_card(le.getIdentityregistrationno());
+            
+            dto.setFamilyname(le.getOrganizationname());
+            dto.setFamily_address(le.getAddress());
+            dto.setIdcardEstbDate(le.getRegdate());
+            
+            dto.setApfrno(right.getCertNumber());
+            dto.setApfr_date(right.getCreateddate());
+            dto.setPoiLst(poiLst);
+            dto.setOther_use(su.getOther_use());
+
+            dto.setLotNo("000");
+            dto.setParcelNo(su.getLandid());
+            dto.setSectionNo(su.getSection());
+            
+            if (right.getMutationId() != null) {
+                MutationType mt = landRecordsService.getMutationType(right.getMutationId());
+                dto.setMutationType(mt.getName());
+
+                // Search for previous APFR number
+                int tranId = 0;
+                RightBasic previousRight = null;
+                for (RightBasic r : su.getRights()) {
+                    if (r.getPersonlandid().compareTo(right.getPersonlandid()) != 0
+                            && r.getLaExtTransactiondetail().getTransactionid() < right.getLaExtTransactiondetail().getTransactionid()
+                            && r.getLaExtTransactiondetail().getTransactionid() > tranId) {
+                        tranId = r.getLaExtTransactiondetail().getTransactionid();
+                        previousRight = r;
+                    }
+                }
+                if (previousRight != null) {
+                    dto.setPreviousApfr(previousRight.getCertNumber());
+                    dto.setPreviousApfrDate(previousRight.getCertIssueDate());
+                }
+            }
+
+            dto.setContractName(right.getTransferContractName());
+            dto.setContractDate(right.getTransferContractDate());
+            dto.setContractNum(right.getTransferContractNum());
 
         } catch (Exception e) {
             logger.error(e);
