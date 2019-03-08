@@ -412,6 +412,7 @@ public class Form8Dto implements Serializable {
         this.contractName = contractName;
     }
 
+    @JsonSerialize(using = JsonDateSerializer2.class)
     public Date getContractDate() {
         return contractDate;
     }
@@ -436,6 +437,7 @@ public class Form8Dto implements Serializable {
         this.previousApfr = previousApfr;
     }
 
+    @JsonSerialize(using = JsonDateSerializer2.class)
     public Date getPreviousApfrDate() {
         return previousApfrDate;
     }

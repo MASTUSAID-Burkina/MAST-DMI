@@ -2341,9 +2341,9 @@ function CustomAction(refrence, landid, workflowid, transactionid, parcelnum, cl
         showOnMap(landid, workflowid, "", true);
     } else if (action.trim() === "view map") {
         showOnMap(landid, workflowid, "", false);
-    } else if (refrence.title.trim() === "view parcel number") {
+    } else if (action.trim() === "view parcel number") {
         showParcelNumber($("#hSection" + landid).val(), $("#hParcelInSection" + landid).val());
-    } else if (refrence.title.trim() === "edit parcel number") {
+    } else if (action.trim() === "edit parcel number") {
         editParcelNumber(landid, $("#hSection" + landid).val(), $("#hParcelInSection" + landid).val());
     } else if (action.trim() === "edit  parcel") {
         edituserDefineParcel(landid, workflowid);
