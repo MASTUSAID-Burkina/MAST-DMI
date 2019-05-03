@@ -17,8 +17,8 @@ public class ParcelCount implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @SequenceGenerator(name = "PARCEL_COUNT_GENERATOR", sequenceName = "parcelcount_id_seq")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "PARCEL_COUNT_GENERATOR")
+    @SequenceGenerator(name = "PARCEL_COUNT_GENERATOR", sequenceName = "parcelcount_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PARCEL_COUNT_GENERATOR")
     @Column(name = "id")
     private int id;
 

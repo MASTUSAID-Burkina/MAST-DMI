@@ -379,15 +379,17 @@ public class ProjectController {
             }
 
             //SET users
-            for (String user : users) {
-                UserProject userProject = new UserProject();
-                User obuser = userService.findUserByUserId(Integer.parseInt(user));
-                userProject.setUser(obuser);
-                userProject.setProject(project);
-                userProject.setActive(true);
-                userProject.setCreatedby(user_id.longValue());
-                userProject.setCreateddate(new Date());
-                userProjectList.add(userProject);
+            if (users != null && users.length > 0) {
+                for (String user : users) {
+                    UserProject userProject = new UserProject();
+                    User obuser = userService.findUserByUserId(Integer.parseInt(user));
+                    userProject.setUser(obuser);
+                    userProject.setProject(project);
+                    userProject.setActive(true);
+                    userProject.setCreatedby(user_id.longValue());
+                    userProject.setCreateddate(new Date());
+                    userProjectList.add(userProject);
+                }
             }
 
             //SET Baselayer
@@ -425,7 +427,7 @@ public class ProjectController {
             project.setProjectArea(projectAreaset);
 
             ParcelCount[] numberCounters = new ParcelCount[3];
-            
+
             // Get number counters
             ParcelCount appCount = parcelCountDao.findParcelCountByTypeAndProjectName(ConstantUtil.APPLICATION, project.getName());
             if (appCount == null) {
@@ -434,7 +436,7 @@ public class ProjectController {
                 appCount.setType(ConstantUtil.APPLICATION);
             }
             appCount.setCount(appNumber);
-            
+
             ParcelCount pvCount = parcelCountDao.findParcelCountByTypeAndProjectName(ConstantUtil.PV, project.getName());
             if (pvCount == null) {
                 pvCount = new ParcelCount();
@@ -442,7 +444,7 @@ public class ProjectController {
                 pvCount.setType(ConstantUtil.PV);
             }
             pvCount.setCount(pvNumber);
-            
+
             ParcelCount apfrCount = parcelCountDao.findParcelCountByTypeAndProjectName(ConstantUtil.APFR, project.getName());
             if (apfrCount == null) {
                 apfrCount = new ParcelCount();
@@ -450,11 +452,11 @@ public class ProjectController {
                 apfrCount.setType(ConstantUtil.APFR);
             }
             apfrCount.setCount(apfrNumber);
-            
+
             numberCounters[0] = appCount;
             numberCounters[1] = pvCount;
             numberCounters[2] = apfrCount;
-            
+
             projectService.addProject(project, numberCounters);
 
             return "ProjectAdded";
